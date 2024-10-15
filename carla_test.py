@@ -1,7 +1,15 @@
 """
-This is a test script that will spawn a Tesla Model 3 into Carla.
-To use the script download Carla 9.8 and navigate to "[Carla folder]/WindowsNoEditor/PythonAPI/examples/" and place this file into this directory. Once Carla is running simply run the script.
+!!WARNING!!
+Due to this project using Carla 9.8 this script requires Python 3.7 in order to work with the Carla host and the Carla python package.
+Once Python 3.7 is installed use pip to install the Carla package "pip install carla==0.9.5" (this command may result in errors but does not affect performance)
+!!WARNING!!
+
+This is a test script that will spawn a Tesla Model 3 into Carla for 20 seconds before destroying it.
+To use the script download Carla 9.8 and navigate to "[Carla folder]/WindowsNoEditor/PythonAPI/examples/" and place this file into this directory.
+Once Carla is running simply run the script.
 Since the script is being run on the same computer you won't need to change the IP address, "localhost" will work.
+
+Note: Carla simulator 9.8 requires at least 6GB of dedicated video memory to run properly.
 """
 import glob
 import os
