@@ -11,7 +11,7 @@ PACKET_COUNT = 60
 PACKET_SIZE = 112
 
 # get time for printing only
-def getTime():
+def get_time():
     tz = pytz.timezone('America/New_York')
     otz = tz.localize(datetime.now())
     return (otz.hour * 3600) + (otz.minute * 60) + otz.second
