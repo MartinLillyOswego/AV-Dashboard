@@ -11,7 +11,7 @@ To use the script download Carla 9.8 and navigate to "[Carla folder]/WindowsNoEd
 Once Carla is running simply run the script.
 Since the script is being run on the same computer you won't need to change the IP address, "localhost" will work.
 
-Note: Carla simulator 9.8 requires at least 6GB of dedicated video memory to run properly.
+Note: Carla simulator 9.8 requires at least 4GB of dedicated video memory to run properly.
 """
 import glob
 import os
