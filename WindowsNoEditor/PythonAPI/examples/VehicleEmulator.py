@@ -17,7 +17,7 @@ import time
 # create shared instance of Vehicle class
 vehicle = Vehicle()
 
-# start the dashboard send thread
+# start the vehicle emulator's send thread
 t = Sender(vehicle=vehicle, control_unit=None)
 t.start()
 
