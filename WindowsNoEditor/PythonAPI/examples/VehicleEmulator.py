@@ -1,6 +1,6 @@
 """
 Starts the carla simulation which records simulated sensor data
-in into an instance of Vehicle.This data is read by the Sender thread
+in into an instance of Vehicle. This data is read by the Sender thread
 and is packaged and sent to the dashboard over an emulated serial port.
 
 To run, follow the directions given in carla_test.py,
