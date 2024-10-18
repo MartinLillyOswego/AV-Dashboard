@@ -4,7 +4,7 @@ import pytz
 
 CARLA_PORT = 'COM1'
 VEHICLE_PORT = 'NA'
-SEND_INTERVAL = 1
+SEND_INTERVAL = .25
 PACKET_COUNT = 60
 
 # 14 floats in each half = 2(14*4) = 112 bytes
