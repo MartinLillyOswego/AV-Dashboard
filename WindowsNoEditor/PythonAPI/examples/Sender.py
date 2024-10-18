@@ -43,6 +43,7 @@ class Sender(threading.Thread):
                        vehicle_snapshot.battery_current[ind], vehicle_snapshot.battery_temperate[ind],
                        vehicle_snapshot.distance_to_object[ind], vehicle_snapshot.direction[ind],
                        vehicle_snapshot.time[ind]]
+        print(f"{config.get_time()}:SendingThread: Read: {last_packet}]")
 
 
         # populate first half of packet with new commands
@@ -90,6 +91,7 @@ class Sender(threading.Thread):
             return True
         try:
             connection.write(data)
+            print(f"{config.get_time()}:SendingThread: Sent: {data}")
         except serial.SerialTimeoutException:
             print(f"{config.get_time()}:SendingThread: Failed to send packet, bad serial connection")
             return False
@@ -104,3 +106,5 @@ class Sender(threading.Thread):
             if not Sender.send(connection, self.package_data()):
                 connection = Sender.connect()
             time.sleep(config.SEND_INTERVAL-(time.time()-starting_time))
+            if self.vehicle.exit:
+                break
