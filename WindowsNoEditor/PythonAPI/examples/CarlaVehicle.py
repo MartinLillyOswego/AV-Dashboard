@@ -18,6 +18,7 @@ from time import sleep
 import threading
 import Vehicle
 import random
+import config
 import glob
 import time
 import sys
@@ -51,7 +52,7 @@ class CarlaVehicle(threading.Thread):
 
             # Create Modle 3 Blueprint
             bp = blueprint_library.filter("model3")[0]
-            print(bp)
+            print(f"{config.get_time()}:CarlaVehicle: {bp}")
 
             # Select random spawn point
             spawn_point = random.choice(world.get_map().get_spawn_points())
@@ -68,24 +69,36 @@ class CarlaVehicle(threading.Thread):
             running = True
             start = time.time()  # Start timer for runtime
             while running:
-                end = time.time()
-                if (end - start) >= 30: running = False  # Stop loop after 30 seconds
-                # Get the velocity vector of the vehicle
-                velocity = vehicle.get_velocity()
+                 end = time.time()
+                if (end - start) >= 30:
+                    running = False
+                try:
+                    # Get the velocity vector of the vehicle and calculate speed
+                    velocity = vehicle.get_velocity()
+                    speed = 2.237 * (velocity.x ** 2 + velocity.y ** 2 + velocity.z ** 2) ** 0.5  # Speed in mph
 
-                # Convert velocity to speed (magnitude)
-                Covervion_factor = 2.237  # Use 2.237 for MPH and 3.6 for KPH
-                speed = Covervion_factor * (velocity.x ** 2 + velocity.y ** 2 + velocity.z ** 2) ** 0.5
+                    # Get the vehicle control for steering angle
+                    control = vehicle.get_control()
+                    physics_control = vehicle.get_physics_control()
 
-                # update the vehicle class with vehicle.update_with_packet()
-                atts = [12, 24, speed, 0.43, 0, 12.4, 4.325, 0, 45.3, 25.4, 23.8, 257.23, 180, time.time()]
-                self.vehicle.update_with_packet(atts)
+                    max_steer_angle = max(wheel.max_steer_angle for wheel in physics_control.wheels)
+                    steering_angle = control.steer * max_steer_angle  # Approximating to degrees, -30 to +30 range
 
-                #print(f"Speed: {speed:.2f} MPH")
-                sleep(.025)
+                    # update the vehicle class with vehicle.update_with_packet()
+                    atts = [12, 24, speed, 0.43, 0, steering_angle, 4.325, 0, 45.3, 25.4, 23.8, 257.23, 180, time.time()]
+                    self.vehicle.update_with_packet(atts)
+
+                    #print(f"Speed: {speed:.2f} mph | Steering Angle: {steering_angle:.2f} degrees")
+                    # print(f"Steering Angle: {steering_angle:.2f} degrees")
+                    # print(f"Wheel Speeds: {[f'{ws:.2f} mph' for ws in wheel_speeds]}")
+
+                except Exception as e:
+                    print(f"Could not retrieve telemetry data: {e}")
+
+                sleep(1)
 
         # Destroy all actors before quitting
         finally:
             for actor in actor_list:
                 actor.destroy()
-            print("done")
+            print(f"{config.get_time()}:CarlaVehicle: Done")
