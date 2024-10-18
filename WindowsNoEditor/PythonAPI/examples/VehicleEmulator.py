@@ -9,7 +9,6 @@ Requires: python v3.7, "pip install carla==0.9.5", carla simulator 9.8, serial p
 
 from Vehicle import Vehicle
 from Sender import Sender
-from SM import SM
 import threading
 from CarlaVehicle import CarlaVehicle
 import time
@@ -25,6 +24,7 @@ t.start()
 sm = SM()
 sm.start()
 
-# start the carla thread, which updates a shared instance of Vehicle
-cv = CarlaVehicle(vehicle=vehicle)
-cv.start()
+# exit
+time.sleep(40)
+print(f"{config.get_time()}: Simulation exiting . . .")
+vehicle.exit = True
