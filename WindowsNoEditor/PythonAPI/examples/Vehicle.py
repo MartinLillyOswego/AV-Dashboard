@@ -11,6 +11,7 @@ class Vehicle:
 
     def __init__(self):
         self.lock = threading.Lock()
+        self.exit = False
 
         # packet data
         self.sender_id = 0
