@@ -51,6 +51,7 @@ class Vehicle:
     def __copy__(self):
         out = Vehicle()
         with self.lock:
+            out.exit = self.exit
             out.sender_id = self.sender_id
             out.receiver_id = self.receiver_id
             out.velocity = self.velocity.copy()

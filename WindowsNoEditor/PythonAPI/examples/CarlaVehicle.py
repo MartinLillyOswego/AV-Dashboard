@@ -18,17 +18,20 @@ from time import sleep
 import threading
 import Vehicle
 import random
-import config
 import glob
 import time
 import sys
 import os
 
+import config
+
+
 class CarlaVehicle(threading.Thread):
 
-    def __init__(self, vehicle, *args, **kwargs):
+    def __init__(self, outgoing_vehicle, incoming_vehicle, *args, **kwargs):
         super(CarlaVehicle, self).__init__(*args, **kwargs)
-        self.vehicle = vehicle
+        self.outgoing_vehicle = outgoing_vehicle
+        self.incoming_vehicle = incoming_vehicle
 
     def run(self):
         try:
@@ -55,7 +58,7 @@ class CarlaVehicle(threading.Thread):
             print(f"{config.get_time()}:CarlaVehicle: {bp}")
 
             # Select random spawn point
-            spawn_point = random.choice(world.get_map().get_spawn_points())
+            spawn_point = world.get_map().get_spawn_points()[0]
 
             # Spawn vehicle
             vehicle = world.spawn_actor(bp, spawn_point)
@@ -69,8 +72,9 @@ class CarlaVehicle(threading.Thread):
             running = True
             start = time.time()  # Start timer for runtime
             while running:
-                 end = time.time()
-                if (end - start) >= 30:
+
+                end = time.time()
+                if (end - start) >= config.CARLA_SIM_DURATION:
                     running = False
                 try:
                     # Get the velocity vector of the vehicle and calculate speed
@@ -85,8 +89,8 @@ class CarlaVehicle(threading.Thread):
                     steering_angle = control.steer * max_steer_angle  # Approximating to degrees, -30 to +30 range
 
                     # update the vehicle class with vehicle.update_with_packet()
-                    atts = [12, 24, speed, 0.43, 0, steering_angle, 4.325, 0, 45.3, 25.4, 23.8, 257.23, 180, time.time()]
-                    self.vehicle.update_with_packet(atts)
+                    atts = [config.MY_ID, config.EXTERNAL_ID, speed, 0.43, 0, steering_angle, 4.325, 0, 45.3, 25.4, 23.8, 257.23, 180, time.time()]
+                    self.outgoing_vehicle.update_with_packet(atts)
 
                     #print(f"Speed: {speed:.2f} mph | Steering Angle: {steering_angle:.2f} degrees")
                     # print(f"Steering Angle: {steering_angle:.2f} degrees")
@@ -95,7 +99,13 @@ class CarlaVehicle(threading.Thread):
                 except Exception as e:
                     print(f"Could not retrieve telemetry data: {e}")
 
+                #TODO:
+                # Read the commands placed in self.incoming_vehicle
+                # and modify the cara simulation according to the commands.
+                # This could get its own thread, or be placed within this loop
+                vehicle_command_holder = self.incoming_vehicle.__copy__()
                 sleep(1)
+
 
         # Destroy all actors before quitting
         finally:
