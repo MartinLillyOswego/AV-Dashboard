@@ -71,7 +71,7 @@ class Sender(threading.Thread):
                 packet_last_half += bytes(bytearray(struct.pack("f", float_val)))
 
         if packet_first_half == b"":
-            packet_first_half = packet_last_half[4:8] + packet_last_half[:4] + packet_last_half[8:]
+            packet_first_half = packet_last_half
         return packet_first_half + packet_last_half
 
     # attempts to send the packet
