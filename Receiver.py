@@ -64,17 +64,20 @@ class Receiver(threading.Thread):
         attributes = [
             int(rawdata[0]),  # sender_id
             int(rawdata[1]),  # receiver_id
-            rawdata[2],  # velocity
-            rawdata[3],  # throttle
-            rawdata[4],  # braking_force
-            rawdata[5],  # steering_angle
-            rawdata[6],  # slip_angle
-            rawdata[7],  # error_code
-            rawdata[8],  # battery_voltage
-            rawdata[9],  # battery_current
-            rawdata[10], # battery_temperature  # Fixed typo
-            rawdata[11], # distance_to_object
-            rawdata[12], # direction
+            rawdata[2],       # error_code
+            rawdata[3],       # speed
+            rawdata[4],       # throttle
+            rawdata[5],       # front_brake
+            rawdata[6],       # emergency_brake
+            rawdata[7],       # steering_angle
+            rawdata[8],       # compass_direction
+            rawdata[9],       # Speed Control
+            rawdata[10],      # battery_voltage
+            rawdata[11],      # battery_current
+            rawdata[12],      # battery_temperature
+            rawdata[13],      # Front Left Wheel Speed
+            rawdata[14],      # Front Left Wheel Speed
+            rawdata[15],      # distance_to_object
         ]
 
         return attributes
