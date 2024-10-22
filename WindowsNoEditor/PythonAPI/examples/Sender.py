@@ -38,12 +38,22 @@ class Sender(threading.Thread):
         ind = len(vehicle_snapshot.velocity) - 1
         if ind == -1:
             return None
-        last_packet = [vehicle_snapshot.receiver_id, vehicle_snapshot.sender_id, vehicle_snapshot.velocity[ind],
-                       vehicle_snapshot.throttle[ind], vehicle_snapshot.braking_force[ind],
-                       vehicle_snapshot.steering_angle[ind], vehicle_snapshot.slip_angle[ind],
-                       vehicle_snapshot.error_code[ind], vehicle_snapshot.battery_voltage[ind],
-                       vehicle_snapshot.battery_current[ind], vehicle_snapshot.battery_temperate[ind],
-                       vehicle_snapshot.distance_to_object[ind], vehicle_snapshot.direction[ind],
+        last_packet = [vehicle_snapshot.receiver_id,
+                       vehicle_snapshot.sender_id,
+                       vehicle_snapshot.error_code[ind],
+                       vehicle_snapshot.velocity[ind],
+                       vehicle_snapshot.throttle[ind],
+                       vehicle_snapshot.braking_force[ind],
+                       vehicle_snapshot.hand_brake[ind],
+                       vehicle_snapshot.steering_angle[ind],
+                       vehicle_snapshot.direction[ind],
+                       vehicle_snapshot.gear[ind],
+                       vehicle_snapshot.battery_voltage[ind],
+                       vehicle_snapshot.battery_current[ind],
+                       vehicle_snapshot.battery_temperate[ind],
+                       vehicle_snapshot.fl_wheel_speed[ind],
+                       vehicle_snapshot.fr_wheel_speed[ind],
+                       vehicle_snapshot.distance_to_object[ind],
                        vehicle_snapshot.time[ind]]
         print(f"{config.get_time()}:SendingThread: Packaged: {last_packet}]")
 
@@ -61,7 +71,7 @@ class Sender(threading.Thread):
                 packet_last_half += bytes(bytearray(struct.pack("f", float_val)))
 
         if packet_first_half == b"":
-            packet_first_half = packet_last_half[4:8] + packet_last_half[:4] + packet_last_half[8:]
+            packet_first_half = packet_last_half
         return packet_first_half + packet_last_half
 
     # attempts to send the packet

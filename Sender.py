@@ -9,6 +9,7 @@ otherwise it will reconnect.
 
 from datetime import datetime
 from threading import Thread
+import numpy as np
 import threading
 import serial
 import config
@@ -18,10 +19,11 @@ import pytz
 
 class Sender(threading.Thread):
 
-    def __init__(self, vehicle, control_unit, *args, **kwargs):
+    def __init__(self, vehicle, receiver, control_unit, *args, **kwargs):
         super(Sender, self).__init__(*args, **kwargs)
         self.vehicle = vehicle
         self.control_unit = control_unit
+        self.receiver = receiver
 
     # build the packet
     def package_data(self):
@@ -36,13 +38,24 @@ class Sender(threading.Thread):
         ind = len(vehicle_snapshot.velocity) - 1
         if ind == -1:
             return None
-        last_packet = [vehicle_snapshot.receiver_id, vehicle_snapshot.sender_id, vehicle_snapshot.velocity[ind],
-                       vehicle_snapshot.throttle[ind], vehicle_snapshot.braking_force[ind],
-                       vehicle_snapshot.steering_angle[ind], vehicle_snapshot.slip_angle[ind],
-                       vehicle_snapshot.error_code[ind], vehicle_snapshot.battery_voltage[ind],
-                       vehicle_snapshot.battery_current[ind], vehicle_snapshot.battery_temperate[ind],
-                       vehicle_snapshot.distance_to_object[ind], vehicle_snapshot.direction[ind],
+        last_packet = [vehicle_snapshot.receiver_id,
+                       vehicle_snapshot.sender_id,
+                       vehicle_snapshot.error_code[ind],
+                       vehicle_snapshot.velocity[ind],
+                       vehicle_snapshot.throttle[ind],
+                       vehicle_snapshot.braking_force[ind],
+                       vehicle_snapshot.hand_brake[ind],
+                       vehicle_snapshot.steering_angle[ind],
+                       vehicle_snapshot.direction[ind],
+                       vehicle_snapshot.gear[ind],
+                       vehicle_snapshot.battery_voltage[ind],
+                       vehicle_snapshot.battery_current[ind],
+                       vehicle_snapshot.battery_temperate[ind],
+                       vehicle_snapshot.fl_wheel_speed[ind],
+                       vehicle_snapshot.fr_wheel_speed[ind],
+                       vehicle_snapshot.distance_to_object[ind],
                        vehicle_snapshot.time[ind]]
+        print(f"{config.get_time()}:SendingThread: Packaged: {last_packet}]")
 
 
         # populate first half of packet with new commands
@@ -61,35 +74,14 @@ class Sender(threading.Thread):
             packet_first_half = packet_last_half[4:8] + packet_last_half[:4] + packet_last_half[8:]
         return packet_first_half + packet_last_half
 
-    # attempts to connect to the serial port
-    @staticmethod
-    def connect():
-        failed_attempts = 0
-        while True:
-
-            # attempt to establish serial connection
-            try:
-                connection = serial.Serial(config.CARLA_PORT)
-                if not connection.is_open:
-                    connection.open()
-                print(f"{config.get_time()}:SendingThread: radio connected")
-                return connection
-
-            # re-try if connection fails
-            except serial.SerialException:
-                time.sleep(config.SEND_INTERVAL)
-                if failed_attempts % 100 == 0:
-                    print(f"{config.get_time()}:SendingThread: radio connection failed, retying . . .")
-                    failed_attempts = 1
-                failed_attempts += 1
-
     # attempts to send the packet
     @staticmethod
     def send(connection, data):
-        if data is None:
-            return True
+        if (data is None) or (connection is None):
+            return False
         try:
             connection.write(data)
+            print(f"{config.get_time()}:SendingThread: Sent: {data}")
         except serial.SerialTimeoutException:
             print(f"{config.get_time()}:SendingThread: Failed to send packet, bad serial connection")
             return False
@@ -98,9 +90,11 @@ class Sender(threading.Thread):
     # main loop
     def run(self):
         print(f"{config.get_time()}:SendingThread: Started")
-        connection = Sender.connect()
+        connection = self.receiver.serial_port
         while True:
             starting_time = time.time()
             if not Sender.send(connection, self.package_data()):
-                connection = Sender.connect()
+                connection = self.receiver.serial_port
             time.sleep(config.SEND_INTERVAL-(time.time()-starting_time))
+            if self.vehicle.exit:
+                break

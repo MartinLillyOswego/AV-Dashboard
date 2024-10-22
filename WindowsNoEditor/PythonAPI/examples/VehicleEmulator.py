@@ -5,8 +5,13 @@ and is packaged and sent to the dashboard over an emulated serial port.
 
 To run, follow the directions given in carla_test.py,
 Requires: python v3.7, "pip install carla==0.9.5", carla simulator 9.8, serial port emulator
+
+NOTE: the file "manual_control.py" originates form your instillation of Carla but has been
+modified to write data to an instance of the Vehicle class. This version provided will only work with
+Carla v0.9.8, to run with newer Carla versions, modified your instance of "manual_control.py" provided
+with your installation of Carla, and apply the same changes as seen in this version of "manual_control.py"
 """
-from CarlaVehicle import CarlaVehicle
+from manual_control import CarlaThread
 from Receiver import Receiver
 from Vehicle import Vehicle
 from Sender import Sender
@@ -27,11 +32,6 @@ s = Sender(vehicle=carla_vehicle_data, receiver=r, control_unit=None)
 s.start()
 
 # start the carla thread, which updates a shared instance of Vehicle
-cv = CarlaVehicle(outgoing_vehicle=carla_vehicle_data, incoming_vehicle=received_vehicle_commands)
-cv.start()
+ct = CarlaThread(outgoing_vehicle=carla_vehicle_data, incoming_vehicle=received_vehicle_commands)
+ct.start()
 
-# exit
-time.sleep(config.CARLA_SIM_DURATION+10)
-print(f"{config.get_time()}: Simulation exiting . . .")
-carla_vehicle_data.exit = True
-received_vehicle_commands.exit = True

@@ -11,6 +11,7 @@ class Vehicle:
 
     def __init__(self):
         self.lock = threading.Lock()
+        self.exit = False
 
         # packet data
         self.sender_id = 0
@@ -19,7 +20,7 @@ class Vehicle:
         self.steering_angle = []
         self.throttle = []
         self.braking_force = []
-        self.slip_angle = []
+        self.hand_brake = []
         self.battery_voltage = []
         self.battery_current = []
         self.battery_temperate = []
@@ -27,6 +28,10 @@ class Vehicle:
         self.direction = []
         self.time = []
         self.error_code = []
+        self.gear = []
+        self.fl_wheel_speed = []
+        self.fr_wheel_speed = []
+
         # add more packet fields as needed
 
         # display data
@@ -45,17 +50,19 @@ class Vehicle:
         self.display_error_code = -1
         # add more display fields as needed
 
+    # called by, Sender, control-unit, and display
     # used to get data
     def __copy__(self):
         out = Vehicle()
         with self.lock:
+            out.exit = self.exit
             out.sender_id = self.sender_id
             out.receiver_id = self.receiver_id
             out.velocity = self.velocity.copy()
             out.steering_angle = self.steering_angle.copy()
             out.throttle = self.throttle.copy()
             out.braking_force = self.braking_force.copy()
-            out.slip_angle = self.slip_angle.copy()
+            out.hand_brake = self.hand_brake.copy()
             out.battery_voltage = self.battery_voltage.copy()
             out.battery_current = self.battery_current.copy()
             out.battery_temperate = self.battery_temperate.copy()
@@ -76,6 +83,9 @@ class Vehicle:
             out.display_slip_angle = self.display_slip_angle.copy()
             out.display_distance_to_object = self.display_distance_to_object
             out.display_error_code = self.display_error_code
+            out.gear = self.gear.copy()
+            out.fl_wheel_speed = self.fl_wheel_speed.copy()
+            out.fr_wheel_speed = self.fr_wheel_speed.copy()
         return out
 
     # called by packetReceiver,
@@ -91,7 +101,7 @@ class Vehicle:
                 self.steering_angle.pop(0)
                 self.throttle.pop(0)
                 self.braking_force.pop(0)
-                self.slip_angle.pop(0)
+                self.hand_brake.pop(0)
                 self.battery_voltage.pop(0)
                 self.battery_current.pop(0)
                 self.battery_temperate.pop(0)
@@ -99,22 +109,26 @@ class Vehicle:
                 self.direction.pop(0)
                 self.time.pop(0)
                 self.error_code.pop(0)
+                self.gear.pop(0)
+                self.fl_wheel_speed.pop(0)
+                self.fr_wheel_speed.pop(0)
 
-            self.velocity.append(attributes[2])
-            self.throttle.append(attributes[3])
-            self.braking_force.append(attributes[4])
-            self.steering_angle.append(attributes[5])
-            self.slip_angle.append(attributes[6])
-            self.error_code.append(attributes[7])
-            self.battery_voltage.append(attributes[8])
-            self.battery_current.append(attributes[9])
-            self.battery_temperate.append(attributes[10])
-            self.distance_to_object.append(attributes[11])
-            self.direction.append(attributes[12])
-            self.time.append(attributes[13])
-        print("done with update")
-        print(self.battery_temperate)
-        print(attributes[10])
+            self.error_code.append(attributes[2])
+            self.velocity.append(attributes[3])
+            self.throttle.append(attributes[4])
+            self.braking_force.append(attributes[5])
+            self.hand_brake.append(attributes[6])
+            self.steering_angle.append(attributes[7])
+            self.direction.append(attributes[8])
+            self.gear.append(attributes[9])
+            self.battery_voltage.append(attributes[10])
+            self.battery_current.append(attributes[11])
+            self.battery_temperate.append(attributes[12])
+            self.fl_wheel_speed.append(attributes[13])
+            self.fr_wheel_speed.append(attributes[14])
+            self.distance_to_object.append(attributes[15])
+            self.time.append(attributes[16])
+
 
     # called by controlUnit,
     # update fields not directly given by the packet
