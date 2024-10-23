@@ -6,31 +6,36 @@
 	</head>
 	<body>
 		<div id="main_div">
-			<div id="top_bar"></div>
+			<div id="top_bar">
+				<h1 id="speedDisplay">CurrentSpeed: 0 km/hs</h1>
+			</div>
 			<div id="main_screen">
-				<div id="main_left"></div>
+				<div id="main_left">
+					<img id="speedMeter" src="icons/Speed0.png" height="100%" width="100%">
+				</div>
 				<div id="main_middle"></div>
 				<div id="main_right"></div>
 			</div>
 			<div id="bottom_bar">
-				<div class="icon"><img src="icons/car-oil.png" height="100%"></div>
-				<div class="icon"><img src="icons/accident.png" height="100%"></div>
-				<div class="icon"><img src="icons/battery.png" height="100%"></div>
-				<div class="icon"><img src="icons/brake.png" height="100%"></div>
-				<div class="icon"><img src="icons/engine.png" height="100%"></div>
-				<div class="icon"><img src="icons/sensor.png" height="100%"></div>
-				<div class="icon"><img src="icons/temp.png" height="100%"></div>
-				<div class="icon"><img src="icons/warning.png" height="100%"></div>
+				<div class="icon"><img src="icons/car-oil.png" alt="uh oh" height="100%" width="100%"></div>
+				<div class="icon"><img src="icons/accident.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="icons/battery.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="icons/brake.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="icons/engine.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="icons/sensor.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="icons/temp.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="icons/warning.png" height="100%" width="100%"></div>
 			</div>
 		</div>
-		
+
 	</body>
 </html>
 
 <script>
 	setInterval(async () => {
-	const response = await fetch("/speed");
+	const response = await fetch("/data");
 	const data = await response.json();
 	document.getElementById("speedDisplay").innerText = "Current Speed: " + data.speed + " km/h";
-	}, 100);  // Poll every second
+	document.getElementById("speedMeter").src = data.speed_meter;
+	}, 500);
 </script>
