@@ -25,5 +25,6 @@ async def get_speed():
         if current_speed == 1: direction = "f"
     return {"speed": current_speed}
 
+
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
