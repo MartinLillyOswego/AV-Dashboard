@@ -6,7 +6,9 @@
 	</head>
 	<body>
 		<div id="main_div">
-			<div id="top_bar"></div>
+			<div id="top_bar">
+				<h1 id="speedDisplay">CurrentSpeed: 0 km/hs</h1>
+			</div>
 			<div id="main_screen">
 				<div id="main_left"></div>
 				<div id="main_middle"></div>
@@ -32,5 +34,5 @@
 	const response = await fetch("/speed");
 	const data = await response.json();
 	document.getElementById("speedDisplay").innerText = "Current Speed: " + data.speed + " km/h";
-	}, 100);  // Poll every second
+	}, 10);
 </script>
