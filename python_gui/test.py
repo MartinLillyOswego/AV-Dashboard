@@ -1,12 +1,15 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 import uvicorn
-import random
 
 app = FastAPI()
+
+# Serve static files (e.g., CSS, JS, images)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 current_speed = 1
 direction = "f"
-
 
 @app.get("/", response_class=HTMLResponse)
 async def read_index():

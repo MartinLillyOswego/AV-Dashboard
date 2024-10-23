@@ -2,25 +2,29 @@
 <html>
 	<head>
 		<title>Dashboard</title>
-		<link rel="stylesheet" href="style.css">
+		<link rel="stylesheet" href="/static/style.css">
+		<!-- Load plotly.js into the DOM -->
+		<script src='https://cdn.plot.ly/plotly-2.35.2.min.js'></script>
 	</head>
 	<body>
 		<div id="main_div">
 			<div id="top_bar"></div>
 			<div id="main_screen">
 				<div id="main_left"></div>
-				<div id="main_middle"></div>
+				<div id="main_middle">
+					<div id='myDiv'></div><!-- Plotly chart will be drawn inside this DIV -->
+				</div>
 				<div id="main_right"></div>
 			</div>
 			<div id="bottom_bar">
-				<div class="icon"><img src="icons/car-oil.png" height="100%"></div>
-				<div class="icon"><img src="icons/accident.png" height="100%"></div>
-				<div class="icon"><img src="icons/battery.png" height="100%"></div>
-				<div class="icon"><img src="icons/brake.png" height="100%"></div>
-				<div class="icon"><img src="icons/engine.png" height="100%"></div>
-				<div class="icon"><img src="icons/sensor.png" height="100%"></div>
-				<div class="icon"><img src="icons/temp.png" height="100%"></div>
-				<div class="icon"><img src="icons/warning.png" height="100%"></div>
+				<div class="icon"><img src="/static/icons/car-oil.png" height="100%"></div>
+				<div class="icon"><img src="/static/icons/accident.png" height="100%"></div>
+				<div class="icon"><img src="/static/icons/battery.png" height="100%"></div>
+				<div class="icon"><img src="/static/icons/brake.png" height="100%"></div>
+				<div class="icon"><img src="/static/icons/engine.png" height="100%"></div>
+				<div class="icon"><img src="/static/icons/sensor.png" height="100%"></div>
+				<div class="icon"><img src="/static/icons/temp.png" height="100%"></div>
+				<div class="icon"><img src="/static/icons/warning.png" height="100%"></div>
 			</div>
 		</div>
 		
@@ -33,4 +37,42 @@
 	const data = await response.json();
 	document.getElementById("speedDisplay").innerText = "Current Speed: " + data.speed + " km/h";
 	}, 100);  // Poll every second
+</script>
+
+<script type="text/javascript">
+	var data = [
+  {
+    type: "indicator",
+    mode: "gauge+number+delta",
+    value: 420,
+    title: { text: "Speed", font: { size: 24 } },
+    delta: { reference: 400, increasing: { color: "RebeccaPurple" } },
+    gauge: {
+      axis: { range: [null, 500], tickwidth: 1, tickcolor: "darkblue" },
+      bar: { color: "darkblue" },
+      bgcolor: "white",
+      borderwidth: 2,
+      bordercolor: "gray",
+      steps: [
+        { range: [0, 250], color: "cyan" },
+        { range: [250, 400], color: "royalblue" }
+      ],
+      threshold: {
+        line: { color: "red", width: 4 },
+        thickness: 0.75,
+        value: 490
+      }
+    }
+  }
+];
+
+var layout = {
+  width: 500,
+  height: 400,
+  margin: { t: 25, r: 25, l: 25, b: 25 },
+  paper_bgcolor: "lavender",
+  font: { color: "darkblue", family: "Arial" }
+};
+
+Plotly.newPlot('myDiv', data, layout);
 </script>
