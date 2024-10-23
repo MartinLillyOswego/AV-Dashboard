@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Dashboard</title>
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<div id="main_div">
+			<div id="top_bar"></div>
+			<div id="main_screen">
+				<div id="main_left"></div>
+				<div id="main_middle"></div>
+				<div id="main_right"></div>
+			</div>
+			<div id="bottom_bar">
+				<div class="icon"><img src="icons/car-oil.png" height="100%"></div>
+				<div class="icon"><img src="icons/accident.png" height="100%"></div>
+				<div class="icon"><img src="icons/battery.png" height="100%"></div>
+				<div class="icon"><img src="icons/brake.png" height="100%"></div>
+				<div class="icon"><img src="icons/engine.png" height="100%"></div>
+				<div class="icon"><img src="icons/sensor.png" height="100%"></div>
+				<div class="icon"><img src="icons/temp.png" height="100%"></div>
+				<div class="icon"><img src="icons/warning.png" height="100%"></div>
+			</div>
+		</div>
+		
+	</body>
+</html>
+
+<script>
+	setInterval(async () => {
+	const response = await fetch("/speed");
+	const data = await response.json();
+	document.getElementById("speedDisplay").innerText = "Current Speed: " + data.speed + " km/h";
+	}, 100);  // Poll every second
+</script>
