@@ -129,7 +129,6 @@ class Vehicle:
             self.distance_to_object.append(attributes[15])
             self.time.append(attributes[16])
 
-
     # called by controlUnit,
     # update fields not directly given by the packet
     def update_calculated_data(self, attributes):
@@ -147,3 +146,4 @@ class Vehicle:
             self.display_slip_angle = attributes[10].copy()
             self.display_distance_to_object = attributes[11]
             self.display_error_code = attributes[12]
+

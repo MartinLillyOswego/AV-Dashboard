@@ -11,12 +11,11 @@ modified to write data to an instance of the Vehicle class. This version provide
 Carla v0.9.8, to run with newer Carla versions, modified your instance of "manual_control.py" provided
 with your installation of Carla, and apply the same changes as seen in this version of "manual_control.py"
 """
-from manual_control import CarlaThread
-from Receiver import Receiver
-from Vehicle import Vehicle
-from Sender import Sender
+from manual_control_v0_9_8 import CarlaThread
+from emulator_Receiver import Receiver
+from emulator_Vehicle import Vehicle
+from emulator_Sender import Sender
 import threading
-import config
 import time
 
 # create shared instances of Vehicle class
@@ -34,4 +33,3 @@ s.start()
 # start the carla thread, which updates a shared instance of Vehicle
 ct = CarlaThread(outgoing_vehicle=carla_vehicle_data, incoming_vehicle=received_vehicle_commands)
 ct.start()
-

@@ -23,7 +23,7 @@ body {
 	padding: 0px;
 /*	background-color: lightblue;*/
 	display: grid;
-	grid-template-rows: 8% 87% 5%;
+	grid-template-rows: 8% 84% 8%;
 	grid-template-columns: 100%;
 }
 
@@ -56,9 +56,8 @@ body {
 }
 
 .icon {
-	height: 100%;
-	width: 52px;
+	height: 10%;
+	width: 75px;
 /*	background-color: green;*/
 	float:left;
 }
-
