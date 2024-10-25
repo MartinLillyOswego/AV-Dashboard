@@ -9,8 +9,8 @@ app = FastAPI()
 current_speed = 1
 max_speed = 100
 direction = "f"
-throttle_percent = 60
-break_percent = 100
+throttle_percent = 20
+brake_percent = 70
 
 ### Resources
 
@@ -30,7 +30,7 @@ async def get_speed():
     global max_speed
     global speed_meter
     global throttle_percent
-    global break_percent
+    global brake_percent
 
     ### Speed
     if direction == "f":
@@ -48,7 +48,7 @@ async def get_speed():
     return {"speed": current_speed,
             "speed_meter": speed_meter_source,
             "throttle": throttle_percent,
-            "break": break_percent}
+            "break": brake_percent}
 
 ### Server Start
 
