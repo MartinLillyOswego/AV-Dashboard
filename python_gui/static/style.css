@@ -11,11 +11,7 @@ html {
 body {
 	margin: 0px;
 	padding: 0px;
-<<<<<<< Updated upstream
-	width: 100%;
-=======
 	width: 100vw;
->>>>>>> Stashed changes
 	height: 100vh;
 	overflow: hidden;
 }
@@ -25,25 +21,14 @@ body {
 	height: 100%;
 	margin: 0px;
 	padding: 0px;
-<<<<<<< Updated upstream
-/*	background-color: lightblue;*/
-	display: grid;
-	grid-template-rows: 8% 87% 5%;
-=======
 	display: grid;
 	grid-template-rows: 8% 84% 8%;
->>>>>>> Stashed changes
 	grid-template-columns: 100%;
 }
 
 #top_bar {
-<<<<<<< Updated upstream
-/*	background-color: green;*/
-	border-bottom: 2px black solid;
-=======
 	background-color: gray;
 	border-bottom: 2px white solid;
->>>>>>> Stashed changes
 }
 
 #main_screen {
@@ -54,21 +39,6 @@ body {
 
 #bottom_bar {
 	background-color: black;
-<<<<<<< Updated upstream
-	border-top: 2px black solid;
-}
-
-#main_left {
-	background-color: red;
-}
-
-#main_middle {
-	background-color: green;
-}
-
-#main_right {
-	background-color: blue;
-=======
 	border-top: 2px white solid;
 }
 
@@ -144,18 +114,10 @@ body {
 	top: 3vw;
 	left: 1vw;
 	position: relative;
->>>>>>> Stashed changes
 }
 
 .icon {
 	height: 100%;
-<<<<<<< Updated upstream
-	width: 52px;
-/*	background-color: green;*/
-	float:left;
-}
-
-=======
 	width: 4.5vw;
 	margin-left: 1vw;
 	float:left;
@@ -164,4 +126,3 @@ body {
 h1 {
 	color: white;
 }
->>>>>>> Stashed changes
