@@ -11,7 +11,7 @@ html {
 body {
 	margin: 0px;
 	padding: 0px;
-	width: 100%;
+	width: 100vw;
 	height: 100vh;
 	overflow: hidden;
 }
@@ -21,15 +21,14 @@ body {
 	height: 100%;
 	margin: 0px;
 	padding: 0px;
-/*	background-color: lightblue;*/
 	display: grid;
-	grid-template-rows: 8% 87% 5%;
+	grid-template-rows: 8% 84% 8%;
 	grid-template-columns: 100%;
 }
 
 #top_bar {
-/*	background-color: green;*/
-	border-bottom: 2px black solid;
+	background-color: gray;
+	border-bottom: 2px white solid;
 }
 
 #main_screen {
@@ -40,25 +39,90 @@ body {
 
 #bottom_bar {
 	background-color: black;
-	border-top: 2px black solid;
+	border-top: 2px white solid;
 }
 
 #main_left {
-	background-color: red;
+	background-color: black;
 }
 
 #main_middle {
-	background-color: green;
+	background-color: black;
+	border-left: 2px white solid;
+	border-right: 2px white solid;
 }
 
 #main_right {
-	background-color: blue;
+	background-color: black;
+}
+
+#speedMeter {
+	width: 32vw;
+	height: 32vw;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	z-index: -2;
+}
+
+#speedDisplay {
+	display: block;
+	top: -21vw;
+	left: 18.5vw;
+	position: relative;
+}
+
+#throttle_label {
+	display: block;
+	top: -14vw;
+	left: 3vw;
+	position: relative;
+}
+
+#brake_label {
+	display: block;
+	top: -12vw;
+	left: 3vw;
+	position: relative;
+}
+
+#bar_zone {
+	width: 24vw;
+	height: 10vw;
+	background-color: gray;
+	display: block;
+	top: -23vw;
+	left: 13vw;
+	position: relative;
+}
+
+#throttle_bar {
+	width: 22vw;
+	height: 3vw;
+	background-color: green;
+	display: block;
+	top: 1vw;
+	left: 1vw;
+	position: relative;
+}
+
+#break_bar {
+	width: 22vw;
+	height: 3vw;
+	background-color: red;
+	display: block;
+	top: 3vw;
+	left: 1vw;
+	position: relative;
 }
 
 .icon {
 	height: 100%;
-	width: 52px;
-/*	background-color: green;*/
+	width: 4.5vw;
+	margin-left: 1vw;
 	float:left;
 }
 
+h1 {
+	color: white;
+}

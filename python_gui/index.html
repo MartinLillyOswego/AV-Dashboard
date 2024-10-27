@@ -3,8 +3,6 @@
 	<head>
 		<title>Dashboard</title>
 		<link rel="stylesheet" href="static/style.css">
-		<!-- Load plotly.js into the DOM -->
-		<script src='https://cdn.plot.ly/plotly-2.35.2.min.js'></script>
 	</head>
 	<body>
 		<div id="main_div">
@@ -12,20 +10,26 @@
 			<div id="main_screen">
 				<div id="main_left"></div>
 				<div id="main_middle">
-					<div style="height:442px; width: 100%;"></div>
-					<div id='myDiv'></div><!-- Plotly chart will be drawn inside this DIV -->
+					<img id="speedMeter" src="static/icons/Speed0.png">
+					<h1 id="speedDisplay" style="font-size: 60px;" >0</h1>
+					<h1 id="throttle_label" style="font-size: 40px;">Throttle</h1>
+					<h1 id="break_label" style="font-size: 40px;">Brake</h1>
+					<div id="bar_zone">
+						<div id="throttle_bar"></div>
+						<div id="break_bar"></div>
+					</div>
 				</div>
 				<div id="main_right"></div>
 			</div>
 			<div id="bottom_bar">
-				<div class="icon"><img src="static/icons/car-oil.png" height="100%"></div>
-				<div class="icon"><img src="static/icons/accident.png" height="100%"></div>
-				<div class="icon"><img src="static/icons/battery.png" height="100%"></div>
-				<div class="icon"><img src="static/icons/brake.png" height="100%"></div>
-				<div class="icon"><img src="static/icons/engine.png" height="100%"></div>
-				<div class="icon"><img src="static/icons/sensor.png" height="100%"></div>
-				<div class="icon"><img src="static/icons/temp.png" height="100%"></div>
-				<div class="icon"><img src="static/icons/warning.png" height="100%"></div>
+				<div class="icon"><img src="static/icons/car-oil.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/accident.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/battery.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/brake.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/engine.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/sensor.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/temp.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/warning.png" height="100%" width="100%"></div>
 			</div>
 		</div>
 		
@@ -33,52 +37,12 @@
 </html>
 
 <script>
-	
-</script>
-
-<script type="text/javascript">
-	var data = [
-  {
-    type: "indicator",
-    mode: "gauge+number",
-    value: 60,
-    title: { text: "Speed", font: { size: 24 } },
-    gauge: {
-      axis: { range: [null, 120], tickwidth: 1, tickcolor: "darkblue" },
-      bar: { color: "darkblue" },
-      bgcolor: "white",
-      borderwidth: 2,
-      bordercolor: "gray",
-      steps: [
-        { range: [0, 50], color: "cyan" },
-        { range: [50, 120], color: "royalblue" }
-      ],
-      threshold: {
-        line: { color: "red", width: 4 },
-        thickness: 0.75,
-        value: 100
-      }
-    }
-  }
-];
-
-var layout = {
-  width: 768,
-  height: 420,
-  margin: { t: 55, r: 30, l: 25, b: 0 },
-  paper_bgcolor: "green",
-  font: { color: "darkblue", family: "Arial" }
-};
-
-Plotly.newPlot('myDiv', data, layout);
-
-function updateSpeed(newSpeed) {
-    Plotly.restyle('myDiv', 'value', [newSpeed]);
-  }
-
-  setInterval(async () => {
-	const response = await fetch("/speed");
-	const data = await response.json();
-	 updateSpeed(data.speed);
-	}, 100);  // Poll every second
+	setInterval(async () => {
+		const response = await fetch("/speed");
+		const data = await response.json();
+		document.getElementById("speedDisplay").innerText = data.speed;
+		document.getElementById("speedMeter").src = data.speed_meter;
+		document.getElementById("throttle_bar").style.width = (22*data.throttle/100) + "vw";
+		document.getElementById("break_bar").style.width = (22*data.break/100) + "vw";
+	}, 100);
 </script>
