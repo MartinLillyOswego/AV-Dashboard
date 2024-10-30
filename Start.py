@@ -26,6 +26,7 @@ sender_thread = Sender(vehicle=telemetry, receiver=receiver_thread, control_unit
 sender_thread.start()
 
 # start the gui thread
+time.sleep(3)
 gui_thread = GUI(vehicle=telemetry)
 gui_thread.start()
 
