@@ -9,8 +9,10 @@ app = FastAPI()
 current_speed = 1
 max_speed = 100
 direction = "f"
-throttle_percent = 20
-brake_percent = 70
+throttle_percent = 100
+brake_percent = 100
+steering_angle = 0;
+steering_angle_limit = max_speed; ## change
 
 ### Resources
 
@@ -23,6 +25,10 @@ async def read_index():
     with open("index.html", 'r') as f:
         return HTMLResponse(content=f.read())
 
+@app.get("/open_config")
+async def open_config():
+    print("config")
+
 @app.get("/speed")
 async def get_speed():
     global direction
@@ -31,11 +37,13 @@ async def get_speed():
     global speed_meter
     global throttle_percent
     global brake_percent
+    global steering_angle
+    global steering_angle_limit
 
     ### Speed
     if direction == "f":
         current_speed = current_speed + 1
-        if current_speed == 120: direction = "b"
+        if current_speed == 100: direction = "b"
     else:
         current_speed = current_speed - 1
         if current_speed == 1: direction = "f"
@@ -44,11 +52,25 @@ async def get_speed():
     speed_meter = min(math.ceil(current_speed*9/max_speed),9)
     speed_meter_source = "static/icons/Speed" + str(speed_meter) + ".png"
     
+    ### Throttle
+    throttle_percent = current_speed
+    
+    ### Brake
+    brake_percent = max_speed - current_speed
+    
+    ### Steering Angle
+    steering_angle = current_speed - 50  ## change
+    steering_notch_x = (2*steering_angle/steering_angle_limit)* math.cos(math.radians(steering_angle))
+    steering_notch_y = (30*steering_angle/steering_angle_limit)* math.sin(math.radians(steering_angle))
+    
     ### Send
     return {"speed": current_speed,
             "speed_meter": speed_meter_source,
             "throttle": throttle_percent,
-            "break": brake_percent}
+            "brake": brake_percent,
+            "steering_notch_x": steering_notch_x,
+            "steering_notch_y": steering_notch_y,
+            "steering_angle" : steering_angle}
 
 ### Server Start
 
