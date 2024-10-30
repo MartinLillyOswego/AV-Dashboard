@@ -287,17 +287,22 @@ class World(object):
 
 class KeyboardControl(object):
     """Class that handles keyboard input."""
-    def __init__(self, world, start_in_autopilot):
+    def __init__(self, world, start_in_autopilot, joystick):
         self._autopilot_enabled = start_in_autopilot
         if isinstance(world.player, carla.Vehicle):
             self._control = carla.VehicleControl()
             self._lights = carla.VehicleLightState.NONE
+            self._ackermann_enabled = False
+            self._ackermann_reverse = 1
             world.player.set_autopilot(self._autopilot_enabled)
             world.player.set_light_state(self._lights)
+            self._joystick = joystick
         elif isinstance(world.player, carla.Walker):
             self._control = carla.WalkerControl()
             self._autopilot_enabled = False
+            self._ackermann_control = carla.VehicleAckermannControl()
             self._rotation = world.player.get_transform().rotation
+
         else:
             raise NotImplementedError("Actor type not supported")
         self._steer_cache = 0.0
@@ -309,6 +314,24 @@ class KeyboardControl(object):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return True
+
+            elif event.type == pygame.JOYBUTTONDOWN:
+                if self._joystick.get_button(7):
+                    world.hud.help.toggle()
+                elif self._joystick.get_button(2):
+                     self._control.manual_gear_shift = not self._control.manual_gear_shift
+                     self._control.gear = world.player.get_control().gear
+                     world.hud.notification('%s Transmission' %
+                                            ('Manual' if self._control.manual_gear_shift else 'Automatic'))
+                elif self._joystick.get_button(1):
+                      if not self._ackermann_enabled:
+                            self._control.gear = 1 if self._control.reverse else -1
+                      else:
+                            self._ackermann_reverse *= -1
+                            # Reset ackermann control
+                            self._ackermann_control = carla.VehicleAckermannControl()
+
+
             elif event.type == pygame.KEYUP:
                 if self._is_quit_shortcut(event.key):
                     return True
@@ -419,25 +442,40 @@ class KeyboardControl(object):
                     elif event.key == K_x:
                         current_lights ^= carla.VehicleLightState.RightBlinker
 
-        if not self._autopilot_enabled:
-            if isinstance(self._control, carla.VehicleControl):
-                self._parse_vehicle_keys(pygame.key.get_pressed(), clock.get_time())
-                self._control.reverse = self._control.gear < 0
-                # Set automatic control-related vehicle lights
-                if self._control.brake:
-                    current_lights |= carla.VehicleLightState.Brake
-                else: # Remove the Brake flag
-                    current_lights &= carla.VehicleLightState.All ^ carla.VehicleLightState.Brake
-                if self._control.reverse:
-                    current_lights |= carla.VehicleLightState.Reverse
-                else: # Remove the Reverse flag
-                    current_lights &= carla.VehicleLightState.All ^ carla.VehicleLightState.Reverse
-                if current_lights != self._lights: # Change the light state only if necessary
-                    self._lights = current_lights
-                    world.player.set_light_state(carla.VehicleLightState(self._lights))
-            elif isinstance(self._control, carla.WalkerControl):
-                self._parse_walker_keys(pygame.key.get_pressed(), clock.get_time(), world)
-            world.player.apply_control(self._control)
+            if not self._autopilot_enabled:
+                if isinstance(self._control, carla.VehicleControl):
+                    if event.type == pygame.JOYAXISMOTION:
+                        self._parse_controller()
+                    else:
+                        self._parse_vehicle_keys(pygame.key.get_pressed(), clock.get_time())
+                    self._control.reverse = self._control.gear < 0
+                    # Set automatic control-related vehicle lights
+                    if self._control.brake:
+                        current_lights |= carla.VehicleLightState.Brake
+                    else: # Remove the Brake flag
+                        current_lights &= carla.VehicleLightState.All ^ carla.VehicleLightState.Brake
+                    if self._control.reverse:
+                        current_lights |= carla.VehicleLightState.Reverse
+                    else: # Remove the Reverse flag
+                        current_lights &= carla.VehicleLightState.All ^ carla.VehicleLightState.Reverse
+                    if current_lights != self._lights: # Change the light state only if necessary
+                        self._lights = current_lights
+                        world.player.set_light_state(carla.VehicleLightState(self._lights))
+                elif isinstance(self._control, carla.WalkerControl):
+                    self._parse_walker_keys(pygame.key.get_pressed(), clock.get_time(), world)
+                world.player.apply_control(self._control)
+
+    def _parse_controller(self):
+        self._joystick.get_axis(0)
+        steering = (self._joystick.get_axis(0)) * .7
+        self._control.steer = .5 * steering
+        self._joystick.get_axis(4)
+        braking = (self._joystick.get_axis(4) + 1) / 2
+        self._control.brake = braking
+        self._joystick.get_axis(5)
+        throttle = (self._joystick.get_axis(5) + 1) / 2
+        # print (f"{throttle}")
+        self._control.throttle = throttle
 
     def _parse_vehicle_keys(self, keys, milliseconds):
         self._control.throttle = 1.0 if keys[K_UP] or keys[K_w] else 0.0
@@ -1034,6 +1072,15 @@ class CameraManager(object):
 
 def game_loop(args, ogv, icv):
     pygame.init()
+
+    joystick_count = pygame.joystick.get_count()
+    for i in range(joystick_count):
+        joystick = pygame.joystick.Joystick(i)
+        joystick.init()
+        print(f"Joystick {joystick.get_name()} initialized")
+    pygame.joystick.init()
+    pygame.event.get()
+
     pygame.font.init()
     world = None
 
@@ -1047,7 +1094,7 @@ def game_loop(args, ogv, icv):
 
         hud = HUD(args.width, args.height, ogv=ogv, icv=icv)
         world = World(client.get_world(), hud, args)
-        controller = KeyboardControl(world, args.autopilot)
+        controller = KeyboardControl(world, args.autopilot, joystick)
 
         clock = pygame.time.Clock()
         while True:
@@ -1134,6 +1181,7 @@ def main(ogv, icv):
 
     except KeyboardInterrupt:
         print('\nCancelled by user. Bye!')
+
 
 # threading implementation
 class CarlaThread(threading.Thread):
