@@ -1,7 +1,7 @@
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from threading import Thread
 from fastapi import FastAPI
+import threading
 import config
 import uvicorn
 import math
@@ -12,7 +12,7 @@ class GUI(threading.Thread):
         super(GUI, self).__init__()
         self.vehicle = vehicle
         
-        self.app = FastAPI()
+        app = FastAPI()
         self.current_speed = vehicle.velocity
         self.max_speed = 100 ## from config
         self.direction = vehicle.direction
