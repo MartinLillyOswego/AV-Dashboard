@@ -10,15 +10,10 @@ import config
 
 class ControlUnit(threading.Thread):
 
-    def __init__(self, vehicle, controller_commands, keyboard_commands, *args, **kwargs):
+    def __init__(self, vehicle, *args, **kwargs):
         super(ControlUnit, self).__init__(*args, **kwargs)
         self.vehicle = vehicle
-        self.response_commands = []
-        self.outgoing_commands = []
 
-        # input devices containing potential new commands to be sent
-        self.controller_commands = controller_commands
-        self.keyboard_commands = keyboard_commands
 
     # constructs data to be displayed
     def generate_display_data(self):
@@ -36,22 +31,20 @@ class ControlUnit(threading.Thread):
 
     # determinces any necessary commands to maintain vehicle safety
     def generate_responce_commands(self):
-        errors = self.generate_vehicle_error()
         #TODO:
         # read errors and vehicle state to determine any necessary responce commands
-        self.response_commands = commands
+        pass
 
     # constructs a new set of outgoing vehicle commands
     def generate_vehicle_commands(self):
-        self.generate_responce_commands()
         #TODO:
         # build final output of commands with a collection of input devices
         # new_commands = self.controller_commands + self.keyboard_commands + self.response_commands
-        self.outgoing_commands = new_commands
+        pass
 
     # called by sender to send new commands
     def get_vehicle_commands(self):
-        return self.outgoing_commands
+        return
 
     # main loop, update command and display fields
     def run(self):

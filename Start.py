@@ -8,6 +8,7 @@ import config
 import signal
 import time
 import python_gui.gui
+from ControlUnit import ControlUnit
 
 # create instance of Vehicle class
 telemetry = Vehicle()
@@ -16,11 +17,13 @@ telemetry = Vehicle()
 receiver_thread = Receiver(vehicle=telemetry)
 receiver_thread.start()
 
+# start the control unit
+control_unit = ControlUnit(vehicle=telemetry)
+control_unit.start()
+
 # start the sender thread
 sender_thread = Sender(vehicle=telemetry, receiver=receiver_thread, control_unit=None)
 sender_thread.start()
-
-
 
 
 """
