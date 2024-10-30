@@ -1,6 +1,8 @@
-from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from threading import Thread
+from fastapi import FastAPI
+import config
 import uvicorn
 import math
 
@@ -11,18 +13,18 @@ max_speed = 100
 direction = "f"
 throttle_percent = 100
 brake_percent = 100
-steering_angle = 0;
-steering_angle_limit = max_speed; ## change
+steering_angle = 0
+steering_angle_limit = max_speed ## change
 
 ### Resources
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="python_gui/static"), name="static")
 
-### HTML File 
+### HTML File
 
 @app.get("/", response_class=HTMLResponse)
 async def read_index():
-    with open("index.html", 'r') as f:
+    with open("python_gui/index.html", 'r') as f:
         return HTMLResponse(content=f.read())
 
 @app.get("/open_config")
@@ -40,7 +42,7 @@ async def get_speed():
     global steering_angle
     global steering_angle_limit
 
-    ### Speed
+    # Speed
     if direction == "f":
         current_speed = current_speed + 1
         if current_speed == 100: direction = "b"
@@ -48,22 +50,22 @@ async def get_speed():
         current_speed = current_speed - 1
         if current_speed == 1: direction = "f"
 
-    ### Speed meter
+    # Speed meter
     speed_meter = min(math.ceil(current_speed*9/max_speed),9)
     speed_meter_source = "static/icons/Speed" + str(speed_meter) + ".png"
     
-    ### Throttle
+    # Throttle
     throttle_percent = current_speed
     
-    ### Brake
+    # Brake
     brake_percent = max_speed - current_speed
     
-    ### Steering Angle
-    steering_angle = current_speed - 50  ## change
+    # Steering Angle
+    steering_angle = current_speed - 50  # change
     steering_notch_x = (2*steering_angle/steering_angle_limit)* math.cos(math.radians(steering_angle))
     steering_notch_y = (30*steering_angle/steering_angle_limit)* math.sin(math.radians(steering_angle))
     
-    ### Send
+    # Send
     return {"speed": current_speed,
             "speed_meter": speed_meter_source,
             "throttle": throttle_percent,
@@ -73,6 +75,8 @@ async def get_speed():
             "steering_angle" : steering_angle}
 
 ### Server Start
-
-if __name__ == "__main__":
+def main():
     uvicorn.run(app, host="127.0.0.1", port=8000)
+thread = Thread(target=main)
+thread.start()
+print(f"{config.get_time()}:Webapp: Started")
