@@ -67,8 +67,9 @@ body {
 }
 
 #config_button {
-	width: 10vw;
-	height: 17vh;
+	width: 80px;
+	border-radius: 10px;
+	float: right;
 }
 
 #speed_zone {
