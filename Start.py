@@ -2,12 +2,12 @@ from communication.Receiver import Receiver
 from communication.Sender import Sender
 from ControlUnit import ControlUnit
 from Vehicle import Vehicle
+from python_gui.gui import GUI
 import threading
 #import Shutdown
 import config
 import signal
 import time
-import python_gui.gui
 from ControlUnit import ControlUnit
 
 # create instance of Vehicle class
@@ -24,6 +24,10 @@ control_unit.start()
 # start the sender thread
 sender_thread = Sender(vehicle=telemetry, receiver=receiver_thread, control_unit=None)
 sender_thread.start()
+
+# start the gui thread
+gui_thread = GUI(vehicle=telemetry)
+gui_thread.start()
 
 
 """

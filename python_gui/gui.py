@@ -13,14 +13,14 @@ class GUI(threading.Thread):
         self.vehicle = vehicle
         
         self.app = FastAPI()
-        self.current_speed = 1
+        self.current_speed = vehicle.velocity
         self.max_speed = 100 ## from config
-        self.direction = "f"
-        self.throttle_force = 50
+        self.direction = vehicle.direction
+        self.throttle_force = vehicle.throttle
         self.max_throttle_force = 100 ## from config
-        self.brake_force = 50
+        self.brake_force = vehicle.braking_force
         self.max_brake_force = 50 ## from config
-        self.steering_angle = 0
+        self.steering_angle = vehicle.steering_angle
         self.max_steering_angle = 90 ## from config
 
         ### Resources
