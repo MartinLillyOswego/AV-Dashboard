@@ -7,7 +7,7 @@ import threading
 import config
 import signal
 import time
-import python_gui.test
+import python_gui.gui
 
 # create instance of Vehicle class
 telemetry = Vehicle()
