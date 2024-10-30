@@ -10,16 +10,26 @@
 			<div id="main_screen">
 				<div id="main_left"></div>
 				<div id="main_middle">
-					<img id="speedMeter" src="static/icons/Speed0.png">
-					<h1 id="speedDisplay" style="font-size: 60px;" >0</h1>
-					<h1 id="throttle_label" style="font-size: 40px;">Throttle</h1>
-					<h1 id="break_label" style="font-size: 40px;">Brake</h1>
+					<div id="speed_zone">
+						<img id="speedMeter" src="static/icons/Speed0.png">
+						<h1 id="speedDisplay">0</h1>
+					</div>
 					<div id="bar_zone">
+						<h1 id="throttle_label">Throttle</h1>
+						<h1 id="brake_label">Brake</h1>
+						<div id="bar_box"></div>
 						<div id="throttle_bar"></div>
-						<div id="break_bar"></div>
+						<div id="brake_bar"></div>
+					</div>
+					<div id="steering_zone">
+						<img id="steering_bar" src="static/icons/steeringbar.png">
+						<img id="steering_notch" src="static/icons/steeringnotch.png">
+						<h1 id="steering_display">0&deg</h1>
 					</div>
 				</div>
-				<div id="main_right"></div>
+				<div id="main_right">
+					<button id="config_button" onClick="javascript:open_config()" width="100%" height="100%"><img id="config_button" src="static/icons/gear.png"></button>
+				</div>
 			</div>
 			<div id="bottom_bar">
 				<div class="icon"><img src="static/icons/car-oil.png" height="100%" width="100%"></div>
@@ -37,12 +47,20 @@
 </html>
 
 <script>
+
+	function open_config() {
+		fetch("/open_config");
+	}
+	
 	setInterval(async () => {
 		const response = await fetch("/speed");
 		const data = await response.json();
 		document.getElementById("speedDisplay").innerText = data.speed;
 		document.getElementById("speedMeter").src = data.speed_meter;
-		document.getElementById("throttle_bar").style.width = (22*data.throttle/100) + "vw";
-		document.getElementById("break_bar").style.width = (22*data.break/100) + "vw";
-	}, 100);
+		document.getElementById("throttle_bar").style.width = (20*data.throttle/100) + "vw";
+		document.getElementById("brake_bar").style.width = (20*data.brake/100) + "vw";
+		document.getElementById("steering_notch").style.left = (17+ 20*data.steering_notch_x) + "vw";
+		document.getElementById("steering_notch").style.top = (2 + data.steering_notch_y) + "vw";
+		document.getElementById("steering_display").innerHTML = data.steering_angle + "&deg";
+	}, 1);
 </script>
