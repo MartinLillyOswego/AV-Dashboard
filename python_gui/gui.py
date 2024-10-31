@@ -12,15 +12,16 @@ class GUI(threading.Thread):
         super(GUI, self).__init__()
         self.vehicle = vehicle
         
+        
         app = FastAPI()
-        self.current_speed = vehicle.velocity[0]
+        self.current_speed = 100
         self.max_speed = 100 ## from config
-        self.direction = vehicle.direction[0]
-        self.throttle_force = vehicle.throttle[0]
+        self.direction = 100
+        self.throttle_force = 100
         self.max_throttle_force = 100 ## from config
-        self.brake_force = vehicle.braking_force[0]
-        self.max_brake_force = 50 ## from config
-        self.steering_angle = vehicle.steering_angle[0]
+        self.brake_force = 100
+        self.max_brake_force = 100 ## from config
+        self.steering_angle = 100
         self.max_steering_angle = 90 ## from config
 
         ### Resources
@@ -40,6 +41,26 @@ class GUI(threading.Thread):
 
         @app.get("/data")
         async def get_data():
+            if len(vehicle.velocity) == 0:
+                return {"speed": 100,
+                    "speed_meter": "static/icons/Speed9.png",
+                    "throttle": 100,
+                    "brake": 100,
+                    "steering_notch_x": 100,
+                    "steering_notch_y": 100,
+                    "steering_angle" : 100}
+            
+            ## update data
+            self.current_speed = vehicle.velocity[0]
+            self.max_speed = 100 ## from config
+            self.direction = vehicle.direction[0]
+            self.throttle_force = vehicle.throttle[0]
+            self.max_throttle_force = 100 ## from config
+            self.brake_force = vehicle.braking_force[0]
+            self.max_brake_force = 50 ## from config
+            self.steering_angle = vehicle.steering_angle[0]
+            self.max_steering_angle = 90 ## from config
+            
             # Speed meter
             speed_meter = min(math.ceil(self.current_speed*9/self.max_speed),9)
             speed_meter_source = "static/icons/Speed" + str(speed_meter) + ".png"
