@@ -24,6 +24,8 @@ class GUI(threading.Thread):
         self.steering_angle = 100
         self.max_steering_angle = 90 ## from config
 
+        self.responce_text = ""
+
         ### Resources
 
         app.mount("/static", StaticFiles(directory="python_gui/static"), name="static")
@@ -35,9 +37,36 @@ class GUI(threading.Thread):
             with open("python_gui/index.html", 'r') as f:
                 return HTMLResponse(content=f.read())
 
-        @app.get("/open_config")
-        async def open_config():
-            print("config")
+        @app.get("/open_config", response_class=HTMLResponse)
+        async def open_config(serial_port: str = "", max_speed: str = ""):
+
+            # update serial port
+            if serial_port != "":
+                print(f"{config.get_time()}: Updating value for serial_port")
+                config.CARLA_SERIAL_PORT = serial_port
+                config.VEHICLE_PORT = serial_port
+                self.responce_text = "Updated Serial Port, you may need to restart the dashboard"
+
+            # updated allowed max speed
+            if max_speed != "":
+                try:
+                    config.MAX_SPEED = float(max_speed)
+                    self.responce_text = "Updated Allowed Max Speed"
+                except ValueError:
+                    self.responce_text = "Invalid input for this filed"
+
+            with open("python_gui/tuning_menu.html", 'r') as f:
+                return HTMLResponse(content=f.read())
+
+        @app.get("/config_data")
+        async def get_config_data():
+            out = {
+                "serial_port": config.VEHICLE_PORT,
+                "max_speed": config.MAX_SPEED,
+                "responce_text": self.responce_text
+            }
+            self.responce_text = ""
+            return out
 
         @app.get("/data")
         async def get_data():

@@ -1,11 +1,12 @@
-import serial
 import serial.tools.list_ports
-import threading
-import struct
-import time 
-import config
-import numpy as np
 from Vehicle import Vehicle
+import numpy as np
+import threading
+import serial
+import struct
+import config
+import time
+
 
 class Receiver(threading.Thread):
 
@@ -15,19 +16,18 @@ class Receiver(threading.Thread):
         self.serial_port = None 
 
     def serial_connect(self):
-        serial_id = config.VEHICLE_PORT
-        if config.USE_CARLA_DATA:
-            serial_id = config.CARLA_SERIAL_PORT
-
         while True:
+            serial_id = config.VEHICLE_PORT
+            if config.USE_CARLA_DATA:
+                serial_id = config.CARLA_SERIAL_PORT
             try:
                 self.serial_port = serial.Serial(serial_id, baudrate=9600, timeout=1)
                 if not self.serial_port.is_open:
                     self.serial_port.open()
                 print(f"{config.get_time()}:Receiver: Serial port connected")
                 break
-            except serial.SerialException:
-                print(f"{config.get_time()}:Receiver: Failed to connect to serial port")
+            except serial.SerialException as e:
+                print(f"{config.get_time()}:Receiver: Failed to connect to serial port {e}")
                 time.sleep(config.SEND_INTERVAL)
 
     @staticmethod

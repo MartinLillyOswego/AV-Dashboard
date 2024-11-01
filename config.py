@@ -8,8 +8,8 @@ import pytz
 
 # Serial connection
 USE_CARLA_DATA = True  # True-->Connects to Carla simulation, False-->Connects to Vehicle's radio
-CARLA_SERIAL_PORT = 'COM1'  # local emulated serial port
-VEHICLE_PORT = 'NA'  # radio's serial port
+CARLA_SERIAL_PORT = 'COM3'  # local emulated serial port
+VEHICLE_PORT = 'COM3'  # radio's serial port
 
 # Packet info
 SEND_INTERVAL = .3  # total wait time elapsed between sending packets
@@ -21,6 +21,8 @@ PACKET_SIZE = 136  # 17 floats in each half = 2(17*4) = 136 bytes
 CONTROL_UNIT_INTERVAL = 0.2
 
 CARLA_SIM_DURATION = 30  # number of seconds that the carla simulation will run for
+
+MAX_SPEED = 30
 
 # get time for printing only
 def get_time():

@@ -1,0 +1,66 @@
+body{
+    background-image: url("background.png");
+    background-repeat: no-repeat;
+    margin: 0px;
+	padding: 0px;
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
+    }
+
+#top_bar {
+	background-color: #262626;
+	border-bottom: 2px black solid;
+	position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 6%;
+    #label{
+        position: absolute;
+        top: 15%;
+        left: 1%;
+        }
+    #buttonDash{
+        position: absolute;
+        top: 20%;
+        right: 3%;
+        }
+    }
+
+#bottom_bar {
+    background-color: #262626;
+    border-top: 2px black solid;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    height: 6%;
+    #responce{
+        position: absolute;
+        top: 15%;
+        left: 1%;
+        }
+    }
+
+#main {
+    position: absolute;
+    top: 10%;
+    left: 1%;
+    width: 50%;
+    height: 80%;
+    padding-left: 10px;
+    background-color: #282829;
+    border-style: dashed;
+    border-width: 3px;
+    border-color: #151414;
+    }
+
+.buttonSty{
+    font-weight:bold;
+    font-family: Trebuchet MS;
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0px;
+    cursor: pointer;}

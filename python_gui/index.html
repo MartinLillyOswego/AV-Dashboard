@@ -4,7 +4,7 @@
 		<title>Dashboard</title>
 		<link rel="stylesheet" href="static/style.css">
 	</head>
-	<body>
+	<body style="font-family: Trebuchet MS">
 		<div id="main_div">
 			<div id="top_bar"></div>
 			<div id="main_screen">
@@ -28,7 +28,15 @@
 					</div>
 				</div>
 				<div id="main_right">
-					<button id="config_button" onClick="javascript:open_config()"><img src="static/icons/gear.png" style="width: 100%;"></button>
+
+					<!-- open the tuning menu -->
+					<form id="config_button" action="/open_config">
+					<input name="config" value="none" type="hidden">
+					<button style="width: 100%;" type="submit">
+						<img src="static/icons/gear.png" style="width: 100%;">
+					</button>
+					</form>
+
 				</div>
 			</div>
 			<div id="bottom_bar">
@@ -48,10 +56,6 @@
 
 <script>
 
-	function open_config() {
-		fetch("/open_config");
-	}
-	
 	setInterval(async () => {
 		const response = await fetch("/data");
 		const data = await response.json();
@@ -62,5 +66,6 @@
 		document.getElementById("steering_notch").style.left = (17+ 20*data.steering_notch_x) + "vw";
 		document.getElementById("steering_notch").style.top = (2 + data.steering_notch_y) + "vw";
 		document.getElementById("steering_display").innerHTML = data.steering_angle + "&deg";
+
 	}, 50);
 </script>
