@@ -105,7 +105,12 @@ class GUI(threading.Thread):
             steering_notch_y = (30*self.steering_angle/self.max_steering_angle)* math.sin(math.radians(self.steering_angle))
             
             # Send
-            return {"speed": self.current_speed,
+           veh = self.vehicle.__copy__()
+            v = 0
+            ind = len(veh.velocity)-1
+            if ind >= 0:
+                v = veh.velocity[ind]
+            return {"speed": v,
                     "speed_meter": speed_meter_source,
                     "throttle": throttle_percent,
                     "brake": brake_percent,
