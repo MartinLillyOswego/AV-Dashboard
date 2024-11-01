@@ -1,6 +1,5 @@
 
 #Imports
-import pygame
 try:
     import pygame
     from pygame.locals import KMOD_CTRL
@@ -12,6 +11,7 @@ try:
     from pygame.locals import K_COMMA
     from pygame.locals import K_DOWN
     from pygame.locals import K_ESCAPE
+    #from pygame.locals import K_ENTER
     from pygame.locals import K_F1
     from pygame.locals import K_LEFT
     from pygame.locals import K_PERIOD
@@ -55,10 +55,11 @@ class Controller:
 		self.IsConnected
 
 	#def SelectControllerType(self, controller):
-	def IsControllerConnected()
+	def IsControllerConnected(self):
 		if pygame.joystick.get_count() < 1:
 			print("Controller Not Connected")
 			self.IsConnected = False
+			return False
 		else:
 			self.controller = pygame.joystick.Joystick(0)
 			self.controller.init()
@@ -67,11 +68,12 @@ class Controller:
 			print(f"Controller Name: {self.controller.get_name()}")
 			if pygame.joystick.get_count() > 1:
 				print("One controller allowed at any time")
+			return True
 
 
 	#Handles different controller inputs
-	def GetControllerValue(selection):	
-		if self.controller_name == "Xbox One for Windows"
+	def GetControllerValue(self, selection):	
+		if self.controller_name == "Xbox One for Windows":
 			buttons = {
 				"Reverse"   :self.controller.get_button(1),
 				"GearUp"    :self.controller.get_button(5),
@@ -97,21 +99,54 @@ class Controller:
 				"Down"  :self.controller.get_hats(3)
 			}
 
-		'''
-		elif self.controller_name == "Logitech G29 for Windows"
+	'''
+	elif self.controller_name == "Logitech G29 for Windows"
+	'''
 
-		'''
-
-	def GetKeyboardValue():
+	def GetKeyboardValue(self):
 
 		keys = {
-			"Throttle": key_w,
-			"Brake": key_b,
-			"SteerLeft": 
-
-
+			"Throttle"   :K_w,
+			"Brake"      :K_b,
+			"SteerLeft"  :K_a,
+			"SteerRight" :K_d,
+			"Reverse"    :K_q,
+			"ManualMode" :K_m,
+			"GearUp"     :K_UP,
+			"GearDown"   :K_DOWN,
+			"Menu"       :K_h,
+			"Select"	 :K_b,
+			"Options"    :K_o,
 		}
 
-	#main loop	
-	def GameLoop():
+'''
 
+	pygame.init()
+	pygame.joystick.init()
+
+	if pygame.joystick.get_count() < 1:
+		print("Controller Not Connected")
+	else:
+		joystick = pygame.joystick.Joystick(0)
+		joystick.init()
+		print(f"Controller Name: {joystick.get_name()}")
+
+	try:
+		while True:
+
+				for event in pygame.event.get():
+					if event.type == pygame.JOYBUTTONDOWN:
+						print(f"Button {event.button} pressed")
+					elif event.type == pygame.JOYBUTTONUP:
+						print(f"Button {event.button} pressed")
+					elif event.type == pygame.JOYAXISMOTION:
+						print(f"Axis {event.axis} moved to {event.value: .2f}")
+					joystick = pygame.joystick.get_count ()
+					print (f"Joysticks Connected: {joystick}")
+
+
+	except KeyboardInterrupt: 
+		print("Exiting")
+
+	pygame.quit()
+'''
