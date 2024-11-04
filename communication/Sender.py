@@ -9,10 +9,10 @@ otherwise it will reconnect.
 
 from datetime import datetime
 from threading import Thread
+import control.config as config
 import numpy as np
 import threading
 import serial
-import config
 import struct
 import time
 import pytz

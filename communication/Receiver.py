@@ -1,10 +1,10 @@
+from control.Vehicle import Vehicle
 import serial.tools.list_ports
-from Vehicle import Vehicle
+import control.config as config
 import numpy as np
 import threading
 import serial
 import struct
-import config
 import time
 
 

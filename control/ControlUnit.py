@@ -1,8 +1,8 @@
-import time
+from control.Vehicle import Vehicle
 from threading import Thread
-from Vehicle import Vehicle
+import control.config as config
 import threading
-import config
+import time
 
 #TODO:
 # implement input devices class
@@ -20,8 +20,7 @@ class ControlUnit(threading.Thread):
         #TODO:
         # generate all required values and assets neeed to fully update the display
         # display_data + self.generate_vehicle_error() + otherStuff
-        # self.vehicle.update_calculated_data(display_data)
-        pass
+        self.vehicle.update_calculated_data(display_data)
 
     # called when generating response commands, responsible for observing vehicle errors
     def generate_vehicle_error(self):

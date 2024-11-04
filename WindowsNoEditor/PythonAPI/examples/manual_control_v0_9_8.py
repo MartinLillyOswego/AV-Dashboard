@@ -296,7 +296,8 @@ class KeyboardControl(object):
             self._ackermann_reverse = 1
             world.player.set_autopilot(self._autopilot_enabled)
             world.player.set_light_state(self._lights)
-            self._joystick = joystick
+            if joystick is not None:
+                self._joystick = joystick
         elif isinstance(world.player, carla.Walker):
             self._control = carla.WalkerControl()
             self._autopilot_enabled = False
@@ -1074,6 +1075,7 @@ def game_loop(args, ogv, icv):
     pygame.init()
 
     joystick_count = pygame.joystick.get_count()
+    joystick = None
     for i in range(joystick_count):
         joystick = pygame.joystick.Joystick(i)
         joystick.init()
@@ -1096,11 +1098,13 @@ def game_loop(args, ogv, icv):
         world = World(client.get_world(), hud, args)
         controller = KeyboardControl(world, args.autopilot, joystick)
 
+
         clock = pygame.time.Clock()
         while True:
             clock.tick_busy_loop(60)
-            if controller.parse_events(client, world, clock):
-                return
+            if controller is not None:
+                if controller.parse_events(client, world, clock):
+                    return
             world.tick(clock)
             world.render(display)
             pygame.display.flip()

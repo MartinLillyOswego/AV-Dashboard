@@ -1,14 +1,18 @@
-from communication.Receiver import Receiver
-from communication.Sender import Sender
-from ControlUnit import ControlUnit
-from Vehicle import Vehicle
-from python_gui.gui import GUI
 import threading
 #import Shutdown
-import config
 import signal
 import time
-from ControlUnit import ControlUnit
+
+import control.config as config
+config.read()
+try:
+    from control.ControlUnit import ControlUnit
+    from communication.Receiver import Receiver
+    from communication.Sender import Sender
+    from control.Vehicle import Vehicle
+    from python_gui.gui import GUI
+except ImportError:
+    raise RuntimeError("cannot import local dependencies")
 
 # create instance of Vehicle class
 telemetry = Vehicle()
@@ -25,8 +29,8 @@ receiver_thread.start()
 sender_thread = Sender(vehicle=telemetry, receiver=receiver_thread, control_unit=None)
 sender_thread.start()
 
-# start the gui thread
 time.sleep(3)
+# start the gui thread
 gui_thread = GUI(vehicle=telemetry)
 gui_thread.start()
 

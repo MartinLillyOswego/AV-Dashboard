@@ -1,10 +1,14 @@
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi import FastAPI
+import control.config as config
 import threading
-import config
 import uvicorn
 import math
+import os
+from os import listdir
+from os.path import isfile, join
+import random
 
 class GUI(threading.Thread):
     
@@ -12,16 +16,15 @@ class GUI(threading.Thread):
         super(GUI, self).__init__()
         self.vehicle = vehicle
         
-        
         app = FastAPI()
-        self.current_speed = 100
+        self.current_speed = 0  #vehicle.velocity[0]
         self.max_speed = 100 ## from config
-        self.direction = 100
-        self.throttle_force = 100
+        self.direction =0 #vehicle.direction[0]
+        self.throttle_force =0 #vehicle.throttle[0]
         self.max_throttle_force = 100 ## from config
-        self.brake_force = 100
-        self.max_brake_force = 100 ## from config
-        self.steering_angle = 100
+        self.brake_force = 0#vehicle.braking_force[0]
+        self.max_brake_force = 50 ## from config
+        self.steering_angle = 0#vehicle.steering_angle[0]
         self.max_steering_angle = 90 ## from config
 
         self.responce_text = ""
@@ -46,12 +49,14 @@ class GUI(threading.Thread):
                 config.CARLA_SERIAL_PORT = serial_port
                 config.VEHICLE_PORT = serial_port
                 self.responce_text = "Updated Serial Port, you may need to restart the dashboard"
+                config.write()
 
             # updated allowed max speed
             if max_speed != "":
                 try:
                     config.MAX_SPEED = float(max_speed)
                     self.responce_text = "Updated Allowed Max Speed"
+                    config.write()
                 except ValueError:
                     self.responce_text = "Invalid input for this filed"
 
@@ -72,24 +77,24 @@ class GUI(threading.Thread):
         async def get_data():
             if len(vehicle.velocity) == 0:
                 return {"speed": 100,
-                    "speed_meter": "static/icons/Speed9.png",
-                    "throttle": 100,
-                    "brake": 100,
-                    "steering_notch_x": 100,
-                    "steering_notch_y": 100,
-                    "steering_angle" : 100}
-            
+                        "speed_meter": "static/icons/Speed9.png",
+                        "throttle": 100,
+                        "brake": 100,
+                        "steering_notch_x": 100,
+                        "steering_notch_y": 100,
+                        "steering_angle": 100}
+
             ## update data
             self.current_speed = vehicle.velocity[0]
-            self.max_speed = 100 ## from config
+            self.max_speed = 100  ## from config
             self.direction = vehicle.direction[0]
             self.throttle_force = vehicle.throttle[0]
-            self.max_throttle_force = 100 ## from config
+            self.max_throttle_force = 100  ## from config
             self.brake_force = vehicle.braking_force[0]
-            self.max_brake_force = 50 ## from config
+            self.max_brake_force = 50  ## from config
             self.steering_angle = vehicle.steering_angle[0]
-            self.max_steering_angle = 90 ## from config
-            
+            self.max_steering_angle = 90  ## from config
+
             # Speed meter
             speed_meter = min(math.ceil(self.current_speed*9/self.max_speed),9)
             speed_meter_source = "static/icons/Speed" + str(speed_meter) + ".png"
@@ -105,7 +110,7 @@ class GUI(threading.Thread):
             steering_notch_y = (30*self.steering_angle/self.max_steering_angle)* math.sin(math.radians(self.steering_angle))
             
             # Send
-           veh = self.vehicle.__copy__()
+            veh = self.vehicle.__copy__()
             v = 0
             ind = len(veh.velocity)-1
             if ind >= 0:
