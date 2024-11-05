@@ -9,23 +9,25 @@ import os
 from os import listdir
 from os.path import isfile, join
 import random
+import logging
+
 
 class GUI(threading.Thread):
-    
+
     def __init__(self, vehicle):
         super(GUI, self).__init__()
         self.vehicle = vehicle
-        
+
         app = FastAPI()
-        self.current_speed = 0  #vehicle.velocity[0]
-        self.max_speed = 100 ## from config
-        self.direction =0 #vehicle.direction[0]
-        self.throttle_force =0 #vehicle.throttle[0]
-        self.max_throttle_force = 100 ## from config
-        self.brake_force = 0#vehicle.braking_force[0]
-        self.max_brake_force = 50 ## from config
-        self.steering_angle = 0#vehicle.steering_angle[0]
-        self.max_steering_angle = 90 ## from config
+        self.current_speed = 0  # vehicle.velocity[0]
+        self.max_speed = 100  ## from config
+        self.direction = 0  # vehicle.direction[0]
+        self.throttle_force = 0  # vehicle.throttle[0]
+        self.max_throttle_force = 100  ## from config
+        self.brake_force = 0  # vehicle.braking_force[0]
+        self.max_brake_force = 50  ## from config
+        self.steering_angle = 0  # vehicle.steering_angle[0]
+        self.max_steering_angle = 90  ## from config
 
         self.responce_text = ""
 
@@ -41,7 +43,13 @@ class GUI(threading.Thread):
                 return HTMLResponse(content=f.read())
 
         @app.get("/open_config", response_class=HTMLResponse)
-        async def open_config(serial_port: str = "", max_speed: str = ""):
+        async def open_config(serial_port: str = "", max_speed: str = "", carla_state: str = ""):
+
+            # enable carla
+            if carla_state != "":
+                config.USE_CARLA_DATA = not config.USE_CARLA_DATA
+                self.responce_text = "Restart Required"
+                config.write()
 
             # update serial port
             if serial_port != "":
@@ -65,9 +73,13 @@ class GUI(threading.Thread):
 
         @app.get("/config_data")
         async def get_config_data():
+            carla_state = "Enable"
+            if config.USE_CARLA_DATA:
+                carla_state = "Disable"
             out = {
                 "serial_port": config.VEHICLE_PORT,
                 "max_speed": config.MAX_SPEED,
+                "carla_state": carla_state,
                 "responce_text": self.responce_text
             }
             self.responce_text = ""
@@ -86,7 +98,7 @@ class GUI(threading.Thread):
 
             ## update data
             veh = self.vehicle.__copy__()
-            ind = len(veh.velocity)-1
+            ind = len(veh.velocity) - 1
             self.current_speed = vehicle.velocity[ind]
             self.max_speed = 100  ## from config
             self.direction = vehicle.direction[ind]
@@ -98,29 +110,32 @@ class GUI(threading.Thread):
             self.max_steering_angle = 90  ## from config
 
             # Speed meter
-            speed_meter = min(math.ceil(self.current_speed*9/self.max_speed),9)
+            speed_meter = min(math.ceil(self.current_speed * 9 / self.max_speed), 9)
             speed_meter_source = "static/icons/Speed" + str(speed_meter) + ".png"
-            
+
             # Throttle
             throttle_percent = 100 * self.throttle_force / self.max_throttle_force
-            
+
             # Brake
             brake_percent = 100 * self.brake_force / self.max_brake_force
-            
+
             # Steering Angle
-            steering_notch_x = (2*self.steering_angle/self.max_steering_angle)* math.cos(math.radians(self.steering_angle))
-            steering_notch_y = (30*self.steering_angle/self.max_steering_angle)* math.sin(math.radians(self.steering_angle))
-            
+            steering_notch_x = (2 * self.steering_angle / self.max_steering_angle) * math.cos(
+                math.radians(self.steering_angle))
+            steering_notch_y = (30 * self.steering_angle / self.max_steering_angle) * math.sin(
+                math.radians(self.steering_angle))
+
             # Send
-            
+
             return {"speed": self.current_speed,
                     "speed_meter": speed_meter_source,
                     "throttle": throttle_percent,
                     "brake": brake_percent,
                     "steering_notch_x": steering_notch_x,
                     "steering_notch_y": steering_notch_y,
-                    "steering_angle" : self.steering_angle}
+                    "steering_angle": self.steering_angle}
 
         ### Server Start
-        uvicorn.run(app, host="127.0.0.1", port=8000)
         print(f"{config.get_time()}:Webapp: Started")
+        uvicorn.run(app, host="127.0.0.1", port=8000, log_level=logging.WARNING)
+

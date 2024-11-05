@@ -21,6 +21,13 @@
     <!-- holds all submission boxes -->
     <div id="main">
 
+        <!-- enable / disable carla -->
+        <form id="carla" action="/open_config">
+            <p style="font-family: Trebuchet MS;color:white">Use Carla As Input:
+            <label> <input name="carla_state" id="carla_state_box" style="color:white; background-color:#4a4946"
+                           type="submit" />
+            </label></p>
+        </form>
 
         <!-- input for serial port -->
         <form id="serial" action="/open_config">
@@ -54,6 +61,7 @@
     const data = await response.json();
     document.getElementById("serial_text").innerText = "Operating Value: " + data.serial_port;
     document.getElementById("max_speed_text").innerText = "Operating Value: " + data.max_speed;
+    document.querySelector('#carla_state_box').value = data.carla_state;
     document.getElementById("responce").innerText = data.responce_text;
     }
 </script>
