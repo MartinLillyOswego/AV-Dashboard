@@ -85,14 +85,16 @@ class GUI(threading.Thread):
                         "steering_angle": 100}
 
             ## update data
-            self.current_speed = vehicle.velocity[0]
+            veh = self.vehicle.__copy__()
+            ind = len(veh.velocity)-1
+            self.current_speed = vehicle.velocity[ind]
             self.max_speed = 100  ## from config
-            self.direction = vehicle.direction[0]
-            self.throttle_force = vehicle.throttle[0]
+            self.direction = vehicle.direction[ind]
+            self.throttle_force = vehicle.throttle[ind]
             self.max_throttle_force = 100  ## from config
-            self.brake_force = vehicle.braking_force[0]
+            self.brake_force = vehicle.braking_force[ind]
             self.max_brake_force = 50  ## from config
-            self.steering_angle = vehicle.steering_angle[0]
+            self.steering_angle = vehicle.steering_angle[ind]
             self.max_steering_angle = 90  ## from config
 
             # Speed meter
@@ -110,12 +112,8 @@ class GUI(threading.Thread):
             steering_notch_y = (30*self.steering_angle/self.max_steering_angle)* math.sin(math.radians(self.steering_angle))
             
             # Send
-            veh = self.vehicle.__copy__()
-            v = 0
-            ind = len(veh.velocity)-1
-            if ind >= 0:
-                v = veh.velocity[ind]
-            return {"speed": v,
+            
+            return {"speed": self.current_speed,
                     "speed_meter": speed_meter_source,
                     "throttle": throttle_percent,
                     "brake": brake_percent,
