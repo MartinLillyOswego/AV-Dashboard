@@ -16,6 +16,7 @@ import serial
 import struct
 import time
 import pytz
+from control.Controller import Controller
 
 class Sender(threading.Thread):
 
@@ -24,15 +25,10 @@ class Sender(threading.Thread):
         self.vehicle = vehicle
         self.control_unit = control_unit
         self.receiver = receiver
+        self.controller = Controller()
 
     # build the packet
     def package_data(self):
-
-        #TODO:
-        # pull new commands from control_unit
-        # new_commands = self.control_unit.get_vehicle_commands()
-        new_commands = None
-
         # pull last_packet from vehicle class
         vehicle_snapshot = self.vehicle.__copy__()
         ind = len(vehicle_snapshot.velocity) - 1
@@ -55,7 +51,34 @@ class Sender(threading.Thread):
                        vehicle_snapshot.fr_wheel_speed[ind],
                        vehicle_snapshot.distance_to_object[ind],
                        vehicle_snapshot.time[ind]]
-        print(f"{config.get_time()}:SendingThread: Sending: {last_packet}]")
+
+        first_packet = [vehicle_snapshot.sender_id,
+                       vehicle_snapshot.receiver_id,
+                       vehicle_snapshot.error_code[ind],
+                       vehicle_snapshot.velocity[ind],
+                       vehicle_snapshot.throttle[ind],
+                       vehicle_snapshot.braking_force[ind],
+                       vehicle_snapshot.hand_brake[ind],
+                       vehicle_snapshot.steering_angle[ind],
+                       vehicle_snapshot.direction[ind],
+                       vehicle_snapshot.gear[ind],
+                       vehicle_snapshot.battery_voltage[ind],
+                       vehicle_snapshot.battery_current[ind],
+                       vehicle_snapshot.battery_temperate[ind],
+                       vehicle_snapshot.fl_wheel_speed[ind],
+                       vehicle_snapshot.fr_wheel_speed[ind],
+                       vehicle_snapshot.distance_to_object[ind],
+                       vehicle_snapshot.time[ind]]
+
+        # pull new commands from control_unit
+        # Request error confirmation from control unit
+        # Take new commands in
+        new_commands = self.controller.get_vehicle_commands(first_packet, ind)
+        print(f"{type(last_packet[4])}")
+        # Call for system control factors to override commands
+        #print(f"{new_commands}")
+        #new_commands = None
+        #print(f"SendingThread: Sending: {new_commands}]")
 
 
         # populate first half of packet with new commands

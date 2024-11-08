@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env pythonpip index
 
 # Copyright (c) 2019 Computer Vision Center (CVC) at the Universitat Autonoma de
 # Barcelona (UAB).
@@ -63,8 +63,8 @@ import sys
 from threading import Thread
 import threading
 import time
-import emulator_config
-import emulator_Vehicle
+import control.config as config
+import control.Vehicle
 
 try:
     sys.path.append(glob.glob('../carla/dist/carla-*%d.%d-%s.egg' % (
@@ -567,7 +567,7 @@ class HUD(object):
             avCompass = int(world.imu_sensor.compass * .70833)  # East is 0 degrees and rotates clockwise to north
 
             # Assemble integer packet
-            intPacket = [emulator_config.MY_ID, emulator_config.EXTERNAL_ID, 3, avSpeed, avThrottle, avBrake,
+            intPacket = [config.MY_ID, config.EXTERNAL_ID, 3, avSpeed, avThrottle, avBrake,
                          avHandBrake, avSteer,
                          avCompass, avSpeedControl, 10, 11, 12, 13, 14, 15, time.time()]
 
@@ -1183,5 +1183,5 @@ class CarlaThread(threading.Thread):
 
     # main loop
     def run(self):
-        print(f"{emulator_config.get_time()}:Carla output: Started")
+        print(f"{config.get_time()}:Carla output: Started")
         main(self.ogv, self.icv)
