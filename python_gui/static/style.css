@@ -78,7 +78,7 @@ body {
 }
 
 #vehicle_state {
-	background-color: black;
+	background-image: radial-gradient(grey, black);
 	border: 1px white solid;
 	width: 100%;
 	height: 100%;
