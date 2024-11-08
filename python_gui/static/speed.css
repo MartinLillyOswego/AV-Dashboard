@@ -1,0 +1,115 @@
+* {
+	box-sizing: border-box;
+}
+#speedometer {
+	width: 100%;
+	height: 200%;
+	border: 2px solid black;
+	border-radius: 50%;
+	position: absolute;
+}
+
+#center {
+	background-color: black;
+	width: 1.5%;
+	height: 1.5%;
+	border: 2px solid black;
+	border-radius: 50%;
+	position: absolute;
+	top: 49.5%;
+	left: 49.5%;
+}
+
+#center-hide {
+	background-color: black;
+	width: 70%;
+	height: 70%;
+	border: 2px solid #00ACEF;
+	border-radius: 50%;
+	position: absolute;
+	top: 15%;
+	left: 15%;
+}
+
+#bottom-hide {
+	width: 102%;
+	height: 49%;
+	position: absolute;
+	top: 52%;
+	left: -1%;
+	background-color: white;
+	z-index: 100;
+}
+
+.scales {
+	width: 1%;
+	height: 95%;
+	background-color: #00ACEF;
+	position: absolute;
+	left: 49.5%;
+	top: 2.5%;
+}
+
+.red-box {
+	width: 300px;
+	height: 300px;
+	background-color: red;
+}
+
+#arrow-container {
+	width: 60%;
+	height: 60%;
+	background-color: transparent;
+	position: absolute;
+	top: 20%;
+	left: 20%;
+}
+
+#arrow-wrapper {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	background-color: transparent;
+	transform: rotate(120deg);
+}
+
+#arrow {
+	width: 80%;
+	height: 1%;
+	position: absolute;
+	background-color: red;
+	top: 49%;
+	left: -29.5%;
+}
+
+#speed {
+	position: relative;
+	width: 50%;
+	height: 20%;
+	top: 20%;
+	left: 25%;
+	text-align: center;
+	font-size: 300%;
+	color: #00ACEF;
+	font-family: 'Seven Segment', sans-serif;
+}
+
+.scale-1 { transform: rotate(-90deg); }
+.scale-2 { transform: rotate(-80deg); }
+.scale-3 { transform: rotate(-70deg); }
+.scale-4 { transform: rotate(-60deg); }
+.scale-5 { transform: rotate(-50deg); }
+.scale-6 { transform: rotate(-40deg); }
+.scale-7 { transform: rotate(-30deg); }
+.scale-8 { transform: rotate(-20deg); }
+.scale-9 { transform: rotate(-10deg); }
+.scale-10 { transform: rotate(0deg); }
+.scale-11 { transform: rotate(10deg); }
+.scale-12 { transform: rotate(20deg); }
+.scale-13 { transform: rotate(30deg); }
+.scale-14 { transform: rotate(40deg); }
+.scale-15 { transform: rotate(50deg); }
+.scale-16 { transform: rotate(60deg); }
+.scale-17 { transform: rotate(70deg); }
+.scale-18 { transform: rotate(80deg); }
+.scale-19 { transform: rotate(90deg); }

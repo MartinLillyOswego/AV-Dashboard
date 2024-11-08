@@ -32,9 +32,9 @@ body {
 }
 
 #main_screen {
-	background-color: blue;
+	background-image: radial-gradient(grey, black);
 	display: grid;
-	grid-template-columns: 30% 40% 30%;
+	grid-template-columns: auto 805px auto;
 	position: relative;
 }
 
@@ -45,11 +45,10 @@ body {
 }
 
 #main_left {
-	background-color: black;
+/*	background-color: black;*/
 }
 
 #main_middle {
-	background-color: black;
 	border-left: 2px white solid;
 	border-right: 2px white solid;
 	width: 100%;
@@ -57,12 +56,11 @@ body {
 	margin: 0px;
 	padding: 0px;
 	display: grid;
-	grid-template-rows: 35% 30% 35%;
+	grid-template-rows: 26% 26% 400px;
 	grid-template-columns: 100%;
 }
 
 #main_right {
-	background-color: black;
 	position: relative;
 }
 
