@@ -77,6 +77,16 @@ body {
 /*	background-color: black;*/
 }
 
+#vehicle_state {
+	background-color: black;
+	border: 2px white solid;
+	width: 1000%;
+	height: 40%;
+	color: white;
+	margin: 0px;
+	padding: 0px;
+}
+
 #main_middle {
 	border-left: 2px white solid;
 	border-right: 2px white solid;
