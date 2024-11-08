@@ -53,7 +53,7 @@ class Receiver(threading.Thread):
                 packet = self.serial_port.read(config.PACKET_SIZE)
                 data = self.parse_telemetry(packet)
                 if data is not None:
-                    print(f"{config.get_time()}:Receiver: got: {data}")
+                    #print(f"{config.get_time()}:Receiver: got: {data}")
                     self.vehicle.update_with_packet(data)
             time.sleep(0.01)
             if self.vehicle.exit:
