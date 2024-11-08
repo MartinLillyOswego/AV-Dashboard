@@ -14,7 +14,20 @@
 				<h1 id="battery_temp">0&degF</h1>
 			</div>
 			<div id="main_screen">
-				<div id="main_left"></div>
+				<div id="main_left">
+					 <div id="vehicle_state">
+					    <div id="vehicle_state">
+						    <h3 id="vstate_label">Vehicle State</h3>
+						    <h4 id="acceleration">Acceleration: 0</h4>
+						    <h4 id="steering_angle">Steering Angle: 0°</h4>
+						    <h4 id="Distance_to_Object">Distance to Object:</h4>
+						    <h4 id="direction">Direction: 0°</h4>		
+						    <h4 id="battery_voltage">Battery Voltage: 0 V</h4>
+						    <h4 id="battery_current">Battery Current: 0 A</h4>
+						    <h4 id="battery_temperature">Battery Temperature: 0°C</h4>			
+                			    </div>		
+					</div>
+				</div>
 				<div id="main_middle">
 					<div id="speed_zone">
 						<img id="speedMeter" src="static/icons/Speed0.png">
@@ -109,6 +122,12 @@
 		document.getElementById("battery_img").src = data.battery_img;
 		document.getElementById("battery_percent").innerText = data.battery_percent + "%";
 		document.getElementById("battery_temp").innerHTML = data.battery_temp + "&degF";
-
-	}, 50);
+		document.getElementById("acceleration").innerText = "Acceleration: " + data.acceleration.toFixed(2);
+        	document.getElementById("steering_angle").innerText = "Steering Angle: " + data.steering_angle.toFixed(1) + "°";
+       		document.getElementById("Distance_to_Object").innerText = "Distance to Object: " + data.display_distance_to_object.toFixed(1) + " m";
+        	document.getElementById("direction").innerText = "Direction: " + data.direction.toFixed(1) + "°";
+        	document.getElementById("battery_voltage").innerText = "Battery Voltage: " + data.battery_voltage.toFixed(1) + " V";
+        	document.getElementById("battery_current").innerText = "Battery Current: " + data.battery_current.toFixed(1) + " A";
+        	document.getElementById("battery_temperature").innerText = "Battery Temperature: " + data.battery_temperature.toFixed(1) + "°C";
+    }, 50);
 </script>
