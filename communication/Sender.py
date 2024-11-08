@@ -97,6 +97,6 @@ class Sender(threading.Thread):
                 connection = self.receiver.serial_port
             t = config.SEND_INTERVAL-(time.time()-starting_time)
             if t>0:
-                time.sleep()
+                time.sleep(t)
             if self.vehicle.exit:
                 break
