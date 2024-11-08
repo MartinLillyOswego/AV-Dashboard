@@ -80,8 +80,8 @@ body {
 #vehicle_state {
 	background-color: black;
 	border: 2px white solid;
-	width: 1000%;
-	height: 40%;
+	width: 100%;
+	height: 100%;
 	color: white;
 	margin: 0px;
 	padding: 0px;
