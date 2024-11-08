@@ -99,7 +99,13 @@ class GUI(threading.Thread):
                         "steering_angle": 100,
                         "battery_img": "static/icons/battery0.png",
                         "battery_percent": 100,
-                        "battery_temp": 100}
+                        "battery_temp": 100,
+                        "acceleration": 0,
+                        "distance_to_object": float('inf'),
+                        "direction": 0,
+                        "battery_voltage": 0,
+                        "battery_current": 0,
+                        "battery_temperature": 0}
 
             ## update data
             veh = self.vehicle.__copy__()
@@ -115,6 +121,12 @@ class GUI(threading.Thread):
             self.max_steering_angle = 90  ## from config
             self.battery_temp = vehicle.battery_temperate[ind]
             ###self.battery_percent = uh
+            direction = veh.direction[ind]
+            acceleration = veh.acceleration[ind]
+            distance_to_object = veh.display_distance_to_object[ind]
+            battery_voltage = veh.battery_voltage[ind]
+            battery_current = veh.battery_current[ind]
+            battery_temperate = veh.battery_temperate[ind]
 
             # Speed meter
             speed_meter = min(math.ceil(self.current_speed * 9 / self.max_speed), 9)
@@ -146,7 +158,13 @@ class GUI(threading.Thread):
                     "steering_angle": self.steering_angle,
                     "battery_img": battery_img,
                     "battery_percent": self.battery_percent,
-                    "battery_temp": self.battery_temp}
+                    "battery_temp": self.battery_temp,
+                    "acceleration": acceleration,
+                    "direction": direction,
+                    "battery_voltage": battery_voltage,
+                    "battery_current": battery_current,
+                    "battery_temperate": battery_temperate,
+                    "distance_to_object": distance_to_object}
 
         ### Server Start
         print(f"{config.get_time()}:Webapp: Started")
