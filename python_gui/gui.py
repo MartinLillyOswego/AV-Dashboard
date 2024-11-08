@@ -28,6 +28,8 @@ class GUI(threading.Thread):
         self.max_brake_force = 50  ## from config
         self.steering_angle = 0  # vehicle.steering_angle[0]
         self.max_steering_angle = 90  ## from config
+        self.battery_percent = 100
+        self.battery_temp = 50
 
         self.responce_text = ""
 
@@ -94,7 +96,10 @@ class GUI(threading.Thread):
                         "brake": 100,
                         "steering_notch_x": 100,
                         "steering_notch_y": 100,
-                        "steering_angle": 100}
+                        "steering_angle": 100,
+                        "battery_img": "static/icons/battery0.png",
+                        "battery_percent": 100,
+                        "battery_temp": 100}
 
             ## update data
             veh = self.vehicle.__copy__()
@@ -108,6 +113,8 @@ class GUI(threading.Thread):
             self.max_brake_force = 50  ## from config
             self.steering_angle = vehicle.steering_angle[ind]
             self.max_steering_angle = 90  ## from config
+            self.battery_temp = vehicle.battery_temperate[ind]
+            ###self.battery_percent = uh
 
             # Speed meter
             speed_meter = min(math.ceil(self.current_speed * 9 / self.max_speed), 9)
@@ -125,6 +132,9 @@ class GUI(threading.Thread):
             steering_notch_y = (30 * self.steering_angle / self.max_steering_angle) * math.sin(
                 math.radians(self.steering_angle))
 
+            # Battery Img
+            battery_img = "static/icons/battery" + str(min(math.ceil(self.battery_percent * 4 / 100), 4)) + ".png"
+
             # Send
 
             return {"speed": self.current_speed,
@@ -133,7 +143,10 @@ class GUI(threading.Thread):
                     "brake": brake_percent,
                     "steering_notch_x": steering_notch_x,
                     "steering_notch_y": steering_notch_y,
-                    "steering_angle": self.steering_angle}
+                    "steering_angle": self.steering_angle,
+                    "battery_img": battery_img,
+                    "battery_percent": self.battery_percent,
+                    "battery_temp": self.battery_temp}
 
         ### Server Start
         print(f"{config.get_time()}:Webapp: Started")

@@ -63,8 +63,8 @@ import sys
 from threading import Thread
 import threading
 import time
-import emulator_config
-import emulator_Vehicle
+import control.config as emulator_config
+import control.Vehicle as emulator_Vehicle
 
 try:
     sys.path.append(glob.glob('../carla/dist/carla-*%d.%d-%s.egg' % (

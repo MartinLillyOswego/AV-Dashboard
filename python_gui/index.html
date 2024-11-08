@@ -8,7 +8,11 @@
 	</head>
 	<body style="font-family: Trebuchet MS">
 		<div id="main_div">
-			<div id="top_bar"></div>
+			<div id="top_bar">
+				<img id="battery_img" src="static/icons/battery0.png">
+				<h1 id="battery_percent">0%</h1>
+				<h1 id="battery_temp">0&degF</h1>
+			</div>
 			<div id="main_screen">
 				<div id="main_left"></div>
 				<div id="main_middle">
@@ -96,13 +100,15 @@
 		const data = await response.json();
 		const maxSpeed = 40;
 		document.getElementById("value").innerHTML = data.speed;
-		console.log(data.speed)
 		document.getElementById("arrow-wrapper").style.transform = "rotate("+ (data.speed/maxSpeed)*180 + "deg)"
 		document.getElementById("throttle_bar").style.width = (20*data.throttle/100) + "vw";
 		document.getElementById("brake_bar").style.width = (20*data.brake/100) + "vw";
 		// document.getElementById("steering_notch").style.left = (17+ 20*data.steering_notch_x) + "vw";
 		// document.getElementById("steering_notch").style.top = (2 + data.steering_notch_y) + "vw";
 		// document.getElementById("steering_display").innerHTML = data.steering_angle + "&deg";
+		document.getElementById("battery_img").src = data.battery_img;
+		document.getElementById("battery_percent").innerText = data.battery_percent + "%";
+		document.getElementById("battery_temp").innerHTML = data.battery_temp + "&degF";
 
 	}, 50);
 </script>
