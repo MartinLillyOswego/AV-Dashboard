@@ -55,7 +55,7 @@ class Sender(threading.Thread):
                        vehicle_snapshot.fr_wheel_speed[ind],
                        vehicle_snapshot.distance_to_object[ind],
                        vehicle_snapshot.time[ind]]
-        print(f"{config.get_time()}:SendingThread: Sending: {last_packet}]")
+        #print(f"{config.get_time()}:SendingThread: Sending: {last_packet}]")
 
 
         # populate first half of packet with new commands
