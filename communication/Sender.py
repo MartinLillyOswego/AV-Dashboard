@@ -56,6 +56,8 @@ class Sender(threading.Thread):
         # Request error confirmation from control unit
         # Take new commands in
         new_commands = self.controller.get_vehicle_commands(last_packet.copy(), ind)
+        new_commands[0] = config.MY_ID
+        new_commands[1] = config.EXTERNAL_ID
         print(f"{type(last_packet[4])}")
         # Call for system control factors to override commands
         #print(f"{new_commands}")
