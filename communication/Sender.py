@@ -73,14 +73,18 @@ class Sender(threading.Thread):
         # pull new commands from control_unit
         # Request error confirmation from control unit
         # Take new commands in
-        new_commands = self.controller.get_vehicle_commands(first_packet, ind)
-        print(f"{type(last_packet[4])}")
+        new_commands = self.controller.get_vehicle_commands(first_packet)
+        packetToSend = b''
+        packetToSend += bytes(new_commands + last_packet)
+        if ind % 10:
+            print(f"{packetToSend}")
+        #print(f"{type(last_packet[4])}")
         # Call for system control factors to override commands
         #print(f"{new_commands}")
         #new_commands = None
         #print(f"SendingThread: Sending: {new_commands}]")
 
-
+        '''
         # populate first half of packet with new commands
         packet_first_half = b""
         if new_commands is not None:
@@ -93,9 +97,12 @@ class Sender(threading.Thread):
             for float_val in last_packet:
                 packet_last_half += bytes(bytearray(struct.pack("f", float_val)))
 
-        if packet_first_half == b"":
-            packet_first_half = packet_last_half
-        return packet_first_half + packet_last_half
+        # if packet_first_half == b"":
+        #     packet_first_half = packet_last_half
+        #print (f"{packet_first_half} + {packet_last_half}")
+        '''
+        return packetToSend
+
 
     # attempts to send the packet
     @staticmethod
