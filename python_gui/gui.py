@@ -11,37 +11,18 @@ from os.path import isfile, join
 import random
 import logging
 
-
 class GUI(threading.Thread):
 
     def __init__(self, vehicle):
         super(GUI, self).__init__()
-        self.vehicle = vehicle
-
         app = FastAPI()
-        self.current_speed = 0  # vehicle.velocity[0]
-        self.max_speed = 100  ## from config
-        self.direction = 0  # vehicle.direction[0]
-        self.throttle_force = 0  # vehicle.throttle[0]
-        self.max_throttle_force = 100  ## from config
-        self.brake_force = 0  # vehicle.braking_force[0]
-        self.max_brake_force = 50  ## from config
-        self.steering_angle = 0  # vehicle.steering_angle[0]
-        self.max_steering_angle = 90  ## from config
-        self.battery_percent = 100
-        self.battery_temp = 50
-
+        self.vehicle = vehicle
         self.responce_text = ""
-
-        ### Resources
-
         app.mount("/static", StaticFiles(directory="python_gui/static"), name="static")
-
-        ### HTML File
 
         @app.get("/", response_class=HTMLResponse)
         async def read_index():
-            with open("python_gui/index.html", 'r') as f:
+            with open("python_gui/dashboard.html", 'r') as f:
                 return HTMLResponse(content=f.read())
 
         @app.get("/open_config", response_class=HTMLResponse)
@@ -90,83 +71,43 @@ class GUI(threading.Thread):
         @app.get("/data")
         async def get_data():
             if len(vehicle.velocity) == 0:
-                return {"speed": 100,
-                        "speed_meter": "static/icons/Speed9.png",
-                        "throttle": 100,
-                        "brake": 100,
-                        "steering_notch_x": 100,
-                        "steering_notch_y": 100,
-                        "steering_angle": 100,
-                        "battery_img": "static/icons/battery0.png",
-                        "battery_percent": 100,
-                        "battery_temp": 100,
-                        "acceleration": 0,
-                        "distance_to_object": float('inf'),
-                        "direction": 0,
-                        "battery_voltage": 0,
-                        "battery_current": 0,
-                        "battery_temperature": 0}
+                return {"speed": 0,
+                        "throttle": 0,
+                        "brake": 0,
+                        "steering_angle": 0,
+                        "battery_img": "static/icons/battery4.png",
+                        "con_png": "static/icons/radio.png",
+                        "battery_percent_and_temp": "100% 0°F"}
 
-            ## update data
+            # update data
             veh = self.vehicle.__copy__()
             ind = len(veh.velocity) - 1
-            self.current_speed = vehicle.velocity[ind]
-            self.max_speed = 100  ## from config
-            self.direction = vehicle.direction[ind]
-            self.throttle_force = vehicle.throttle[ind]
-            self.max_throttle_force = 100  ## from config
-            self.brake_force = vehicle.braking_force[ind]
-            self.max_brake_force = 50  ## from config
-            self.steering_angle = vehicle.steering_angle[ind]
-            self.max_steering_angle = 90  ## from config
-            self.battery_temp = vehicle.battery_temperate[ind]
-            ###self.battery_percent = uh
-            direction = veh.direction[ind]
-            acceleration = veh.acceleration[ind]
-            distance_to_object = veh.display_distance_to_object[ind]
-            battery_voltage = veh.battery_voltage[ind]
-            battery_current = veh.battery_current[ind]
-            battery_temperate = veh.battery_temperate[ind]
+            current_speed = vehicle.velocity[ind]
+            throttle_force = vehicle.throttle[ind]
+            brake_force = vehicle.braking_force[ind]
+            steering_angle = vehicle.steering_angle[ind]
+            battery_temperate = 0
+            battery_percent = 100
 
-            # Speed meter
-            speed_meter = min(math.ceil(self.current_speed * 9 / self.max_speed), 9)
-            speed_meter_source = "static/icons/Speed" + str(speed_meter) + ".png"
-
-            # Throttle
-            throttle_percent = 100 * self.throttle_force / self.max_throttle_force
-
-            # Brake
-            brake_percent = 100 * self.brake_force / self.max_brake_force
-
-            # Steering Angle
-            steering_notch_x = (2 * self.steering_angle / self.max_steering_angle) * math.cos(
-                math.radians(self.steering_angle))
-            steering_notch_y = (30 * self.steering_angle / self.max_steering_angle) * math.sin(
-                math.radians(self.steering_angle))
+            # assuming throttle_force in {0, 1, 2, ..., 255}, then throttle_percent =
+            throttle_percent = int(10 * ((throttle_force+1) / 256))
+            brake_percent = int(10 * ((brake_force+1) / 256))
 
             # Battery Img
-            battery_img = "static/icons/battery" + str(min(math.ceil(self.battery_percent * 4 / 100), 4)) + ".png"
+            battery_img = "static/icons/battery" + str(min(math.ceil(battery_percent * 4 / 100), 4)) + ".png"
 
-            # Send
+            con_png = ("static/icons/radio.png", "static/icons/radio_weak.png",
+                       "static/icons/radio_active.png")[veh.radio_state]
 
-            return {"speed": self.current_speed,
-                    "speed_meter": speed_meter_source,
+            return {"speed": current_speed,
                     "throttle": throttle_percent,
                     "brake": brake_percent,
-                    "steering_notch_x": steering_notch_x,
-                    "steering_notch_y": steering_notch_y,
-                    "steering_angle": self.steering_angle,
+                    "steering_angle": steering_angle,
                     "battery_img": battery_img,
-                    "battery_percent": self.battery_percent,
-                    "battery_temp": self.battery_temp,
-                    "acceleration": acceleration,
-                    "direction": direction,
-                    "battery_voltage": battery_voltage,
-                    "battery_current": battery_current,
-                    "battery_temperate": battery_temperate,
-                    "distance_to_object": distance_to_object}
+                    "con_png": con_png,
+                    "battery_percent_and_temp": f"{battery_percent}% {battery_temperate}°F"}
 
-        ### Server Start
+
+        # Server Start
         print(f"{config.get_time()}:Webapp: Started")
         uvicorn.run(app, host="127.0.0.1", port=8000, log_level=logging.WARNING)
-

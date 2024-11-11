@@ -27,10 +27,11 @@ class Vehicle:
         self.distance_to_object = []
         self.direction = []
         self.time = []
-        self.error_code = []
         self.gear = []
         self.fl_wheel_speed = []
         self.fr_wheel_speed = []
+
+        self.radio_state = 0
 
         # add more packet fields as needed
 
@@ -48,6 +49,7 @@ class Vehicle:
         self.display_slip_angle = []
         self.display_distance_to_object = -1
         self.display_error_code = -1
+        self.error_code = []
         # add more display fields as needed
 
     # called by, Sender, control-unit, and display
@@ -86,6 +88,7 @@ class Vehicle:
             out.gear = self.gear.copy()
             out.fl_wheel_speed = self.fl_wheel_speed.copy()
             out.fr_wheel_speed = self.fr_wheel_speed.copy()
+            out.radio_state = self.radio_state
         return out
 
     # called by packetReceiver,

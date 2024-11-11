@@ -16,6 +16,7 @@ import serial
 import struct
 import time
 import pytz
+from control.Controller import Controller
 
 class Sender(threading.Thread):
 
@@ -24,6 +25,8 @@ class Sender(threading.Thread):
         self.vehicle = vehicle
         self.control_unit = control_unit
         self.receiver = receiver
+        self.controller = Controller()
+        self.radio_state = 0  # 0-not connected, 1-weak connection, 2-strong connection
 
     # build the packet
     def package_data(self):
@@ -56,7 +59,9 @@ class Sender(threading.Thread):
                        vehicle_snapshot.distance_to_object[ind],
                        vehicle_snapshot.time[ind]]
         #print(f"{config.get_time()}:SendingThread: Sending: {last_packet}]")
-
+        new_commands = self.controller.get_vehicle_commands(last_packet.copy(), ind)
+        new_commands[0] = config.MY_ID
+        new_commands[1] = config.EXTERNAL_ID
 
         # populate first half of packet with new commands
         packet_first_half = b""
@@ -75,17 +80,20 @@ class Sender(threading.Thread):
         return packet_first_half + packet_last_half
 
     # attempts to send the packet
-    @staticmethod
-    def send(connection, data):
+    def send(self, connection, data):
         if (data is None) or (connection is None):
+            self.vehicle.radio_state = 0
             return False
         try:
             connection.write(data)
             #print(f"{config.get_time()}:SendingThread: Sent: {data}")
         except serial.SerialTimeoutException:
             print(f"{config.get_time()}:SendingThread: Failed to send packet, bad serial connection")
+            self.vehicle.radio_state = 0
             return False
+        self.vehicle.radio_state = 2
         return True
+
 
     # main loop
     def run(self):
@@ -93,7 +101,7 @@ class Sender(threading.Thread):
         connection = self.receiver.serial_port
         while True:
             starting_time = time.time()
-            if not Sender.send(connection, self.package_data()):
+            if not self.send(connection, self.package_data()):
                 connection = self.receiver.serial_port
             t = config.SEND_INTERVAL-(time.time()-starting_time)
             if t>0:

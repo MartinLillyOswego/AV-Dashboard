@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Dashboard</title>
+		<link rel="stylesheet" href="static/dashboard.css">
+		<link rel="stylesheet" href="static/speed.css">
+		<link href="https://fonts.cdnfonts.com/css/seven-segment" rel="stylesheet">
+	</head>
+
+	<body style="font-family: Trebuchet MS">
+		<div id="main_div">
+
+            <!-- Top Bar -->
+			<div id="top_bar">
+				<h1 id="battery_percent_and_temp" style="font-family:Seven Segment; color:#acadad; font-size: 24px;">0% 0&degF</h1>
+				<img id="battery_img" src="static/icons/battery0.png">
+
+                <!-- open the tuning menu -->
+                <form id="config_button" action="/open_config">
+                <input name="config" value="none" type="hidden">
+                <button style="width: 60%; color:#858F94;" type="submit">
+                    <img src="static/icons/gear.png" style="width: 100%;"></button></form>
+			</div>
+
+            <!-- Main Dashboard stuff -->
+			<div id="main">
+
+                <!-- Speed Graphic -->
+				<div id="speed_zone">
+					<div style="height: 400px; width: 800px;">
+						<div style="height: 400px; width: 100%; position: absolute; overflow: hidden; border-bottom: 2px solid black;">
+							<div id="speedometer">
+								<div class="scales scale-1"></div>
+								<div class="scales scale-2"></div>
+								<div class="scales scale-3"></div>
+								<div class="scales scale-4"></div>
+								<div class="scales scale-5"></div>
+								<div class="scales scale-6"></div>
+								<div class="scales scale-7"></div>
+								<div class="scales scale-8"></div>
+								<div class="scales scale-9"></div>
+								<div class="scales scale-10"></div>
+								<div class="scales scale-11"></div>
+								<div class="scales scale-12"></div>
+								<div class="scales scale-13"></div>
+								<div class="scales scale-14"></div>
+								<div class="scales scale-15"></div>
+								<div class="scales scale-16"></div>
+								<div class="scales scale-17"></div>
+								<div class="scales scale-18"></div>
+								<div class="scales scale-19"></div>
+								<div id="center"></div>
+								<div id="bottom-hide"></div>
+								<div id="arrow-container"><div id="arrow-wrapper"><div id="arrow"></div></div>
+								</div><div id="center-hide"><div id="speed"><div id="value">0</div> <div>MPH</div></div>
+				</div></div></div></div></div>
+
+                <!-- Throttle and brake Graphic -->
+                <div id="bar_zone">
+                    <h1 id="throttle_label" style="font-family:Seven Segment; color:#acadad; font-size: 24px;" >Throttle:</h1>
+                    <h1 id="brake_label" style="font-family: Seven Segment; color:#acadad; font-size: 24px;">Brake:</h1>
+                    <div id="throttle_bar"></div>
+                    <div id="brake_bar"></div>
+                </div>
+
+				<!-- Position Graphic -->
+				<div id="position_graphic" >
+					<!-- Position Graphic will go here when implemented -->
+					<p style="font-family:Seven Segment; color:#acadad; font-size: 18px;">*position graphic*</p>
+				</div>
+
+				<!-- Steering Graphic -->
+				<div id="steering_graphic" >
+					<!-- Steering Graphic will go here when implemented -->
+					<p style="font-family:Seven Segment; color:#acadad; font-size: 18px;">*steering graphic*</p>
+				</div>
+
+				<!-- Remaining Sensor data Graphic -->
+				<div id="misc_graphic" >
+					<!-- Remaining Sensor data will go here when implemented -->
+					<p style="font-family:Seven Segment; color:#acadad; font-size: 18px;">*other sensors*</p>
+				</div>
+
+			</div>
+
+
+            <!-- Bottom Bar -->
+			<div id="bottom_bar">
+				<div class="icon"><img src="static/icons/car-oil.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/accident.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/battery.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/brake.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/engine.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/sensor.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/temp.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/warning.png" height="100%" width="100%"></div>
+				<div id="con_png" class="icon"><img id="connection_png" src="static/icons/radio.png" height="100%" width="100%"></div>
+			</div>
+
+		</div>
+    </body>
+</html>
+
+<script>
+	setInterval(async () => {
+		const response = await fetch("/data");
+		const data = await response.json();
+		const maxSpeed = 40;
+		document.getElementById("value").innerHTML = data.speed;
+		document.getElementById("arrow-wrapper").style.transform = "rotate("+ (data.speed/maxSpeed)*180 + "deg)";
+		document.getElementById("battery_percent_and_temp").innerText = data.battery_percent_and_temp;
+		document.getElementById("battery_img").src = data.battery_img;
+		document.getElementById("connection_png").src = data.con_png;
+		document.getElementById("throttle_bar").style.width = data.throttle + "vw";
+		document.getElementById("brake_bar").style.width = data.brake + "vw";
+	}, 50);
+</script>

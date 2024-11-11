@@ -13,7 +13,7 @@
 	background-color: black;
 	width: 1.5%;
 	height: 1.5%;
-	border: 2px solid black;
+	border: 2px solid #05a6a6;
 	border-radius: 50%;
 	position: absolute;
 	top: 49.5%;
@@ -24,7 +24,7 @@
 	background-color: black;
 	width: 70%;
 	height: 70%;
-	border: 2px solid #00ACEF;
+	border: 2px solid #05a6a6;
 	border-radius: 50%;
 	position: absolute;
 	top: 15%;
@@ -44,7 +44,7 @@
 .scales {
 	width: 1%;
 	height: 95%;
-	background-color: #00ACEF;
+	background-color: #0573a6;
 	position: absolute;
 	left: 49.5%;
 	top: 2.5%;
@@ -90,7 +90,7 @@
 	left: 25%;
 	text-align: center;
 	font-size: 300%;
-	color: #00ACEF;
+	color: #05a6a6;
 	font-family: 'Seven Segment', sans-serif;
 }
 
