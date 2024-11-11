@@ -51,18 +51,18 @@ class Controller:
 	def __init__(self):
 		pygame.init()
 
-	def get_vehicle_commands(self, packet, index):
+	def get_vehicle_commands(self, packet):
 		#try to connect with latest controller
 		if pygame.joystick.get_count()>0:
 			self.controller = pygame.joystick.Joystick(0)
 			self.controller_name = self.controller.get_name()
 
 		#Call get events method
-		self.get_events(self, packet)
+		self.get_events(packet)
 
 		return packet
 
-	def get_events(self, packet, index):
+	def get_events(self, packet):
 		#Look for any events
 		for event in pygame.event.get():
 			if event.type == pygame.JOYBUTTONDOWN:
@@ -83,22 +83,23 @@ class Controller:
 					elif packet[9] < 4:
 						packet[9] += 1
 
-			elif event.type == pygame.JOYAXISMOTION:
+			#elif event.type == pygame.JOYAXISMOTION:
 				#Get all axis values
-				self.throttle = self.controller.get_axis(5)
-				self.brake = self.controller.get_axis(4)
-				self.steering = self.controller.get_axis(0)
+			self.throttle = self.controller.get_axis(5)
+				#print (f"THROTTLE{type(self.throttle)}")
+			self.brake = self.controller.get_axis(4)
+			self.steering = self.controller.get_axis(0)
 
 				#Map axis
-				self.throttle = ((self.throttle + 1)/2) * 255
-				self.brake = ((self.brake + 1)/2) * 255
-				self.steering = ((self.steering + 0.7)/1.4) * 255
-				print(f"{self.throttle}")
+			self.throttle = ((self.throttle + 1)/2) * 255
+			self.brake = ((self.brake + 1)/2) * 255
+			self.steering = ((self.steering + 0.7)/1.4) * 255
+				#print(f"{self.throttle}")
 
 				#Change packet values
-				packet[4] = self.throttle
-				packet[5] = self.brake
-				packet[7] = self.steering
+			packet[4] = int(self.throttle)
+			packet[5] = int(self.brake)
+			packet[7] = int(self.steering)
 
 			#elif event.type == pygame.KEYUP:
 				#if event.key == GetKeyboardValue(keys["Throttle"]):
