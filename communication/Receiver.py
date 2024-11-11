@@ -13,7 +13,7 @@ class Receiver(threading.Thread):
     def __init__(self, vehicle):
         super(Receiver, self).__init__()
         self.vehicle = vehicle
-        self.serial_port = None 
+        self.serial_port = None
 
     def serial_connect(self):
         while True:
@@ -32,12 +32,15 @@ class Receiver(threading.Thread):
 
     @staticmethod
     def parse_telemetry(packet):
+        '''
         if len(packet) != config.PACKET_SIZE:
             print("Invalid packet")
             return None
+        '''
         parsedPac = np.frombuffer(packet, np.float32)
         # don't record the packets that we ourselves sent
         if parsedPac[0] == config.MY_ID:
+            print("Invalid ID")
             return None
         out = []
         for da in parsedPac:
@@ -50,11 +53,14 @@ class Receiver(threading.Thread):
         self.serial_connect()
         while True:
             if self.serial_port and self.serial_port.in_waiting:
-                packet = self.serial_port.read(config.PACKET_SIZE)
-                data = self.parse_telemetry(packet)
-                if data is not None:
+                packet = self.serial_port.read(34)
+                #print(f"{packet}")
+                #intVals = int.from_bytes(packet[0:33],byteorder='big')
+                #data = self.parse_telemetry(packet)
+                #if data is not None:
                     #print(f"{config.get_time()}:Receiver: got: {data}")
-                    self.vehicle.update_with_packet(data)
+                    #self.vehicle.update_with_packet(data)
+                self.vehicle.update_with_packet(packet)
             time.sleep(0.01)
             if self.vehicle.exit:
                 break

@@ -71,7 +71,7 @@ def run():
     import control.config as helper_config
     helper_config.read(helper_config.CONFIG_FILE)
     if helper_config.USE_CARLA_DATA:
-        start_carla_vehicle()
+        #start_carla_vehicle()
         time.sleep(1)
     start_dashboard()
 
