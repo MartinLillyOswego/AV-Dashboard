@@ -9,7 +9,6 @@ def start_dashboard():
     import control.config as dashboard_config
     dashboard_config.read(dashboard_config.CONFIG_FILE)
     try:
-        from control.ControlUnit import ControlUnit
         from communication.Receiver import Receiver
         from communication.Sender import Sender
         from control.Vehicle import Vehicle
@@ -20,15 +19,12 @@ def start_dashboard():
     # create instance of Vehicle class
     telemetry = Vehicle()
 
-    # create the control unit
-    control_unit = ControlUnit(vehicle=telemetry)
-
     # start the receiver thread
     receiver_thread = Receiver(vehicle=telemetry)
     receiver_thread.start()
 
     # start the sender thread
-    sender_thread = Sender(vehicle=telemetry, receiver=receiver_thread, control_unit=control_unit)
+    sender_thread = Sender(vehicle=telemetry, receiver=receiver_thread)
     sender_thread.start()
 
     time.sleep(1)
@@ -41,7 +37,6 @@ def start_carla_vehicle():
     import control.config as emulated_config
     emulated_config.read(emulated_config.EMULATED_CONFIG_FILE)
     try:
-        from control.ControlUnit import ControlUnit
         from communication.Receiver import Receiver
         from communication.Sender import Sender
         from control.Vehicle import Vehicle
@@ -59,7 +54,7 @@ def start_carla_vehicle():
     r.start()
 
     # start the vehicle emulator's send thread
-    s = Sender(vehicle=carla_vehicle_data, receiver=r, control_unit=None)
+    s = Sender(vehicle=carla_vehicle_data, receiver=r)
     s.start()
 
     # start the carla thread, which updates a shared instance of Vehicle
