@@ -89,12 +89,6 @@ class GUI(threading.Thread):
             battery_temperate = 0
             battery_percent = 100
 
-<<<<<<< Updated upstream
-            # assuming throttle_force in {0, 1, 2, ..., 255}, then throttle_percent =
-=======
-            # assuming throttle_force in {0, 1, 2, ..., 255}, then scale
-            # assuming max width is 10vw
->>>>>>> Stashed changes
             throttle_percent = int(10 * ((throttle_force+1) / 256))
             brake_percent = int(10 * ((brake_force+1) / 256))
 
