@@ -20,10 +20,9 @@ from control.Controller import Controller
 
 class Sender(threading.Thread):
 
-    def __init__(self, vehicle, receiver, control_unit, *args, **kwargs):
+    def __init__(self, vehicle, receiver, *args, **kwargs):
         super(Sender, self).__init__(*args, **kwargs)
         self.vehicle = vehicle
-        self.control_unit = control_unit
         self.receiver = receiver
         self.controller = Controller()
 
