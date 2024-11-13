@@ -48,9 +48,10 @@ body {
         align-items: center;
 
         #speed_zone {
-            border-bottom: 2px white solid;
+/*            border-bottom: 2px white solid;*/
             position: absolute;
-            bottom: 0px;
+            bottom: 8%;
+            overflow: hidden;
 
             #speedDisplay {
                 display: block;
