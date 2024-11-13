@@ -17,7 +17,7 @@ class GUI(threading.Thread):
         super(GUI, self).__init__()
         app = FastAPI()
         self.vehicle = vehicle
-        self.responce_text = ""
+        self.response_text = ""
         app.mount("/static", StaticFiles(directory="python_gui/static"), name="static")
 
         @app.get("/", response_class=HTMLResponse)
@@ -28,49 +28,40 @@ class GUI(threading.Thread):
         @app.get("/open_config", response_class=HTMLResponse)
         async def open_config(serial_port: str = "", max_speed: str = "", carla_state: str = ""):
 
-            # enable carla
-            if carla_state != "":
-                config.USE_CARLA_DATA = not config.USE_CARLA_DATA
-                self.responce_text = "Restart Required"
-                config.write()
-
             # update serial port
             if serial_port != "":
                 print(f"{config.get_time()}: Updating value for serial_port")
                 config.CARLA_SERIAL_PORT = serial_port
                 config.VEHICLE_PORT = serial_port
-                self.responce_text = "Updated Serial Port, you may need to restart the dashboard"
+                self.response_text = "Updated Serial Port, you may need to restart the dashboard"
                 config.write()
 
             # updated allowed max speed
             if max_speed != "":
                 try:
                     config.MAX_SPEED = float(max_speed)
-                    self.responce_text = "Updated Allowed Max Speed"
+                    self.response_text = "Updated Allowed Max Speed"
                     config.write()
                 except ValueError:
-                    self.responce_text = "Invalid input for this filed"
+                    self.response_text = "Invalid input for this filed"
 
             with open("python_gui/tuning_menu.html", 'r') as f:
                 return HTMLResponse(content=f.read())
 
         @app.get("/config_data")
         async def get_config_data():
-            carla_state = "Enable"
-            if config.USE_CARLA_DATA:
-                carla_state = "Disable"
             out = {
                 "serial_port": config.VEHICLE_PORT,
                 "max_speed": config.MAX_SPEED,
                 "carla_state": carla_state,
                 "responce_text": self.responce_text
             }
-            self.responce_text = ""
+            self.response_text = ""
             return out
 
         @app.get("/data")
         async def get_data():
-            if len(vehicle.velocity) == 0:
+            if len(vehicle.speed) == 0:
                 return {"speed": 0,
                         "throttle": 0,
                         "brake": 0,
@@ -81,12 +72,12 @@ class GUI(threading.Thread):
 
             # update data
             veh = self.vehicle.__copy__()
-            ind = len(veh.velocity) - 1
-            current_speed = vehicle.velocity[ind]
+            ind = len(veh.speed) - 1
+            current_speed = vehicle.speed[ind]
             throttle_force = vehicle.throttle[ind]
-            brake_force = vehicle.braking_force[ind]
+            brake_force = vehicle.brake[ind]
             steering_angle = vehicle.steering_angle[ind]
-            battery_temperate = 0
+            battery_temperature = 0
             battery_percent = 100
 
             throttle_percent = int(10 * ((throttle_force+1) / 256))
@@ -104,7 +95,7 @@ class GUI(threading.Thread):
                     "steering_angle": steering_angle,
                     "battery_img": battery_img,
                     "con_png": con_png,
-                    "battery_percent_and_temp": f"{battery_percent}% {battery_temperate}°F"}
+                    "battery_percent_and_temp": f"{battery_percent}% {battery_temperature}°F"}
 
 
         # Server Start

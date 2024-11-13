@@ -10,7 +10,6 @@ try:
     from pygame.locals import K_COMMA
     from pygame.locals import K_DOWN
     from pygame.locals import K_ESCAPE
-    # from pygame.locals import K_ENTER
     from pygame.locals import K_F1
     from pygame.locals import K_LEFT
     from pygame.locals import K_PERIOD
@@ -85,21 +84,23 @@ class Controller:
 
             # elif event.type == pygame.JOYAXISMOTION:
             # Get all axis values
-            self.throttle = self.controller.get_axis(5)
+            steering = self.controller.get_axis(0)
+            throttle = self.controller.get_axis(5)
             # print (f"THROTTLE{type(self.throttle)}")
-            self.brake = self.controller.get_axis(4)
-            self.steering = self.controller.get_axis(0)
+            brake = self.controller.get_axis(4)
+            
 
             # Map axis
-            self.throttle = ((self.throttle + 1) / 2) * 255
-            self.brake = ((self.brake + 1) / 2) * 255
-            self.steering = ((self.steering + 0.7) / 1.4) * 255
-            # print(f"{self.throttle}")
+            throttle = ((throttle + 1) / 2) * 255
+            brake = ((brake + 1) / 2) * 255
+            steering = ((steering + 1) / 2) * 255
+            
 
             # Change packet values
-            packet[4] = int(self.throttle)
-            packet[5] = int(self.brake)
-            packet[7] = int(self.steering)
+            packet[3] = int(throttle)
+            packet[4] = int(brake)
+            packet[7] = int(steering)
+            print(f"{packet[7]}")
 
         # elif event.type == pygame.KEYUP:
         # if event.key == GetKeyboardValue(keys["Throttle"]):

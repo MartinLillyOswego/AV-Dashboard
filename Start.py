@@ -32,42 +32,10 @@ def start_dashboard():
     gui_thread = GUI(vehicle=telemetry)
     gui_thread.start()
 
-def start_carla_vehicle():
-    # load config, import dependencies
-    import control.config as emulated_config
-    emulated_config.read(emulated_config.EMULATED_CONFIG_FILE)
-    try:
-        from communication.Receiver import Receiver
-        from communication.Sender import Sender
-        from control.Vehicle import Vehicle
-        from python_gui.gui import GUI
-        from control.manual_control_v0_9_12 import CarlaThread
-    except ImportError:
-        raise RuntimeError("cannot import local dependencies")
-
-    # create shared instances of Vehicle class
-    carla_vehicle_data = Vehicle()
-    received_vehicle_commands = Vehicle()
-
-    # start the vehicle emulator's receive thread
-    r = Receiver(vehicle=received_vehicle_commands)
-    r.start()
-
-    # start the vehicle emulator's send thread
-    s = Sender(vehicle=carla_vehicle_data, receiver=r)
-    s.start()
-
-    # start the carla thread, which updates a shared instance of Vehicle
-    ct = CarlaThread(outgoing_vehicle=carla_vehicle_data, incoming_vehicle=received_vehicle_commands)
-    ct.start()
-
 # run
 def run():
     import control.config as helper_config
     helper_config.read(helper_config.CONFIG_FILE)
-    if helper_config.USE_CARLA_DATA:
-        #start_carla_vehicle()
-        time.sleep(1)
     start_dashboard()
 
 run()

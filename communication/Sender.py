@@ -30,76 +30,64 @@ class Sender(threading.Thread):
     def package_data(self):
         # pull last_packet from vehicle class
         vehicle_snapshot = self.vehicle.__copy__()
-        ind = len(vehicle_snapshot.velocity) - 1
+        ind = len(vehicle_snapshot.speed) - 1
+        
+        # If no data is available yet
         if ind == -1:
             return None
-        last_packet = [vehicle_snapshot.sender_id,
-                       vehicle_snapshot.receiver_id,
-                       vehicle_snapshot.error_code[ind],
-                       vehicle_snapshot.velocity[ind],
-                       vehicle_snapshot.throttle[ind],
-                       vehicle_snapshot.braking_force[ind],
-                       vehicle_snapshot.hand_brake[ind],
-                       vehicle_snapshot.steering_angle[ind],
-                       vehicle_snapshot.direction[ind],
-                       vehicle_snapshot.gear[ind],
-                       vehicle_snapshot.battery_voltage[ind],
-                       vehicle_snapshot.battery_current[ind],
-                       vehicle_snapshot.battery_temperate[ind],
-                       vehicle_snapshot.fl_wheel_speed[ind],
-                       vehicle_snapshot.fr_wheel_speed[ind],
-                       vehicle_snapshot.distance_to_object[ind],
-                       vehicle_snapshot.time[ind]]
 
-        first_packet = [vehicle_snapshot.sender_id,
-                       vehicle_snapshot.receiver_id,
-                       vehicle_snapshot.error_code[ind],
-                       vehicle_snapshot.velocity[ind],
-                       vehicle_snapshot.throttle[ind],
-                       vehicle_snapshot.braking_force[ind],
-                       vehicle_snapshot.hand_brake[ind],
-                       vehicle_snapshot.steering_angle[ind],
-                       vehicle_snapshot.direction[ind],
-                       vehicle_snapshot.gear[ind],
-                       vehicle_snapshot.battery_voltage[ind],
-                       vehicle_snapshot.battery_current[ind],
-                       vehicle_snapshot.battery_temperate[ind],
-                       vehicle_snapshot.fl_wheel_speed[ind],
-                       vehicle_snapshot.fr_wheel_speed[ind],
-                       vehicle_snapshot.distance_to_object[ind],
-                       vehicle_snapshot.time[ind]]
+        # Pull last four digits of icp
+        
+        # Assign initial values to 
+        # End of packet/ Last received data
+        end_packet = [vehicle_snapshot.sender_id,                   #1  SenderId   : ICP of Vehicle 
+                      vehicle_snapshot.receiver_id,                 #2  ReceiverID : ICP of Dashboard
+                      vehicle_snapshot.speed[ind],                  #3
+                      vehicle_snapshot.throttle[ind],
+                      vehicle_snapshot.brake[ind],
+                      vehicle_snapshot.emergency_brake[ind],
+                      vehicle_snapshot.gear[ind],
+                      vehicle_snapshot.steering_angle[ind],
+                      vehicle_snapshot.direction[ind],
+                      vehicle_snapshot.battery_voltage[ind],
+                      vehicle_snapshot.battery_current[ind],
+                      vehicle_snapshot.battery_temperature[ind],
+                      vehicle_snapshot.front_L_wheel_speed[ind],
+                      vehicle_snapshot.front_R_wheel_speed[ind],
+                      vehicle_snapshot.distance_to_object[ind]]
 
-        # pull new commands from control_unit
-        # Request error confirmation from control unit
-        # Take new commands in
-        new_commands = self.controller.get_vehicle_commands(first_packet)
+        # Beginning of packet/ Commands to send
+        beginning_packet = [vehicle_snapshot.receiver_id,
+                           vehicle_snapshot.sender_id,
+                           vehicle_snapshot.speed[ind],
+                           vehicle_snapshot.throttle[ind],
+                           vehicle_snapshot.brake[ind],
+                           vehicle_snapshot.emergency_brake[ind],
+                           vehicle_snapshot.gear[ind],
+                           vehicle_snapshot.steering_angle[ind],
+                           vehicle_snapshot.direction[ind],
+                           vehicle_snapshot.battery_voltage[ind],
+                           vehicle_snapshot.battery_current[ind],
+                           vehicle_snapshot.battery_temperature[ind],
+                           vehicle_snapshot.front_L_wheel_speed[ind],
+                           vehicle_snapshot.front_R_wheel_speed[ind],
+                           vehicle_snapshot.distance_to_object[ind]]
+
+        # Take new controller commands
+        new_commands = self.controller.get_vehicle_commands(beginning_packet)
+        
+        # Request error confirmation from control unit/ Control Responses to overwrite packet values
+
+        # package byte string
         packetToSend = b''
-        packetToSend += bytes(new_commands + last_packet)
-        if ind % 10:
-            print(f"{packetToSend}")
-        #print(f"{type(last_packet[4])}")
-        # Call for system control factors to override commands
-        #print(f"{new_commands}")
-        #new_commands = None
-        #print(f"SendingThread: Sending: {new_commands}]")
+        packetToSend += bytes(new_commands + end_packet)
+        
+        # print packet out
+        #if ind % 10:
+            #print(f"{packetToSend}")
+            #print(f"{new_commands}")
 
-        '''
-        # populate first half of packet with new commands
-        packet_first_half = b""
-        if new_commands is not None:
-            for float_val in new_commands:
-                packet_first_half += bytes(bytearray(struct.pack("f", float_val)))
-
-        # populate last half of packet with last received packet
-        packet_last_half = b""
-        if last_packet is not None:
-            for float_val in last_packet:
-                packet_last_half += bytes(bytearray(struct.pack("f", float_val)))
-
-        # if packet_first_half == b"":
-        #     packet_first_half = packet_last_half
-        #print (f"{packet_first_half} + {packet_last_half}")
-        '''
+        # return completed packet to send out
         return packetToSend
 
 
@@ -110,7 +98,6 @@ class Sender(threading.Thread):
             return False
         try:
             connection.write(data)
-            #print(f"{config.get_time()}:SendingThread: Sent: {data}")
         except serial.SerialTimeoutException:
             print(f"{config.get_time()}:SendingThread: Failed to send packet, bad serial connection")
             return False

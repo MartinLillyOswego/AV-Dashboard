@@ -18,8 +18,6 @@ class Receiver(threading.Thread):
     def serial_connect(self):
         while True:
             serial_id = config.VEHICLE_PORT
-            if config.USE_CARLA_DATA:
-                serial_id = config.CARLA_SERIAL_PORT
             try:
                 self.serial_port = serial.Serial(serial_id, baudrate=9600, timeout=1)
                 if not self.serial_port.is_open:
@@ -30,37 +28,22 @@ class Receiver(threading.Thread):
                 print(f"{config.get_time()}:Receiver: Failed to connect to serial port {e}")
                 time.sleep(config.SEND_INTERVAL)
 
-    @staticmethod
-    def parse_telemetry(packet):
-        '''
-        if len(packet) != config.PACKET_SIZE:
-            print("Invalid packet")
-            return None
-        '''
-        parsedPac = np.frombuffer(packet, np.float32)
-        # don't record the packets that we ourselves sent
-        if parsedPac[0] == config.MY_ID:
-            print("Invalid ID")
-            return None
-        out = []
-        for da in parsedPac:
-            out.append(float(f"{da:.3f}"))
-        return out
-
     # main loop
     def run(self):
         print(f"{config.get_time()}:Receiver: Started")
         self.serial_connect()
         while True:
             if self.serial_port and self.serial_port.in_waiting:
-                packet = self.serial_port.read(34)
-                #print(f"{packet}")
-                #intVals = int.from_bytes(packet[0:33],byteorder='big')
-                #data = self.parse_telemetry(packet)
-                #if data is not None:
-                    #print(f"{config.get_time()}:Receiver: got: {data}")
-                    #self.vehicle.update_with_packet(data)
+                packet = self.serial_port.read(config.PACKET_SIZE)
+                
+                '''
+                error checking function?
+                if len(packet) != config.PACKET_SIZE:
+                print("Invalid packet")
+                return None
+                
+                '''
                 self.vehicle.update_with_packet(packet)
-            time.sleep(0.01)
+            #time.sleep(config.SEND_INTERVAL)
             if self.vehicle.exit:
                 break

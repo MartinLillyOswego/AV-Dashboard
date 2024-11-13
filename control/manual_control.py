@@ -556,15 +556,37 @@ class KeyboardControl(object):
 
     def _parse_vehicle_keys(self, keys, milliseconds, new_commands):
 
-        if new_commands[4] > 10:
+        if new_commands[3] > 10:
             self._control.throttle = min(self._control.throttle + 0.01, 1.00)
         else:
             self._control.throttle = 0.0
 
-        if new_commands[5] > 10:
+        if new_commands[4] > 10:
             self._control.brake = min(self._control.brake + 0.2, 1.00)
         else:
             self._control.brake = 0.0
+        if new_commands[5] > 10:
+            self._control.hand_brake = 1
+        else:
+            self._control.hand_brake = 0
+
+        steer_increment = 5e-4 * milliseconds
+        if new_commands[7] < 125:
+            if self._steer_cache > 0:
+                self._steer_cache = 0
+            else:
+                self._steer_cache -= steer_increment
+        elif new_commands[7] > 129:
+            if self._steer_cache < 0:
+                self._steer_cache = 0
+            else:
+                self._steer_cache += steer_increment
+        else:
+            self._steer_cache = 0.0
+        self._steer_cache = min(0.7, max(-0.7, self._steer_cache))
+        self._control.steer = round(self._steer_cache, 1)
+
+
         '''
 
         if keys[K_UP] or keys[K_w]:
@@ -662,9 +684,9 @@ class HUD(object):
             avThrottle = int(c.throttle * 255)
             avBrake = int(c.brake * 255)
             avHandBrake = int(c.hand_brake * 255)
+            avGear =  c.gear + 1          #int((c.gear * 32) + 6)
             avSteer = int((c.steer + 0.7) * 182)
             avReverse = int(c.reverse)
-            avSpeedControl = c.gear + 1  # Reverse is -1, Neutral is 0, First is 1 and so on
             avCompass = int(world.imu_sensor.compass * .70833)  # East is 0 degrees and rotates clockwise to north
 
             # Assemble integer packet
@@ -674,16 +696,15 @@ class HUD(object):
                       avThrottle,
                       avBrake,
                       avHandBrake,
+                      avGear,
                       avSteer,
                       avCompass,
-                      avSpeedControl,
-                      10,
-                      11,
-                      12,
-                      13,
-                      14,
-                      15,
-                      16]
+                      10,           #Voltage
+                      11,           #Current
+                      12,           #Temp
+                      13,           #Left Wheel Speed
+                      14,           #Right Wheel Speed
+                      15]           #Distance to object
 
         # Write to serial
         serial.writePacket(Packet)
@@ -1231,26 +1252,25 @@ class SerialConnect:
         self.serialPort = "COM2"
         self.SerialConnection = None
         self.dataIn = False
-        self.newInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  # New data to command vehicle
+        self.newInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  # New data to command vehicle
         self.count = 0
 
+        # Packet Data
         self.sender_id = 1
         self.receiver_id = 0
-        self.velocity = []
-        self.steering_angle = []
+        self.speed = []
         self.throttle = []
-        self.braking_force = []
-        self.hand_brake = []
+        self.brake = []
+        self.emergency_brake = []
+        self.gear = []
+        self.steering_angle = []
+        self.direction = []
         self.battery_voltage = []
         self.battery_current = []
-        self.battery_temperate = []
+        self.battery_temperature = []
+        self.front_L_wheel_speed = []
+        self.front_R_wheel_speed = []
         self.distance_to_object = []
-        self.direction = []
-        self.time = []
-        self.error_code = []
-        self.gear = []
-        self.fl_wheel_speed = []
-        self.fr_wheel_speed = []
 
     def connect(self):
         if self.Connected == False:
@@ -1270,61 +1290,71 @@ class SerialConnect:
     def readPacket(self):
         if self.SerialConnection.in_waiting > 0:
             self.dataIn = True
-            response = self.SerialConnection.read(34)
-            if self.count % 10:
-                print(f"{response}")
+            response = self.SerialConnection.read(30)
+            #if self.count % 10:
+                #print(f"{response}")
             self.count += 1
             self.newInfo = [response[0], response[1], response[2], response[3], response[4], response[5], response[6],
                             response[7], response[8], response[9], response[10], response[11], response[12],
                             response[13],
-                            response[14], response[15], response[16]]
+                            response[14]]
         else:
             self.dataIn = False
 
         return self.newInfo
 
     def writePacket(self, Packet):
-        # If vehicle is isn't in ready state find initial values to send out
-        self.sender_id = 1
-        self.receiver_id = 0
-        self.velocity.append(Packet[2])
-        self.steering_angle.append(Packet[6])
-        self.throttle.append(Packet[3])
-        self.braking_force.append(Packet[4])
-        self.hand_brake.append(Packet[5])
-        self.battery_voltage.append(0)
-        self.battery_current.append(0)
-        self.battery_temperate.append(0)
-        self.distance_to_object.append(0)
-        self.direction.append(137)
-        self.time.append(Packet[15])
-        self.error_code.append(0)
-        self.gear.append(Packet[8])
-        self.fl_wheel_speed.append(0)
-        self.fr_wheel_speed.append(0)
+        if len(self.speed) == 100:
+            self.speed.pop(0)
+            self.throttle.pop(0)
+            self.brake.pop(0)
+            self.emergency_brake.pop(0)
+            self.gear.pop(0)
+            self.steering_angle.pop(0)
+            self.direction.pop(0)
+            self.battery_voltage.pop(0)
+            self.battery_current.pop(0)
+            self.battery_temperature.pop(0)
+            self.front_L_wheel_speed.pop(0)
+            self.front_R_wheel_speed.pop(0)
+            self.distance_to_object.pop(0)
 
-        ind = len(self.velocity) - 1
+        # append new values to end of list
+        self.sender_id = Packet[0]
+        self.receiver_id = Packet[1]
+        self.speed.append(Packet[2])
+        self.throttle.append(Packet[3])
+        self.brake.append(Packet[4])
+        self.emergency_brake.append(Packet[5])
+        self.gear.append(Packet[6])
+        self.steering_angle.append(Packet[7])
+        self.direction.append(Packet[8])
+        self.battery_voltage.append(Packet[9])
+        self.battery_current.append(Packet[10])
+        self.battery_temperature.append(Packet[11])
+        self.front_L_wheel_speed.append(Packet[12])
+        self.front_R_wheel_speed.append(Packet[13])
+        self.distance_to_object.append(Packet[14])
+
+        ind = len(self.speed) - 1
         out = [self.sender_id,
                self.receiver_id,
-               self.error_code[ind],
-               self.velocity[ind],
+               self.speed[ind],
                self.throttle[ind],
-               self.braking_force[ind],
-               self.hand_brake[ind],
+               self.brake[ind],
+               self.emergency_brake[ind],
+               self.gear[ind],
                self.steering_angle[ind],
                self.direction[ind],
-               self.gear[ind],
                self.battery_voltage[ind],
                self.battery_current[ind],
-               self.battery_temperate[ind],
-               self.fl_wheel_speed[ind],
-               self.fr_wheel_speed[ind],
-               self.distance_to_object[ind],
-               self.time[ind]]
+               self.battery_temperature[ind],
+               self.front_L_wheel_speed[ind],
+               self.front_R_wheel_speed[ind],
+               self.distance_to_object[ind]]
 
         packetToSend = b""
         packetToSend += bytes(out + self.newInfo)
-        # print(f"{packetToSend}")
         self.SerialConnection.write(packetToSend)
 
 
