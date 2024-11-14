@@ -4,6 +4,7 @@
 		<title>Dashboard</title>
 		<link rel="stylesheet" href="static/dashboard.css">
 		<link rel="stylesheet" href="static/speed.css">
+		<link rel="stylesheet" href="static/steering.css">
 		<link href="https://fonts.cdnfonts.com/css/seven-segment" rel="stylesheet">
 	</head>
 
@@ -63,8 +64,20 @@
 
 				<!-- Steering Graphic -->
 				<div id="steering_graphic" >
-					<!-- Steering Graphic will go here when implemented -->
-					<p style="font-family:Seven Segment; color:#acadad; font-size: 18px;">*steering graphic*</p>
+					<div id="steering-container">
+						<div id="main-steering">
+							<div id="steering-display"><div id="steering-angle">0°</div></div>
+							<div id="axle"></div>
+							<div id="right-wheel" class="wheel">
+								<div class="tread"></div>
+								<div class="tread"></div>
+							</div>
+							<div id="left-wheel" class="wheel">
+								<div class="tread"></div>
+								<div class="tread"></div>
+							</div>
+						</div>
+					</div>
 				</div>
 
 				<!-- Remaining Sensor data Graphic -->
@@ -94,6 +107,11 @@
 </html>
 
 <script type="text/javascript">
+function setAngle(angle) {
+	document.getElementById("left-wheel").style.transform = "rotate("+ (angle) + "deg)"
+	document.getElementById("right-wheel").style.transform = "rotate("+ (angle) + "deg)"
+}
+
 function resize (container1, container2) {
 		const con1 = document.getElementById(container1);
 		const con2 = document.getElementById(container2);
@@ -138,5 +156,6 @@ window.addEventListener("resize", function(){resize('speedometer-container-1', '
 		document.getElementById("connection_png").src = data.con_png;
 		document.getElementById("throttle_bar").style.width = data.throttle + "vw";
 		document.getElementById("brake_bar").style.width = data.brake + "vw";
+		// setAngle(data.steeringAngle) Use this function to set the angle for the steering graphic
 	}, 50);
 </script>

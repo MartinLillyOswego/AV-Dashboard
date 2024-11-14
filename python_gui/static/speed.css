@@ -21,7 +21,7 @@
 }
 
 #center-hide {
-	background-color: black;
+	background-color: #262626;
 	width: 70%;
 	height: 70%;
 	border: 2px solid #00ACEF;
@@ -37,9 +37,10 @@
 	position: absolute;
 	bottom: -1%;
 	left: -1%;
-	background-color: Black;
+	background-color: #262626;
 	z-index: 100;
 	border-radius: 50%;
+	border: 2px solid #00ACEF;
 }
 
 .scales {
