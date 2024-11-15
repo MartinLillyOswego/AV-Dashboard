@@ -26,8 +26,7 @@ class GUI(threading.Thread):
                 return HTMLResponse(content=f.read())
 
         @app.get("/open_config", response_class=HTMLResponse)
-        async def open_config(serial_port: str = "", max_speed: str = "", carla_state: str = ""):
-
+        async def open_config(serial_port: str = "", max_speed: str = ""):
             # update serial port
             if serial_port != "":
                 print(f"{config.get_time()}: Updating value for serial_port")
@@ -53,9 +52,7 @@ class GUI(threading.Thread):
             out = {
                 "serial_port": config.VEHICLE_PORT,
                 "max_speed": config.MAX_SPEED,
-                "carla_state": carla_state,
-                "responce_text": self.responce_text
-            }
+                "responce_text": self.response_text}
             self.response_text = ""
             return out
 
@@ -108,7 +105,6 @@ class GUI(threading.Thread):
                     "display_distance_to_object": dto,
                     "gear": gear,
                     "direction": direction}
-
 
         # Server Start
         print(f"{config.get_time()}:Webapp: Started")
