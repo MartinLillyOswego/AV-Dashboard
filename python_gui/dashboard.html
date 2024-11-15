@@ -112,6 +112,7 @@
 
 <script type="text/javascript">
 function setAngle(angle) {
+	document.getElementById("steering-angle").innerHTML = angle +"°"
 	document.getElementById("left-wheel").style.transform = "rotate("+ (angle) + "deg)"
 	document.getElementById("right-wheel").style.transform = "rotate("+ (angle) + "deg)"
 }
