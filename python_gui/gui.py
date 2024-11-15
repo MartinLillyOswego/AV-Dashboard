@@ -68,7 +68,11 @@ class GUI(threading.Thread):
                         "steering_angle": 0,
                         "battery_img": "static/icons/battery4.png",
                         "con_png": "static/icons/radio.png",
-                        "battery_percent_and_temp": "100% 0°F"}
+                        "battery_percent_and_temp": "100% 0°F",
+                        "acceleration": 0,
+                        "display_distance_to_object": 0,
+                        "gear": 0,
+                        "direction": ""}
 
             # update data
             veh = self.vehicle.__copy__()
@@ -79,6 +83,10 @@ class GUI(threading.Thread):
             steering_angle = vehicle.steering_angle[ind]
             battery_temperature = 0
             battery_percent = 100
+            acceleration = vehicle.acceleration[ind]
+            dto = vehicle.display_distance_to_object[ind]
+            gear = vehicle.gear[ind]
+            direction = vehicle.direction[ind]
 
             throttle_percent = int(10 * ((throttle_force+1) / 256))
             brake_percent = int(10 * ((brake_force+1) / 256))
@@ -95,7 +103,11 @@ class GUI(threading.Thread):
                     "steering_angle": steering_angle,
                     "battery_img": battery_img,
                     "con_png": con_png,
-                    "battery_percent_and_temp": f"{battery_percent}% {battery_temperature}°F"}
+                    "battery_percent_and_temp": f"{battery_percent}% {battery_temperature}°F",
+                    "acceleration": acceleration,
+                    "display_distance_to_object": dto,
+                    "gear": gear,
+                    "direction": direction}
 
 
         # Server Start
