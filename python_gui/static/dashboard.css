@@ -65,7 +65,9 @@ body {
         }
 
 	.Display{
-            color: white;
+            font-family:Seven Segment; 
+            color:#acadad; 
+            font-size: 18px;
         }
 
         #bar_zone {
