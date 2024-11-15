@@ -64,6 +64,10 @@ body {
             }
         }
 
+	.Display{
+            color: white;
+        }
+
         #bar_zone {
             background-color: #262626;
             border: 3px #1e1e1f dashed;
