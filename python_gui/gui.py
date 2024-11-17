@@ -18,6 +18,8 @@ class GUI(threading.Thread):
         app = FastAPI()
         self.vehicle = vehicle
         self.response_text = ""
+        self.lastspeed = 0
+        self.lasttime = time()
         app.mount("/static", StaticFiles(directory="python_gui/static"), name="static")
 
         @app.get("/", response_class=HTMLResponse)
@@ -75,12 +77,17 @@ class GUI(threading.Thread):
             veh = self.vehicle.__copy__()
             ind = len(veh.speed) - 1
             current_speed = vehicle.speed[ind]
+            current_time = time()
             throttle_force = vehicle.throttle[ind]
             brake_force = vehicle.brake[ind]
             steering_angle = vehicle.steering_angle[ind]
             battery_temperature = 0
             battery_percent = 100
-            acceleration = vehicle.acceleration[ind]
+            # Calculate acceleration
+            deltav = current_speed - self.lastspeed
+            deltat = current_time -self.lasttime if current_time != self.lasttime else 1e-6
+            acceleration = deltav / deltat
+            
             dto = vehicle.display_distance_to_object[ind]
             gear = vehicle.gear[ind]
             direction = vehicle.direction[ind]
@@ -101,7 +108,7 @@ class GUI(threading.Thread):
                     "battery_img": battery_img,
                     "con_png": con_png,
                     "battery_percent_and_temp": f"{battery_percent}% {battery_temperature}°F",
-                    "acceleration": acceleration,
+                    "acceleration": round(acceleration, 2),
                     "display_distance_to_object": dto,
                     "gear": gear,
                     "direction": direction}
