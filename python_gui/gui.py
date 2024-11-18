@@ -10,6 +10,7 @@ from os import listdir
 from os.path import isfile, join
 import random
 import logging
+from time import time
 
 class GUI(threading.Thread):
 
@@ -88,9 +89,9 @@ class GUI(threading.Thread):
             deltat = current_time -self.lasttime if current_time != self.lasttime else 1e-6
             acceleration = deltav / deltat
             
-            dto = vehicle.display_distance_to_object[ind]
-            gear = vehicle.gear[ind]
-            direction = vehicle.direction[ind]
+            # dto = vehicle.display_distance_to_object[ind]
+            # gear = vehicle.gear[ind]
+            # direction = vehicle.direction[ind]
 
             throttle_percent = int(10 * ((throttle_force+1) / 256))
             brake_percent = int(10 * ((brake_force+1) / 256))
@@ -109,9 +110,10 @@ class GUI(threading.Thread):
                     "con_png": con_png,
                     "battery_percent_and_temp": f"{battery_percent}% {battery_temperature}°F",
                     "acceleration": round(acceleration, 2),
-                    "display_distance_to_object": dto,
-                    "gear": gear,
-                    "direction": direction}
+                    # "display_distance_to_object": dto,
+                    # "gear": gear,
+                    # "direction": direction
+                    }
 
         # Server Start
         print(f"{config.get_time()}:Webapp: Started")
