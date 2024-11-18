@@ -68,19 +68,19 @@ class Controller:
                 # Find the pressed button
                 if self.controller.get_button() == 0:
                     # Gear Down / Might need to be mapped to 0-255 instead of 0,1,2
-                    if packet[9] == 1:  # If in neutral
-                        if packet[9] <= 5:  # Reverse lockout
-                            packet[9] += - 1
-                    elif packet[9] > 0:
-                        packet[9] += - 1
+                    if packet[10] == 1:  # If in neutral
+                        if packet[10] <= 5:  # Reverse lockout
+                            packet[10] += - 1
+                    elif packet[10] > 0:
+                        packet[10] += - 1
 
                 if self.controller.get_button() == 3:
                     # Gear Up / Might need to be mapped to 0-255 instead of 0,1,2
-                    if packet[9] == 0:  # If in reverse
-                        if packet[9] <= 5:  # Reverse lock
-                            packet[9] += 1
-                    elif packet[9] < 4:
-                        packet[9] += 1
+                    if packet[10] == 0:  # If in reverse
+                        if packet[10] <= 5:  # Reverse lock
+                            packet[10] += 1
+                    elif packet[10] < 4:
+                        packet[10] += 1
 
             # elif event.type == pygame.JOYAXISMOTION:
             # Get all axis values
@@ -97,9 +97,9 @@ class Controller:
             
 
             # Change packet values
-            packet[3] = int(throttle)
-            packet[4] = int(brake)
-            packet[7] = int(steering)
+            packet[4] = int(throttle)
+            packet[5] = int(brake)
+            packet[8] = int(steering)
             print(f"{packet[7]}")
 
         # elif event.type == pygame.KEYUP:
