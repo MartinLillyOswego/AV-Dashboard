@@ -204,6 +204,7 @@ class World(object):
         self.hud = hud
         self.player = None
         self.collision_sensor = None
+        self.distance_sensor = None
         self.lane_invasion_sensor = None
         self.gnss_sensor = None
         self.imu_sensor = None
@@ -277,6 +278,7 @@ class World(object):
             self.modify_vehicle_physics(self.player)
         # Set up the sensors.
         self.collision_sensor = CollisionSensor(self.player, self.hud)
+        self.distance_sensor = ObstacleDetector(self.player, self.hud)
         self.lane_invasion_sensor = LaneInvasionSensor(self.player, self.hud)
         self.gnss_sensor = GnssSensor(self.player)
         self.imu_sensor = IMUSensor(self.player)
@@ -350,7 +352,8 @@ class World(object):
             self.collision_sensor.sensor,
             self.lane_invasion_sensor.sensor,
             self.gnss_sensor.sensor,
-            self.imu_sensor.sensor]
+            self.imu_sensor.sensor,
+            self.distance_sensor.sensor]
         for sensor in sensors:
             if sensor is not None:
                 sensor.stop()
@@ -661,6 +664,7 @@ class HUD(object):
         self._show_info = True
         self._info_text = []
         self._server_clock = pygame.time.Clock()
+        self.collision_distance = 100;
 
     def on_world_tick(self, timestamp):
         self._server_clock.tick()
@@ -688,6 +692,7 @@ class HUD(object):
             avSteer = int((c.steer + 0.7) * 182)
             avReverse = int(c.reverse)
             avCompass = int(world.imu_sensor.compass * .70833)  # East is 0 degrees and rotates clockwise to north
+            avDistance = self.collision_distance
 
             # Assemble integer packet
             Packet = [1,
@@ -704,7 +709,7 @@ class HUD(object):
                       12,           #Temp
                       13,           #Left Wheel Speed
                       14,           #Right Wheel Speed
-                      15]           #Distance to object
+                      avDistance]           #Distance to object
 
         # Write to serial
         serial.writePacket(Packet)
@@ -915,6 +920,33 @@ class CollisionSensor(object):
         self.history.append((event.frame, intensity))
         if len(self.history) > 4000:
             self.history.pop(0)
+
+# ==============================================================================
+# -- ObstacleDetector ----------------------------------------------------------
+# ==============================================================================
+
+class ObstacleDetector(object):
+    def __init__(self, parent_actor, hud):
+        self.sensor = None
+        self._parent = parent_actor
+        self.hud = hud
+        world = self._parent.get_world()
+        bp = world.get_blueprint_library().find('sensor.other.obstacle')
+        bp.set_attribute('distance','250')
+        self.sensor = world.spawn_actor(bp, carla.Transform(), attach_to=self._parent)
+        # We need to pass the lambda a weak reference to self to avoid circular
+        # reference.
+        weak_self = weakref.ref(self)
+        self.sensor.listen(lambda event: ObstacleDetector.update_distance(weak_self, event))
+
+    @staticmethod
+    def update_distance(weak_self, event):
+        self = weak_self()
+        if not self:
+            return
+        self.hud.collision_distance = int(event.distance)
+        
+        self.hud.notification('Distance to object ahead: %r' % event.distance)
 
 
 # ==============================================================================
