@@ -14,21 +14,19 @@ class Vehicle:
         self.exit = False
 
         # packet data received
-        self.sender_id = 1              #1  : ICP of Vehicle 
-        self.receiver_id = 1            #2  : ICP of Dashboard
-        self.speed = []                 #3  : Int 0-255: mph 0-32
-        self.throttle = []              #4  : Int 0-255
-        self.brake = []                 #5  : Int 0-255
-        self.emergency_brake = []       #6  : Int 0-255
-        self.gear = []                  #7  : Int (0-31:Reverse) (32-64:Neutral) (65-97:Low) (98-130:Mid) (131-163:High) (164-196:Overdrive) (197-255:Unassigned)
-        self.steering_angle = []        #8  : Int Center:127 
-        self.direction = []             #9  : Int 0-255 East is zero:Clockwise to 255
-        self.battery_voltage = []       #10 : Int 0-255
-        self.battery_current = []       #11 : Int 0-255
-        self.battery_temperature = []   #12 : Int 0-255
-        self.front_L_wheel_speed = []   #13 : Int 0-255
-        self.front_R_wheel_speed = []   #14 : Int 0-255
-        self.distance_to_object = []    #15 : Int 0-255
+        self.speed = []                 #4  : Int 0-255: mph 0-32
+        self.throttle = []              #5  : Int 0-255
+        self.brake = []                 #6  : Int 0-255
+        self.emergency_brake = []       #8  : Int 0-255
+        self.gear = []                  #9  : Int (0-31:Reverse) (32-64:Neutral) (65-97:Low) (98-130:Mid) (131-163:High) (164-196:Overdrive) (197-255:Unassigned)
+        self.steering_angle = []        #10 : Int Center:127 
+        self.direction = []             #11 : Int 0-255 East is zero:Clockwise to 255
+        self.battery_voltage = []       #11 : Int 0-255
+        self.battery_current = []       #12 : Int 0-255
+        self.battery_temperature = []   #13 : Int 0-255
+        self.front_L_wheel_speed = []   #14 : Int 0-255
+        self.front_R_wheel_speed = []   #15 : Int 0-255
+        self.distance_to_object = []    #16 : Int 0-255
         
         # additional unused packet values
         #self.time = []   
@@ -61,8 +59,6 @@ class Vehicle:
             out.exit = self.exit
             
             # Packet data
-            out.sender_id = self.sender_id
-            out.receiver_id = self.receiver_id
             out.speed = self.speed.copy()
             out.throttle = self.throttle.copy()
             out.brake = self.brake.copy()
@@ -95,7 +91,7 @@ class Vehicle:
 
         return out
 
-    # called by packetReceiver,
+    # called by packetReceiver
     # updates fields directly from new packet
     def update_with_packet(self, attributes):
         with self.lock:
@@ -116,23 +112,20 @@ class Vehicle:
                 self.distance_to_object.pop(0)
 
             # append new values to end of list
-            self.sender_id = attributes[0]
-            self.receiver_id = attributes[1]
-            self.speed.append(attributes[2])
-            self.throttle.append(attributes[3])
-            self.brake.append(attributes[4])
-            self.emergency_brake.append(attributes[5])
-            self.gear.append(attributes[6])
-            self.steering_angle.append(attributes[7])
-            self.direction.append(attributes[8])
-            self.battery_voltage.append(attributes[9])
-            self.battery_current.append(attributes[10])
-            self.battery_temperature.append(attributes[11])
-            self.front_L_wheel_speed.append(attributes[12])
-            self.front_R_wheel_speed.append(attributes[13])
-            self.distance_to_object.append(attributes[14])
+            self.speed.append(attributes[4])
+            self.throttle.append(attributes[5])
+            self.brake.append(attributes[6])
+            self.emergency_brake.append(attributes[7])
+            self.gear.append(attributes[8])
+            self.steering_angle.append(attributes[9])
+            self.direction.append(attributes[10])
+            self.battery_voltage.append(attributes[11])
+            self.battery_current.append(attributes[12])
+            self.battery_temperature.append(attributes[13])
+            self.front_L_wheel_speed.append(attributes[14])
+            self.front_R_wheel_speed.append(attributes[15])
+            self.distance_to_object.append(attributes[16])
 
-    # called by controlUnit,
     # update fields not directly given by the packet
     def update_calculated_data(self, attributes):
         with self.lock:
