@@ -42,6 +42,7 @@
 								</div>
 								<div id="center-hide" style="z-index: 300;">
 									<div id="speed"><div id="value">0</div> <div>MPH</div></div>
+									<div id="speed-values"></div>
 								</div>
 							</div>
 						</div>
@@ -84,7 +85,7 @@
 				<div id="misc_graphic" >
 					<!-- Remaining Sensor data will go here when implemented -->
 					<p style="font-family:Seven Segment; color:#acadad; font-size: 18px;">*other sensors*</p>
-					<h4 id="acceleration" class="Display">Acceleration: </h4>
+					<h4 class="Display">Acceleration: <span id="acceleration">0</span> m/s<sup>2</sup></h4>
 					<h4 id="display_distance_to_object" class="Display">Distance to Object: </h4>
 					<h4 id="gear" class="Display">Gear: </h4>
 					<h4 id="direction" class="Display">Direction: </h4>
@@ -110,57 +111,23 @@
     </body>
 </html>
 
-<script type="text/javascript">
-function setAngle(angle) {
-	document.getElementById("left-wheel").style.transform = "rotate("+ (angle) + "deg)"
-	document.getElementById("right-wheel").style.transform = "rotate("+ (angle) + "deg)"
-}
-
-function resize (container1, container2) {
-		const con1 = document.getElementById(container1);
-		const con2 = document.getElementById(container2);
-		const con1Width = con1.offsetWidth;
-		
-		con1.style.height = con1Width * 0.72 + "px"
-		con2.style.height = con1Width * 0.72 + "px"
-	}
-
-function initalizeSpeedometer(numScales, container1, container2) {
-
-	resize('speedometer-container-1', 'speedometer-container-2')
-
-	element = document.getElementById('scales-container')
-	htmlString = ""
-	for (i=0; i < numScales; i++) {
-		htmlString = htmlString + "<div class='scales scale-" + i + "' style='transform: rotate(" +((-180+(180/numScales))*i)+ "deg);'></div>"
-	}
-
-	element.innerHTML = htmlString
-}
-
-initalizeSpeedometer(10, 'speedometer-container-1', 'speedometer-container-2')
-
-function handleResize() {
-  // Code to execute on window resize
-  console.log("Window resized!"); 
-}
-
-window.addEventListener("resize", function(){resize('speedometer-container-1', 'speedometer-container-2')});
-</script>
+<script type="text/javascript" src="static/gauges.js"></script>
 
 <script>
+	const maxSpeed = 40;
+	initalizeSpeedometer(maxSpeed, 'speedometer-container-1', 'speedometer-container-2')
+
 	setInterval(async () => {
 		const response = await fetch("/data");
 		const data = await response.json();
-		const maxSpeed = 40;
-		document.getElementById("value").innerHTML = data.speed;
-		document.getElementById("arrow-wrapper").style.transform = "rotate("+ (((data.speed/maxSpeed)*230)-25) + "deg)";
+		
+		setSpeed(maxSpeed, data.speed);
 		document.getElementById("battery_percent_and_temp").innerText = data.battery_percent_and_temp;
 		document.getElementById("battery_img").src = data.battery_img;
 		document.getElementById("connection_png").src = data.con_png;
 		document.getElementById("throttle_bar").style.width = data.throttle + "vw";
 		document.getElementById("brake_bar").style.width = data.brake + "vw";
-		document.getElementById("acceleration") = data.acceleration;
+		document.getElementById("acceleration").textContent = data.acceleration;
 		document.getElementById("display_distance_to_object") = data.dto;
 		document.getElementById("gear") = data.gear;
 		document.getElementById("dircetion") = data.direction;

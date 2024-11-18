@@ -10,6 +10,7 @@ from os import listdir
 from os.path import isfile, join
 import random
 import logging
+from time import time
 
 class GUI(threading.Thread):
 
@@ -18,6 +19,8 @@ class GUI(threading.Thread):
         app = FastAPI()
         self.vehicle = vehicle
         self.response_text = ""
+        self.lastspeed = 0
+        self.lasttime = time()
         app.mount("/static", StaticFiles(directory="python_gui/static"), name="static")
 
         @app.get("/", response_class=HTMLResponse)
@@ -26,8 +29,7 @@ class GUI(threading.Thread):
                 return HTMLResponse(content=f.read())
 
         @app.get("/open_config", response_class=HTMLResponse)
-        async def open_config(serial_port: str = "", max_speed: str = "", carla_state: str = ""):
-
+        async def open_config(serial_port: str = "", max_speed: str = ""):
             # update serial port
             if serial_port != "":
                 print(f"{config.get_time()}: Updating value for serial_port")
@@ -53,9 +55,7 @@ class GUI(threading.Thread):
             out = {
                 "serial_port": config.VEHICLE_PORT,
                 "max_speed": config.MAX_SPEED,
-                "carla_state": carla_state,
-                "responce_text": self.responce_text
-            }
+                "responce_text": self.response_text}
             self.response_text = ""
             return out
 
@@ -78,15 +78,20 @@ class GUI(threading.Thread):
             veh = self.vehicle.__copy__()
             ind = len(veh.speed) - 1
             current_speed = vehicle.speed[ind]
+            current_time = time()
             throttle_force = vehicle.throttle[ind]
             brake_force = vehicle.brake[ind]
             steering_angle = vehicle.steering_angle[ind]
             battery_temperature = 0
             battery_percent = 100
-            acceleration = vehicle.acceleration[ind]
-            dto = vehicle.display_distance_to_object[ind]
-            gear = vehicle.gear[ind]
-            direction = vehicle.direction[ind]
+            # Calculate acceleration
+            deltav = current_speed - self.lastspeed
+            deltat = current_time -self.lasttime if current_time != self.lasttime else 1e-6
+            acceleration = deltav / deltat
+            
+            # dto = vehicle.display_distance_to_object[ind]
+            # gear = vehicle.gear[ind]
+            # direction = vehicle.direction[ind]
 
             throttle_percent = int(10 * ((throttle_force+1) / 256))
             brake_percent = int(10 * ((brake_force+1) / 256))
@@ -104,11 +109,11 @@ class GUI(threading.Thread):
                     "battery_img": battery_img,
                     "con_png": con_png,
                     "battery_percent_and_temp": f"{battery_percent}% {battery_temperature}°F",
-                    "acceleration": acceleration,
-                    "display_distance_to_object": dto,
-                    "gear": gear,
-                    "direction": direction}
-
+                    "acceleration": round(acceleration, 2),
+                    # "display_distance_to_object": dto,
+                    # "gear": gear,
+                    # "direction": direction
+                    }
 
         # Server Start
         print(f"{config.get_time()}:Webapp: Started")
