@@ -695,9 +695,7 @@ class HUD(object):
             avDistance = self.collision_distance
 
             # Assemble integer packet
-            Packet = [1,
-                      0,
-                      avSpeed,
+            Packet = [avSpeed,
                       avThrottle,
                       avBrake,
                       avHandBrake,
@@ -1284,12 +1282,10 @@ class SerialConnect:
         self.serialPort = "COM2"
         self.SerialConnection = None
         self.dataIn = False
-        self.newInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  # New data to command vehicle
+        self.newInfo = [0, 1, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  # New data to command vehicle
         self.count = 0
 
         # Packet Data
-        self.sender_id = 1
-        self.receiver_id = 0
         self.speed = []
         self.throttle = []
         self.brake = []
@@ -1326,10 +1322,9 @@ class SerialConnect:
             #if self.count % 10:
                 #print(f"{response}")
             self.count += 1
-            self.newInfo = [response[0], response[1], response[2], response[3], response[4], response[5], response[6],
-                            response[7], response[8], response[9], response[10], response[11], response[12],
-                            response[13],
-                            response[14]]
+            self.newInfo = [0, 1, 23, response[0], response[1], response[2], response[3], response[4], response[5],
+                            response[6], response[7], response[8], response[9], response[10], response[11],
+                            response[12], response[13]]
         else:
             self.dataIn = False
 
@@ -1352,26 +1347,22 @@ class SerialConnect:
             self.distance_to_object.pop(0)
 
         # append new values to end of list
-        self.sender_id = Packet[0]
-        self.receiver_id = Packet[1]
-        self.speed.append(Packet[2])
-        self.throttle.append(Packet[3])
-        self.brake.append(Packet[4])
-        self.emergency_brake.append(Packet[5])
-        self.gear.append(Packet[6])
-        self.steering_angle.append(Packet[7])
-        self.direction.append(Packet[8])
-        self.battery_voltage.append(Packet[9])
-        self.battery_current.append(Packet[10])
-        self.battery_temperature.append(Packet[11])
-        self.front_L_wheel_speed.append(Packet[12])
-        self.front_R_wheel_speed.append(Packet[13])
-        self.distance_to_object.append(Packet[14])
+        self.speed.append(Packet[0])
+        self.throttle.append(Packet[1])
+        self.brake.append(Packet[2])
+        self.emergency_brake.append(Packet[3])
+        self.gear.append(Packet[4])
+        self.steering_angle.append(Packet[5])
+        self.direction.append(Packet[6])
+        self.battery_voltage.append(Packet[7])
+        self.battery_current.append(Packet[8])
+        self.battery_temperature.append(Packet[9])
+        self.front_L_wheel_speed.append(Packet[10])
+        self.front_R_wheel_speed.append(Packet[11])
+        self.distance_to_object.append(Packet[12])
 
         ind = len(self.speed) - 1
-        out = [self.sender_id,
-               self.receiver_id,
-               self.speed[ind],
+        out = [self.speed[ind],
                self.throttle[ind],
                self.brake[ind],
                self.emergency_brake[ind],
@@ -1385,7 +1376,7 @@ class SerialConnect:
                self.front_R_wheel_speed[ind],
                self.distance_to_object[ind]]
 
-        packetToSend = b""
+        packetToSend = b"\x00\x00\x17"
         packetToSend += bytes(out + self.newInfo)
         self.SerialConnection.write(packetToSend)
 
