@@ -35,14 +35,13 @@ class Sender(threading.Thread):
         # If no data is available yet
         if ind == -1:
             return None
-
-        # Pull last four digits of icp
-        
+            
         # Assign initial values to 
         # End of packet/ Last received data
-        end_packet = [vehicle_snapshot.sender_id,                   #1  SenderId   : ICP of Vehicle 
-                      vehicle_snapshot.receiver_id,                 #2  ReceiverID : ICP of Dashboard
-                      vehicle_snapshot.speed[ind],                  #3
+        end_packet = [0,                                     #1  SenderId   : ICP of Vehicle 
+                      1,                                     #2  ReceiverID : ICP of Dashboard
+                      23,
+                      vehicle_snapshot.speed[ind],      
                       vehicle_snapshot.throttle[ind],
                       vehicle_snapshot.brake[ind],
                       vehicle_snapshot.emergency_brake[ind],
@@ -57,8 +56,9 @@ class Sender(threading.Thread):
                       vehicle_snapshot.distance_to_object[ind]]
 
         # Beginning of packet/ Commands to send
-        beginning_packet = [vehicle_snapshot.receiver_id,
-                           vehicle_snapshot.sender_id,
+        beginning_packet = [0,
+                           0,
+                           23,
                            vehicle_snapshot.speed[ind],
                            vehicle_snapshot.throttle[ind],
                            vehicle_snapshot.brake[ind],
