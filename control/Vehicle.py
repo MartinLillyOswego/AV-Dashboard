@@ -112,19 +112,19 @@ class Vehicle:
                 self.distance_to_object.pop(0)
 
             # append new values to end of list
-            self.speed.append(attributes[4])
-            self.throttle.append(attributes[5])
-            self.brake.append(attributes[6])
-            self.emergency_brake.append(attributes[7])
-            self.gear.append(attributes[8])
-            self.steering_angle.append(attributes[9])
-            self.direction.append(attributes[10])
-            self.battery_voltage.append(attributes[11])
-            self.battery_current.append(attributes[12])
-            self.battery_temperature.append(attributes[13])
-            self.front_L_wheel_speed.append(attributes[14])
-            self.front_R_wheel_speed.append(attributes[15])
-            self.distance_to_object.append(attributes[16])
+            self.speed.append(attributes[0])
+            self.throttle.append(attributes[1])
+            self.brake.append(attributes[2])
+            self.emergency_brake.append(attributes[3])
+            self.gear.append(attributes[4])
+            self.steering_angle.append(attributes[5])
+            self.direction.append(attributes[6])
+            self.battery_voltage.append(attributes[7])
+            self.battery_current.append(attributes[8])
+            self.battery_temperature.append(attributes[9])
+            self.front_L_wheel_speed.append(attributes[10])
+            self.front_R_wheel_speed.append(attributes[11])
+            self.distance_to_object.append(attributes[12])
 
     # update fields not directly given by the packet
     def update_calculated_data(self, attributes):
