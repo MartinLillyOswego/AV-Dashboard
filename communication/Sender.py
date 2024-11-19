@@ -39,7 +39,7 @@ class Sender(threading.Thread):
         # Assign initial values to 
         # End of packet/ Last received data
         end_packet = [0,                                     #1  SenderId   : ICP of Vehicle 
-                      1,                                     #2  ReceiverID : ICP of Dashboard
+                      0,                                     #2  ReceiverID : ICP of Dashboard
                       23,
                       vehicle_snapshot.speed[ind],      
                       vehicle_snapshot.throttle[ind],
@@ -57,7 +57,7 @@ class Sender(threading.Thread):
 
         # Beginning of packet/ Commands to send
         beginning_packet = [0,
-                           0,
+                           1,
                            23,
                            vehicle_snapshot.speed[ind],
                            vehicle_snapshot.throttle[ind],
@@ -97,6 +97,7 @@ class Sender(threading.Thread):
         if (data is None) or (connection is None):
             return False
         try:
+            print("Sent: " + str(data))
             connection.write(data)
         except serial.SerialTimeoutException:
             print(f"{config.get_time()}:SendingThread: Failed to send packet, bad serial connection")
@@ -111,7 +112,8 @@ class Sender(threading.Thread):
             starting_time = time.time()
             if not Sender.send(connection, self.package_data()):
                 connection = self.receiver.serial_port
-            if config.SEND_INTERVAL-(time.time()-starting_time) > 0:
-                time.sleep(config.SEND_INTERVAL-(time.time()-starting_time))
+            time.sleep(0.2)
+            #if config.SEND_INTERVAL-(time.time()-starting_time) > 0:
+            #    time.sleep(config.SEND_INTERVAL-(time.time()-starting_time))
             if self.vehicle.exit:
                 break

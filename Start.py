@@ -24,8 +24,8 @@ def start_dashboard():
     receiver_thread.start()
 
     # start the sender thread
-    sender_thread = Sender(vehicle=telemetry, receiver=receiver_thread)
-    sender_thread.start()
+    #sender_thread = Sender(vehicle=telemetry, receiver=receiver_thread)
+    #sender_thread.start()
 
     time.sleep(1)
     # start the gui thread
