@@ -85,7 +85,7 @@
 	height: 100%;
 	position: relative;
 	background-color: transparent;
-	transform: rotate(205deg); /*-25deg : 205deg - |230deg|&*/
+	transform: rotate(-25deg); /*-25deg : 205deg - |230deg|&*/
 	transition: transform 0.5s steps;
 }
 

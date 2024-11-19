@@ -115,13 +115,14 @@
 
 <script>
 	const maxSpeed = 40;
-	initalizeSpeedometer(maxSpeed, 'speedometer-container-1', 'speedometer-container-2')
+	speedometer = new speedometer(maxSpeed, 'speedometer-container-1', 'speedometer-container-2');
+	window.addEventListener("resize", speedometer.resize.bind(speedometer));
 
 	setInterval(async () => {
 		const response = await fetch("/data");
 		const data = await response.json();
 		
-		setSpeed(maxSpeed, data.speed);
+		speedometer.setSpeed(40);
 		document.getElementById("battery_percent_and_temp").innerText = data.battery_percent_and_temp;
 		document.getElementById("battery_img").src = data.battery_img;
 		document.getElementById("connection_png").src = data.con_png;
