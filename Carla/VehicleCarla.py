@@ -7,7 +7,7 @@ interface for other threads to read and set these values
 import threading
 import control.config as config
 
-class Vehicle:
+class VehicleCarla:
 
     def __init__(self):
         self.lock = threading.Lock()
