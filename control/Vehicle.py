@@ -28,9 +28,17 @@ class Vehicle:
         self.front_R_wheel_speed = []   #15 : Int 0-255
         self.distance_to_object = []    #16 : Int 0-255 
 
-        # Error states                
-        self.radio_state = 0
- 
+        # Error states    
+        self.warning_state = False
+        self.critical_error_state = False
+        self.connection_state = 0
+        self.collision_state = False
+        self.battery_depletion = False
+        self.battery_overheat = False
+        self.excessive_load = False
+        self.hill_detection = False
+        self.slip_detection = False
+        
     # called by, Sender, control-unit, and display
     # used to get data
     def __copy__(self):
