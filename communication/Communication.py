@@ -9,7 +9,7 @@ from control.Controller import Controller
 class Communication(threading.Thread):
 
     def __init__(self, vehicle):
-        super(Receiver, self).__init__()
+        super(Communication, self).__init__()
         self.vehicle = vehicle
         self.serial_port = None
         self.controller = Controller()
