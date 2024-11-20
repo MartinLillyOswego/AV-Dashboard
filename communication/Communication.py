@@ -1,14 +1,12 @@
 from control.Vehicle import Vehicle
 import serial.tools.list_ports
 import control.config as config
-import numpy as np
 import threading
 import serial
-import struct
 import time
 from control.Controller import Controller
 
-class Receiver(threading.Thread):
+class Communication(threading.Thread):
 
     def __init__(self, vehicle):
         super(Receiver, self).__init__()
