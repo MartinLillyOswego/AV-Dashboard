@@ -11,7 +11,7 @@ class Vehicle:
 
     def __init__(self):
         self.lock = threading.Lock()
-        self.exit = False
+        self.exit = False                # True when system needs to exit
 
         # packet data received
         self.speed = []                 #4  : Int 0-255: mph 0-32
@@ -26,31 +26,11 @@ class Vehicle:
         self.battery_temperature = []   #13 : Int 0-255
         self.front_L_wheel_speed = []   #14 : Int 0-255
         self.front_R_wheel_speed = []   #15 : Int 0-255
-        self.distance_to_object = []    #16 : Int 0-255
-        
-        # additional unused packet values
-        #self.time = []   
-        #self.error_code = []
+        self.distance_to_object = []    #16 : Int 0-255 
 
-        # vehicle states                
+        # Error states                
         self.radio_state = 0
-
-        # display data
-        self.display_velocity = []
-        self.acceleration = []
-        self.display_battery_temperate = []
-        self.display_battery_voltage = []
-        self.display_battery_current = []
-        self.display_steering_angle = -1
-        self.display_direction = -1
-        self.position_graphic = -1
-        self.total_distance_traveled = -1
-        self.display_throttle = []
-        self.display_slip_angle = []
-        self.display_distance_to_object = -1
-        self.display_error_code = -1
  
-
     # called by, Sender, control-unit, and display
     # used to get data
     def __copy__(self):
