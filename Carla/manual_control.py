@@ -62,6 +62,7 @@ from __future__ import print_function
 import glob
 import os
 import sys
+import threading
 
 try:
     sys.path.append(glob.glob('../carla/dist/carla-*%d.%d-%s.egg' % (
@@ -331,8 +332,8 @@ class World(object):
         except Exception:
             pass
 
-    def tick(self, clock):
-        newInfo = self.hud.tick(self, clock)
+    def tick(self, clock, ogv, igc):
+        newInfo = self.hud.tick(self, clock, ogv, icv)
         return newInfo
 
     def render(self, display):
@@ -558,7 +559,8 @@ class KeyboardControl(object):
             world.player.apply_control(self._control)
 
     def _parse_vehicle_keys(self, keys, milliseconds, new_commands):
-
+        if new_commands is None:
+            return
         if new_commands[2] > 10:
             self._control.throttle = min(self._control.throttle + 0.01, 1.00)
         else:
@@ -568,18 +570,18 @@ class KeyboardControl(object):
             self._control.brake = min(self._control.brake + 0.2, 1.00)
         else:
             self._control.brake = 0.0
-        if new_commands[4] > 10:
+        if new_commands[5] > 10:
             self._control.hand_brake = 1
         else:
             self._control.hand_brake = 0
 
         steer_increment = 5e-4 * milliseconds
-        if new_commands[6] < 125:
+        if new_commands[7] < 125:
             if self._steer_cache > 0:
                 self._steer_cache = 0
             else:
                 self._steer_cache -= steer_increment
-        elif new_commands[6] > 129:
+        elif new_commands[7] > 129:
             if self._steer_cache < 0:
                 self._steer_cache = 0
             else:
@@ -672,7 +674,7 @@ class HUD(object):
         self.frame = timestamp.frame
         self.simulation_time = timestamp.elapsed_seconds
 
-    def tick(self, world, clock):
+    def tick(self, world, clock, ogv, icv):
         self._notifications.tick(world, clock)
         if not self._show_info:
             return
@@ -701,18 +703,16 @@ class HUD(object):
                       avHandBrake,
                       avGear,
                       avSteer,
-                      avCompass,
-                      10,           #Voltage
-                      11,           #Current
-                      12,           #Temp
-                      13,           #Left Wheel Speed
-                      14,           #Right Wheel Speed
+                      0,
+                      0,           #Voltage
+                      0,           #Current
+                      0,           #Temp
+                      0,           #Left Wheel Speed
+                      0,           #Right Wheel Speed
                       avDistance]           #Distance to object
-            
-            # Send Packet Out
 
-            # R
-
+            # Write to serial
+            ogv.update_with_packet(Packet)
 
         compass = world.imu_sensor.compass
         heading = 'N' if compass > 270.5 or compass < 89.5 else ''
@@ -1271,11 +1271,131 @@ class CameraManager(object):
 
 
 # ==============================================================================
+# -- Serial Connect------------------------------------------------------------
+# =============================================================================
+
+class SerialConnect:
+
+    def __init__(self):
+        self.Connected = False
+        self.serialPort = "COM3"
+        self.SerialConnection = None
+        self.dataIn = False
+        self.newInfo = [0, 1, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  # New data to command vehicle
+        self.count = 0
+
+        # Packet Data
+        self.speed = []
+        self.throttle = []
+        self.brake = []
+        self.emergency_brake = []
+        self.gear = []
+        self.steering_angle = []
+        self.direction = []
+        self.battery_voltage = []
+        self.battery_current = []
+        self.battery_temperature = []
+        self.front_L_wheel_speed = []
+        self.front_R_wheel_speed = []
+        self.distance_to_object = []
+
+    def connect(self):
+        if self.Connected == False:
+            try:
+                self.SerialConnection = serial.Serial(port=self.serialPort, baudrate=9600, timeout=1)
+                print(f"Serial Port {self.serialPort} connected")
+                self.Connected = True
+                return True
+
+            except serial.SerialException as serialFail:
+                print(f"Failed to Connect to Port {self.serialPort}: {serialFail}")
+                self.Connected = False
+                return False
+        else:
+            return True
+
+    def readPacket(self):
+        """
+        while not self.SerialConnection.in_waiting:
+            pass"""
+
+        if self.SerialConnection.in_waiting > 0:
+            self.dataIn = True
+            response = self.SerialConnection.read(35)
+            self.SerialConnection.reset_input_buffer()
+
+            #if self.count % 10:
+                #print(f"{response}")
+            self.count += 1
+            self.newInfo = [0, 1, 23, response[0], response[1], response[2], response[3], response[4], response[5],
+                            response[6], response[7], response[8], response[9], response[10], response[11],
+                            response[12], response[13]]
+            print(f"got: {response}")
+            print(f"got: {self.newInfo}")
+        else:
+            self.dataIn = False
+        return self.newInfo
+
+    def writePacket(self, Packet):
+        if len(self.speed) == 100:
+            self.speed.pop(0)
+            self.throttle.pop(0)
+            self.brake.pop(0)
+            self.emergency_brake.pop(0)
+            self.gear.pop(0)
+            self.steering_angle.pop(0)
+            self.direction.pop(0)
+            self.battery_voltage.pop(0)
+            self.battery_current.pop(0)
+            self.battery_temperature.pop(0)
+            self.front_L_wheel_speed.pop(0)
+            self.front_R_wheel_speed.pop(0)
+            self.distance_to_object.pop(0)
+
+        # append new values to end of list
+        self.speed.append(Packet[0])
+        self.throttle.append(Packet[1])
+        self.brake.append(Packet[2])
+        self.emergency_brake.append(Packet[3])
+        self.gear.append(Packet[4])
+        self.steering_angle.append(Packet[5])
+        self.direction.append(Packet[6])
+        self.battery_voltage.append(Packet[7])
+        self.battery_current.append(Packet[8])
+        self.battery_temperature.append(Packet[9])
+        self.front_L_wheel_speed.append(Packet[10])
+        self.front_R_wheel_speed.append(Packet[11])
+        self.distance_to_object.append(Packet[12])
+
+        ind = len(self.speed) - 1
+        out = [self.speed[ind],
+               self.throttle[ind],
+               self.brake[ind],
+               self.emergency_brake[ind],
+               self.gear[ind],
+               self.steering_angle[ind],
+               self.direction[ind],
+               self.battery_voltage[ind],
+               self.battery_current[ind],
+               self.battery_temperature[ind],
+               self.front_L_wheel_speed[ind],
+               self.front_R_wheel_speed[ind],
+               self.distance_to_object[ind]]
+
+        packetToSend = b"\x00\x00\x17"
+        packetToSend += bytes(out + self.newInfo)
+        print(f"send: {out}")
+        print(f"send: {packetToSend}")
+        self.SerialConnection.write(packetToSend)
+        self.SerialConnection.flush()
+
+
+# ==============================================================================
 # -- game_loop() ---------------------------------------------------------------
 # ==============================================================================
 
 
-def game_loop(args):
+def game_loop(args, icv, ogv):
     pygame.init()
     pygame.font.init()
     world = None
@@ -1321,8 +1441,8 @@ def game_loop(args):
             if args.sync:
                 sim_world.tick()
             clock.tick_busy_loop(60)
-            newInfo = world.tick(clock, serial)
-            if controller.parse_events(client, world, clock):
+            newInfo = world.tick(clock, ogv, icv)
+            if controller.parse_events(client, world, clock, newInfo):
                 return
             world.render(display)
 
@@ -1346,8 +1466,10 @@ def game_loop(args):
 # -- main() --------------------------------------------------------------------
 # ==============================================================================
 
+from communication.Communication import Communication
+from control.Vehicle import Vehicle
+def main(ogv, icv):
 
-def main():
     argparser = argparse.ArgumentParser(
         description='CARLA Manual Control Client')
     argparser.add_argument(
@@ -1417,12 +1539,22 @@ def main():
     print(__doc__)
 
     try:
-
-        game_loop(args)
+        game_loop(args, ogv, icv)
 
     except KeyboardInterrupt:
         print('\nCancelled by user. Bye!')
 
+# threading implementation
+class CarlaThread(threading.Thread):
+    def __init__(self, outgoing_vehicle, incoming_vehicle, *args, **kwargs):
+        super(CarlaThread, self).__init__(*args, **kwargs)
+        self.ogv = outgoing_vehicle
+        self.icv = incoming_vehicle
 
-if __name__ == '__main__':
-    main()
+    # main loop
+    def run(self):
+        print(f":Carla output: Started")
+        main(self.ogv, self.icv)
+
+
+
