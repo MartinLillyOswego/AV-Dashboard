@@ -9,8 +9,7 @@ def start_dashboard():
     import control.config as dashboard_config
     dashboard_config.read(dashboard_config.CONFIG_FILE)
     try:
-        from communication.Receiver import Receiver
-        from communication.Sender import Sender
+        from communication.Communication import Receiver
         from control.Vehicle import Vehicle
         from python_gui.gui import GUI
     except ImportError:
@@ -22,10 +21,6 @@ def start_dashboard():
     # start the receiver thread
     receiver_thread = Receiver(vehicle=telemetry)
     receiver_thread.start()
-
-    # start the sender thread
-    #sender_thread = Sender(vehicle=telemetry, receiver=receiver_thread)
-    #sender_thread.start()
 
     time.sleep(1)
     # start the gui thread
