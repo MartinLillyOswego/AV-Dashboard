@@ -85,6 +85,8 @@ class Controller:
             # elif event.type == pygame.JOYAXISMOTION:
             # Get all axis values
             steering = self.controller.get_axis(0)
+            if abs(steering) < 0.1:
+                steering = 0
             throttle = self.controller.get_axis(5)
             # print (f"THROTTLE{type(self.throttle)}")
             brake = self.controller.get_axis(4)
@@ -100,7 +102,7 @@ class Controller:
             packet[4] = int(throttle)
             packet[5] = int(brake)
             packet[8] = int(steering)
-            print(f"{packet[7]}")
+            #print(f"{packet[7]}")
 
         # elif event.type == pygame.KEYUP:
         # if event.key == GetKeyboardValue(keys["Throttle"]):
