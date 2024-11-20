@@ -6,13 +6,12 @@ import serial
 import time
 from control.Controller import Controller
 
-class Communication(threading.Thread):
+class CommunicationCarla(threading.Thread):
 
     def __init__(self, vehicle):
-        super(Communication, self).__init__()
+        super(CommunicationCarla, self).__init__()
         self.vehicle = vehicle
         self.serial_port = None
-        self.controller = Controller()
 
     def serial_connect(self):
         while True:
@@ -53,11 +52,6 @@ class Communication(threading.Thread):
                            vehicle_snapshot.front_L_wheel_speed[ind],
                            vehicle_snapshot.front_R_wheel_speed[ind],
                            vehicle_snapshot.distance_to_object[ind]]
-
-        # Take new controller commands
-        new_commands = self.controller.get_vehicle_commands(beginning_packet)
-        
-        # Request error confirmation from control unit/ Control Responses to overwrite packet values
 
         # package byte string
         packetToSend = b''
