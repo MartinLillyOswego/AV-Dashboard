@@ -98,7 +98,7 @@ class GUI(threading.Thread):
             # Battery Img
             battery_img = "static/icons/battery" + str(min(math.ceil(battery_percent * 4 / 100), 4)) + ".png"
 
-            con_png = ("static/icons/radio.png", "static/icons/radio_weak.png",
+            con_png = ("static/icons/radio.png", "static/icons/radio_low.png",
                        "static/icons/radio_active.png")[veh.radio_state]
 
             return {"speed": current_speed,
