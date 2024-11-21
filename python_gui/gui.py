@@ -70,7 +70,7 @@ class GUI(threading.Thread):
                         "con_png": "static/icons/radio.png",
                         "battery_percent_and_temp": "100% 0°F",
                         "acceleration": 0,
-                        "display_distance_to_object": 0,
+                        "distance_to_object": 0,
                         "gear": 0,
                         "direction": ""}
 
@@ -88,10 +88,9 @@ class GUI(threading.Thread):
             deltav = current_speed - self.lastspeed
             deltat = current_time -self.lasttime if current_time != self.lasttime else 1e-6
             acceleration = deltav / deltat
-            
-            # dto = vehicle.display_distance_to_object[ind]
-            # gear = vehicle.gear[ind]
-            # direction = vehicle.direction[ind]
+            self.lastspeed = current_speed
+            self.lasttime = current_time
+            distance_to_object = str(veh.distance_to_object) if veh.distance_to_object != float('inf') else "No Object Detected"
 
             throttle_percent = int(10 * ((throttle_force+1) / 256))
             brake_percent = int(10 * ((brake_force+1) / 256))
@@ -110,7 +109,7 @@ class GUI(threading.Thread):
                     "con_png": con_png,
                     "battery_percent_and_temp": f"{battery_percent}% {battery_temperature}°F",
                     "acceleration": round(acceleration, 2),
-                    # "display_distance_to_object": dto,
+                    "distance_to_object": distance_to_object,
                     # "gear": gear,
                     # "direction": direction
                     }
