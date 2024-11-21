@@ -4,6 +4,7 @@ import signal
 import time
 
 def start_dashboard():
+
     # load config, import dependencies
     import control.config as dashboard_config
     dashboard_config.read(dashboard_config.CONFIG_FILE)
@@ -17,19 +18,13 @@ def start_dashboard():
     # create instance of Vehicle class
     telemetry = Vehicle()
 
-    # start the receiver thread
+    # start the communication thread
     communication_thread = Communication(vehicle=telemetry)
     communication_thread.start()
-
     time.sleep(1)
+
     # start the gui thread
     gui_thread = GUI(vehicle=telemetry)
     gui_thread.start()
 
-# run
-def run():
-    import control.config as helper_config
-    helper_config.read(helper_config.CONFIG_FILE)
-    start_dashboard()
-
-run()
+start_dashboard()

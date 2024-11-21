@@ -8,6 +8,7 @@ import re
 
 # known values
 CONFIG_FILE = "control/config.txt"
+CONFIG_FILE_MC = "control/configMC.txt"
 
 # values to be loaded from file
 VEHICLE_PORT = -1  # radio's serial port
@@ -17,11 +18,13 @@ SEND_INTERVAL = -1  # total wait time elapsed between sending packets
 PACKET_COUNT = -1  # number of packets the Vehicle class will store at any given time
 MAX_SPEED = -1
 PACKET_HEADER = b""
+PACKET_SIZE = 16
 
 # pull values from config.txt
 def read(input_file):
     try:
-        global VEHICLE_PORT, SEND_INTERVAL, PACKET_COUNT, MAX_SPEED, PACKET_HEADER, LOCAL_PORT, USE_LOCAL_PORT
+        global VEHICLE_PORT, SEND_INTERVAL, PACKET_COUNT, MAX_SPEED, PACKET_HEADER, LOCAL_PORT, USE_LOCAL_PORT,\
+            PACKET_SIZE
         with open(input_file, 'r') as file:
             lines = file.readlines()
         vals = []
@@ -48,6 +51,7 @@ def read(input_file):
         PACKET_HEADER = b
 
         MAX_SPEED = float(vals[6])
+        PACKET_SIZE = int(vals[7])
 
     except:
         raise RuntimeError(f"{get_time()}:Config: Failed to read file")
@@ -65,6 +69,7 @@ SEND_INTERVAL: {SEND_INTERVAL}
 PACKET_COUNT: {PACKET_COUNT} 
 PACKET_HEADER: {header}
 MAX_SPEED: {MAX_SPEED}
+PACKET_SIZE: {PACKET_SIZE}
 """
         with open(CONFIG_FILE, "w") as file:
             file.write(new_config)

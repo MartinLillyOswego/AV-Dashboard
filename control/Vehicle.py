@@ -11,41 +11,41 @@ class Vehicle:
 
     def __init__(self):
         self.lock = threading.Lock()
-        self.exit = False                # True when system needs to exit
+        self.exit = False  # True when system needs to exit
 
         # packet data received
-        self.speed = []                 #4  : Int 0-255: mph 0-32
-        self.throttle = []              #5  : Int 0-255
-        self.brake = []                 #6  : Int 0-255
-        self.emergency_brake = []       #8  : Int 0-255
-        self.gear = []                  #9  : Int (0-31:Reverse) (32-64:Neutral) (65-97:Low) (98-130:Mid) (131-163:High) (164-196:Overdrive) (197-255:Unassigned)
-        self.steering_angle = []        #10 : Int Center:127 
-        self.direction = []             #11 : Int 0-255 East is zero:Clockwise to 255
-        self.battery_voltage = []       #11 : Int 0-255
-        self.battery_current = []       #12 : Int 0-255
-        self.battery_temperature = []   #13 : Int 0-255
-        self.front_L_wheel_speed = []   #14 : Int 0-255
-        self.front_R_wheel_speed = []   #15 : Int 0-255
-        self.distance_to_object = []    #16 : Int 0-255 
+        self.speed = []  # 4  : Int 0-255: mph 0-32
+        self.throttle = []  # 5  : Int 0-255
+        self.brake = []  # 6  : Int 0-255
+        self.emergency_brake = []  # 8  : Int 0-255
+        self.gear = []  # 9  : Int (0-31:Reverse) (32-64:Neutral) (65-97:Low) (98-130:Mid) (131-163:High) (164-196:Overdrive) (197-255:Unassigned)
+        self.steering_angle = []  # 10 : Int Center:127
+        self.direction = []  # 11 : Int 0-255 East is zero:Clockwise to 255
+        self.battery_voltage = []  # 11 : Int 0-255
+        self.battery_current = []  # 12 : Int 0-255
+        self.battery_temperature = []  # 13 : Int 0-255
+        self.front_L_wheel_speed = []  # 14 : Int 0-255
+        self.front_R_wheel_speed = []  # 15 : Int 0-255
+        self.distance_to_object = []  # 16 : Int 0-255
 
-        # Error states    
+        # Error states
         self.warning_state = False
         self.critical_error_state = False
-        self.connection_state = 0
+        self.radio_state = 0
         self.collision_state = False
         self.battery_depletion = False
         self.battery_overheat = False
         self.excessive_load = False
         self.hill_detection = False
         self.slip_detection = False
-        
+
     # called by, Sender, control-unit, and display
     # used to get data
     def __copy__(self):
         out = Vehicle()
         with self.lock:
             out.exit = self.exit
-            
+
             # Packet data
             out.speed = self.speed.copy()
             out.throttle = self.throttle.copy()
@@ -60,21 +60,16 @@ class Vehicle:
             out.front_L_wheel_speed = self.front_L_wheel_speed.copy()
             out.front_R_wheel_speed = self.front_R_wheel_speed.copy()
             out.distance_to_object = self.distance_to_object.copy()
-            
-            # Display data
-            out.display_velocity = self.display_velocity.copy()
-            out.acceleration = self.acceleration.copy()
-            out.display_battery_temperate = self.display_battery_temperate.copy()
-            out.display_battery_voltage = self.display_battery_voltage.copy()
-            out.display_battery_current = self.display_battery_current.copy()
-            out.display_steering_angle = self.display_steering_angle
-            out.display_direction = self.display_direction
-            out.position_graphic = self.position_graphic
-            out.total_distance_traveled = self.total_distance_traveled
-            out.display_throttle = self.display_throttle.copy()
-            out.display_slip_angle = self.display_slip_angle.copy()
-            out.display_distance_to_object = self.display_distance_to_object
-            out.display_error_code = self.display_error_code
+
+            # Error stats
+            out.warning_state = self.warning_state
+            out.critical_error_state = self.critical_error_state
+            out.collision_state = self.collision_state
+            out.battery_depletion = self.battery_depletion
+            out.battery_overheat = self.battery_overheat
+            out.excessive_load = self.excessive_load
+            out.hill_detection = self.hill_detection
+            out.slip_detection = self.slip_detection
             out.radio_state = self.radio_state
 
         return out
