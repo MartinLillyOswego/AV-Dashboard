@@ -86,7 +86,7 @@
 					<!-- Remaining Sensor data will go here when implemented -->
 					<p style="font-family:Seven Segment; color:#acadad; font-size: 18px;">*other sensors*</p>
 					<h4 class="Display">Acceleration: <span id="acceleration">0</span> m/s<sup>2</sup></h4>
-					<h4 id="display_distance_to_object" class="Display">Distance to Object: </h4>
+					<h4 class="Display">Distance to Object: <span id="distance_to_object">Loading...</span></h4>
 					<h4 id="gear" class="Display">Gear: </h4>
 					<h4 id="direction" class="Display">Direction: </h4>
 				</div>
@@ -129,9 +129,9 @@
 		document.getElementById("throttle_bar").style.width = data.throttle + "vw";
 		document.getElementById("brake_bar").style.width = data.brake + "vw";
 		document.getElementById("acceleration").textContent = data.acceleration;
-		document.getElementById("display_distance_to_object") = data.dto;
+		document.getElementById("distance_to_object").textContent = data.distance_to_object || "No Object Detected";
 		document.getElementById("gear") = data.gear;
-		document.getElementById("dircetion") = data.direction;
+		document.getElementById("direction") = data.direction;
 		// setAngle(data.steeringAngle) Use this function to set the angle for the steering graphic
 	}, 50);
 </script>
