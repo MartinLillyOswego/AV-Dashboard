@@ -1397,7 +1397,7 @@ class CommunicationMC(threading.Thread):
                   vehicle_snapshot.front_R_wheel_speed[ind],
                   vehicle_snapshot.distance_to_object[ind]]
         # send with header when using radios
-        if not config.USE_LOCAL_PORT:
+        if config.USE_LOCAL_PORT:
             return bytes(packet)
         return config.PACKET_HEADER + bytes(packet)
 
