@@ -16,6 +16,7 @@ class speedometer {
 		this.speedPerAngle = this.maxSpeed / 230;
 		this.angleGap = 5 / this.speedPerAngle;
 		this.anglePerSpeed = 230 / this.maxSpeed
+		this.currentRotation = -25
 		// Initalize speedometer
 		this.buildScales()
 		this.resize()
@@ -31,7 +32,50 @@ class speedometer {
 	setSpeed(speed) {
 		this.speedDisplay.innerHTML = speed;
 		if (speed > this.maxSpeed) {speed = this.maxSpeed}
-		this.arrow.style.transform = "rotate("+ ((speed * this.anglePerSpeed) - 25) + "deg)";
+		let targetRotation = ((speed * this.anglePerSpeed) - 25)
+		let direction = this.currentRotation < targetRotation ? "up" : "down"
+		console.log( this.currentRotation + " < " + targetRotation + " : " + direction)
+		if (this.currentRotation !== targetRotation) {
+			let intervalId = setInterval(async () => {
+				if (direction === "up"){
+					//speed going up
+					this.currentRotation += 0.5
+					this.arrow.style.transform = "rotate("+ this.currentRotation + "deg)";
+					if (this.currentRotation > targetRotation) {
+						this.arrow.style.transform = "rotate("+ targetRotation + "deg)";
+						clearInterval(intervalId)
+					}
+				} else {
+					//speed going down
+					this.currentRotation -= 0.5
+					this.arrow.style.transform = "rotate("+ this.currentRotation + "deg)";
+					if (this.currentRotation < targetRotation) {
+						this.arrow.style.transform = "rotate("+ targetRotation + "deg)";
+						clearInterval(intervalId)
+					}
+				}
+			}, 5);
+		}
+	}
+	// setSpeed(speed) {
+	// 	this.speedDisplay.innerHTML = speed;
+	// 	if (speed > this.maxSpeed) {speed = this.maxSpeed}
+	// 	this.arrow.style.transform = "rotate("+ ((speed * this.anglePerSpeed) - 25) + "deg)";
+	// }
+
+	getRotationDegrees(obj) {
+	  const matrix = window.getComputedStyle(obj).getPropertyValue('transform');
+
+	  if (matrix !== 'none') {
+	    const values = matrix.split('(')[1].split(')')[0].split(',');
+	    const a = values[0];
+	    const b = values[1];
+	    const angle = Math.round(Math.atan2(b, a) * (180/Math.PI));
+
+	    return angle;
+	  }
+
+	  return 0;
 	}
 
 	buildScales() {
