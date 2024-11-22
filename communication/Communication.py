@@ -49,9 +49,15 @@ class Communication(threading.Thread):
 
         if not config.USE_LOCAL_PORT:
             out = config.PACKET_HEADER + bytes(packet)
-        os.system("cls")
-        print(f"\033[H\033[J", end="")
-        print(f"{config.get_time()}:Sending: {out}")
+        #os.system("cls")
+        #print(f"\033[H\033[J", end="")
+        #print(f"{config.get_time()}:Sending: {out}")
+        if False:
+            os.system("cls")
+            print(f"\033[H\033[J", end="")
+            print(f"Throttle: {self.vehicle.throttleToSend}")
+            print(f"Brake   : {self.vehicle.brakeToSend}")
+            print(f"Steer   : {self.vehicle.steering_angleToSend}")
         return out
 
     @staticmethod
@@ -80,7 +86,7 @@ class Communication(threading.Thread):
                     # where error state is triggered
             if self.serial_port.in_waiting:
                 packet = self.serial_port.read(config.PACKET_SIZE)
-                print(f"{config.get_time()}:Received: {packet}")
+                # print(f"{config.get_time()}:Received: {packet}")
                 self.vehicle.update_with_packet(packet)  # update packet
 
             # call send method

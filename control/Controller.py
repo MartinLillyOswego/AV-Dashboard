@@ -3,46 +3,6 @@ import threading
 
 try:
     import pygame
-    from pygame.locals import KMOD_CTRL
-    from pygame.locals import KMOD_SHIFT
-    from pygame.locals import K_0
-    from pygame.locals import K_9
-    from pygame.locals import K_BACKQUOTE
-    from pygame.locals import K_BACKSPACE
-    from pygame.locals import K_COMMA
-    from pygame.locals import K_DOWN
-    from pygame.locals import K_ESCAPE
-    from pygame.locals import K_F1
-    from pygame.locals import K_LEFT
-    from pygame.locals import K_PERIOD
-    from pygame.locals import K_RIGHT
-    from pygame.locals import K_SLASH
-    from pygame.locals import K_SPACE
-    from pygame.locals import K_TAB
-    from pygame.locals import K_UP
-    from pygame.locals import K_a
-    from pygame.locals import K_b
-    from pygame.locals import K_c
-    from pygame.locals import K_d
-    from pygame.locals import K_f
-    from pygame.locals import K_g
-    from pygame.locals import K_h
-    from pygame.locals import K_i
-    from pygame.locals import K_l
-    from pygame.locals import K_m
-    from pygame.locals import K_n
-    from pygame.locals import K_o
-    from pygame.locals import K_p
-    from pygame.locals import K_q
-    from pygame.locals import K_r
-    from pygame.locals import K_s
-    from pygame.locals import K_t
-    from pygame.locals import K_v
-    from pygame.locals import K_w
-    from pygame.locals import K_x
-    from pygame.locals import K_z
-    from pygame.locals import K_MINUS
-    from pygame.locals import K_EQUALS
 except ImportError:
     raise RuntimeError('cannot import pygame, make sure pygame package is installed')
 
@@ -88,6 +48,7 @@ class Controller(threading.Thread):
                 pass
             if event.type == pygame.JOYDEVICEADDED or event.type == pygame.JOYDEVICEREMOVED:
                 self.controllerConnect()
+            #print(f"{self.vehicle.controller.get_numaxis()}")
             if event.type == pygame.JOYBUTTONDOWN:
                 # handbrake
                 if self.controller.get_button(0) == 1:
@@ -97,9 +58,10 @@ class Controller(threading.Thread):
                         self.vehicle.handbrakeToSend = 0
 
                 # gear selection
-                if self.vehicle.gear[-1] == 1 and self.vehicle.speed[-1] >= 10:
+                ind = len(self.vehicle.speed)
+                if self.vehicle.gear[ind] == 1 and self.vehicle.speed[-1] >= 10:
                     self.vehicle.gearToSend = min(5, self.vehicle.gear + self.vehicle.controller.get_button(5))
-                elif self.vehicle.gear[-1] == 1 and self.vehicle.speed[-1] < 10:
+                elif self.vehicle.gear[ind] == 1 and self.vehicle.speed[-1] < 10:
                     self.vehicle.gearToSend = min(5, self.vehicle.gear + self.vehicle.controller.get_button(5))
                     self.vehicle.gearToSend = max(0, self.vehicle.gear - self.vehicle.controller.get_button(4))
                     if self.controller.get_button(1) == 1:
@@ -109,11 +71,11 @@ class Controller(threading.Thread):
                     self.vehicle.gearToSend = max(0, self.vehicle.gear - self.vehicle.controller.get_button(4))
 
             if event.type == pygame.JOYAXISMOTION:
+                print(f"{self.vehicle.controller.get_axis(0)}")
                 self.vehicle.throttleToSend = int(((self.vehicle.controller.get_axis(5) + 1) * 255) / 2)
                 self.vehicle.brakeToSend = int(((self.vehicle.controller.get_axis(4) + 1) * 255) / 2)
-                self.vehicle.steering_angleToSend = int(((self.vehicle.controller.get_axis(0) + 1) * 255) / 2)
-
-            print(f"{self.vehicle.throttleToSend}")
+            self.vehicle.steering_angleToSend = int(((self.vehicle.controller.get_axis(2) + 1) * 255) / 2)
+            #print(f"{self.vehicle.throttleToSend}")
             print(f"{self.vehicle.brakeToSend}")
             print(f"{self.vehicle.steering_angleToSend}")
     # Handles different controller inputs

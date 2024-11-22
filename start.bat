@@ -1,2 +1,2 @@
-call C:\Users\Spencer\Documents\Python\Dashboard\venv\Scripts\activate
+call C:\Users\Spencer\Documents\Python\AV-Dashboard\venv\Scripts\activate
 cmd /K
