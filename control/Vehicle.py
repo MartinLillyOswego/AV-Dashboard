@@ -15,30 +15,50 @@ class Vehicle:
         self.unchecked = True # should data be checked for error state
 
         # packet data received
-        self.speed = []  # 4  : Int 0-255: mph 0-32
-        self.throttle = []  # 5  : Int 0-255
-        self.brake = []  # 6  : Int 0-255
-        self.emergency_brake = []  # 8  : Int 0-255
-        self.gear = []  # 9  : Int (0-31:Reverse) (32-64:Neutral) (65-97:Low) (98-130:Mid) (131-163:High) (164-196:Overdrive) (197-255:Unassigned)
-        self.steering_angle = []  # 10 : Int Center:127
-        self.direction = []  # 11 : Int 0-255 East is zero:Clockwise to 255
-        self.battery_voltage = []  # 11 : Int 0-255
-        self.battery_current = []  # 12 : Int 0-255
-        self.battery_temperature = []  # 13 : Int 0-255
-        self.front_L_wheel_speed = []  # 14 : Int 0-255
-        self.front_R_wheel_speed = []  # 15 : Int 0-255
-        self.distance_to_object = []  # 16 : Int 0-255
+        self.speed               = []  # 0  : Int 0-255: mph 0-32
+        self.throttle            = []  # 1  : Int 0-255
+        self.brake               = []  # 2  : Int 0-255
+        self.emergency_brake     = []  # 3  : Int 0-255
+        self.gear                = []  # 4  : Int (0-31:Reverse) (32-64:Neutral) (65-97:Low) (98-130:Mid) (131-163:High) (164-196:Overdrive) (197-255:Unassigned)
+        self.steering_angle      = []  # 5  : Int Center:127
+        self.direction           = []  # 6  : Int 0-255 East is zero:Clockwise to 255
+        self.battery_voltage     = []  # 7  : Int 0-255
+        self.battery_current     = []  # 8  : Int 0-255
+        self.battery_temperature = []  # 9  : Int 0-255
+        self.front_L_wheel_speed = []  # 10 : Int 0-255
+        self.front_R_wheel_speed = []  # 11 : Int 0-255
+        self.distance_to_object  = []  # 12 : Int 0-255
 
+        # packet data received
+        self.speedToSend               = 0   # 3  : Int 0-255: mph 0-32
+        self.throttleToSend            = 0   # 4  : Int 0-255
+        self.brakeToSend               = 0   # 5  : Int 0-255
+        self.emergency_brakeToSend     = 0   # 6  : Int 0-255
+        self.gearToSend                = 1   # 7  : Int (0-31:Reverse) (32-64:Neutral) (65-97:Low) (98-130:Mid) (131-163:High) (164-196:Overdrive) (197-255:Unassigned)
+        self.steering_angleToSend      = 127 # 8  : Int Center:127
+        self.directionToSend           = 0   # 9  : Int 0-255 East is zero:Clockwise to 255
+        self.battery_voltageToSend     = 0   # 10 : Int 0-255
+        self.battery_currentToSend     = 0   # 11 : Int 0-255
+        self.battery_temperatureToSend = 0   # 12 : Int 0-255
+        self.front_L_wheel_speedToSend = 0   # 13 : Int 0-255
+        self.front_R_wheel_speedToSend = 0   # 14 : Int 0-255
+        self.distance_to_objectToSend  = 0   # 15 : Int 0-255
+
+        # controller information
+        self.controllerConnected = False
+        self.controllerName      = None
+        self.controllerReference = None
+        
         # Error states
-        self.warning_state = False
-        self.critical_error_state = False
-        self.radio_state = 0
-        self.collision_state = False
-        self.battery_depletion = False
-        self.battery_overheat = False
-        self.excessive_load = False
-        self.hill_detection = False
-        self.slip_detection = False
+        self.warning_state         = False
+        self.critical_error_state  = False
+        self.radio_state           = 0
+        self.collision_state       = False
+        self.battery_depletion     = False
+        self.battery_overheat      = False
+        self.excessive_load        = False
+        self.hill_detection        = False
+        self.slip_detection        = False
 
     # called by, Sender, control-unit, and display
     # used to get data
