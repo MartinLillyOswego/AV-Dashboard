@@ -12,6 +12,7 @@ class Vehicle:
     def __init__(self):
         self.lock = threading.Lock()
         self.exit = False  # True when system needs to exit
+        self.unchecked = True # should data be checked for error state
 
         # packet data received
         self.speed = []  # 4  : Int 0-255: mph 0-32
