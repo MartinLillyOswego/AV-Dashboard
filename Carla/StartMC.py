@@ -1,5 +1,5 @@
 from manual_control import CarlaThread
-from control.Vehicle import Vehicle
+from Vehicle import Vehicle
 from manual_control import CommunicationMC
 
 ogv = Vehicle()

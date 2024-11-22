@@ -58,13 +58,12 @@ from __future__ import print_function
 # -- find carla module ---------------------------------------------------------
 # ==============================================================================
 
-
 import glob
 import os
 import sys
 import threading
-from control.Vehicle import Vehicle
-import control.config as config
+from Vehicle import Vehicle
+import config
 config.read("configMC.txt")
 
 try:
@@ -582,6 +581,8 @@ class KeyboardControl(object):
             self._control.hand_brake = 1
         else:
             self._control.hand_brake = 0
+
+        self._control.gear = veh.gear[ind]
 
         steer_increment = 5e-4 * milliseconds
         if veh.steering_angle[ind] < 125:

@@ -26,7 +26,5 @@ class Shutdown(threading.Thread):
         self.vehicle.hard_turn = abs(self.vehicle.steering_angle[-1]) > 30 and Vehicle.vehicle.velocity[-1] > 60
         # Critically low distance to object
         self.vehicle.collision_state = self.vehicle.distance_to_object[-1] < 20
-        elif abs(self.vehicle.fl_wheel_speed[-1] - self.vehicle.fr_wheel_speed[-1]) > 5:
-            self.vehicle.error_code.append('W')  # Significant difference in wheel speeds
-        else:
-            self.vehicle.error_code.append('')
+        # Significant difference in wheel speeds
+        # self.vehicle.mismatched_wheel_speed = abs(self.vehicle.fl_wheel_speed[-1] - self.vehicle.fr_wheel_speed[-1]) > 5
