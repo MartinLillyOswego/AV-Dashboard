@@ -50,15 +50,16 @@ class Vehicle:
         self.controllerReference = None
         
         # Error states
-        self.warning_state         = False
-        self.critical_error_state  = False
-        self.radio_state           = 0
-        self.collision_state       = False
-        self.battery_depletion     = False
-        self.battery_overheat      = False
-        self.excessive_load        = False
-        self.hill_detection        = False
-        self.slip_detection        = False
+        self.warning_state = False
+        self.critical_error_state = False
+        self.radio_state = 0
+        self.collision_state = False
+        self.battery_depletion = False
+        self.battery_overheat = False
+        self.excessive_load = False
+        self.hill_detection = False
+        self.slip_detection = False
+        self.hard_turn = False
 
     # called by, Sender, control-unit, and display
     # used to get data
@@ -133,6 +134,7 @@ class Vehicle:
     # update fields not directly given by the packet
     def update_calculated_data(self, attributes):
         with self.lock:
+            pass
             '''
             self.display_velocity = attributes[0].copy()
             self.acceleration = attributes[1].copy()

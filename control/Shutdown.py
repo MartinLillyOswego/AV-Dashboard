@@ -1,52 +1,32 @@
 import time
+import threading
 from Vehicle import Vehicle
 
-def park_packet(vehicle):
-    return [
-        vehicle.sender_id,
-        vehicle.receiver_id,
-        0,  # error code
-        0.0,  # velocity
-        0.0,  # throttle
-        0.0,  # braking force
-        100,  # hand brake
-        0.0,  # steering angle
-        0.0,  # direction
-        0,  # gear
-        vehicle.battery_voltage,  # battery voltage
-        vehicle.battery_current,  # battery current
-        vehicle.battery_temperate,  # battery temperature
-        0.0,  # left wheel speed
-        0.0,  # right wheel speed
-        vehicle.distance_to_object,  # distance to object
-        0.0   # time
-    ]
 
-
-def slowdown(vehicle, decrement=5):
-
-    if (vehicle.velocity > 0):
-        vehicle.velocity = max(vehicle.velocity - decrement, 0.0)
-        vehicle.throttle = 0.0
-        vehicle.braking_force = 10
-
-def shutdown(receiver, sender, vehicle):
-    print("Initiating shutdown sequence...")
-
-    # Slow down the vehicle before shutting down
-    while(vehicle.velocity > 0):
-        slowdown(vehicle)
-        sender.send(receiver.serial_port,vehicle)
-
-
-    print("Sending park packet...")
-    park_data = park_packet(vehicle)
-
-    if sender.send(receiver.serial_port, park_data):
-        print("Park packet sent.")
-
-    vehicle.exit = True    #assuming this is in control_unit
-
-    receiver.join()
-    sender.join()
-    print("Shutdown complete.")
+class Shutdown(threading.Thread):
+    def __init__(self, vehicle):
+        super(Communication, self).__init__()
+        self.vehicle = vehicle
+    
+    def run(self):
+        while True:
+            if !self.vehicle.unchecked:
+                continue
+            check_for_error_state()
+    
+    def check_for_error_state():
+        """Appends error codes based on current vehicle state"""
+        # High battery temperature
+        self.vehicle.battery_overheat = self.vehicle.battery_temperate[-1] > 75
+        # Slippery surface
+        self.vehicle.slip_detection =  (self.vehicle.throttle[-1] > 0 and self.vehicle.velocity[-1] <= self.vehicle.velocity[-2]) or (self.vehicle.braking_force[-1] > 70 and self.vehicle.velocity[-1] >= self.vehicle.velocity[-2])
+        # Low battery voltage
+        self.vehicle.battery_depletion = self.vehicle.battery_voltage[-1] < 20
+        # High speed with large steering angle
+        self.vehicle.hard_turn = abs(self.vehicle.steering_angle[-1]) > 30 and Vehicle.vehicle.velocity[-1] > 60
+        # Critically low distance to object
+        self.vehicle.collision_state = self.vehicle.distance_to_object[-1] < 20
+        elif abs(self.vehicle.fl_wheel_speed[-1] - self.vehicle.fr_wheel_speed[-1]) > 5:
+            self.vehicle.error_code.append('W')  # Significant difference in wheel speeds
+        else:
+            self.vehicle.error_code.append('')
