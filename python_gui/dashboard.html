@@ -129,20 +129,20 @@
 	// 	}
 	// }, 1000);
 
-	// setInterval(async () => {
-	// 	const response = await fetch("/data");
-	// 	const data = await response.json();
+	setInterval(async () => {
+		const response = await fetch("/data");
+		const data = await response.json();
 		
-	// 	speedometer.setSpeed(data.speed);
-	// 	document.getElementById("battery_percent_and_temp").innerText = data.battery_percent_and_temp;
-	// 	document.getElementById("battery_img").src = data.battery_img;
-	// 	document.getElementById("connection_png").src = data.con_png;
-	// 	document.getElementById("throttle_bar").style.width = data.throttle + "vw";
-	// 	document.getElementById("brake_bar").style.width = data.brake + "vw";
-	// 	document.getElementById("acceleration").textContent = data.acceleration;
-	// 	document.getElementById("distance_to_object").textContent = data.distance_to_object || "No Object Detected";
-	// 	document.getElementById("gear-value").innerHTML = data.gear;
-	// 	document.getElementById("direction-value").innerHTML = data.direction;
-	// 	// setAngle(data.steeringAngle) Use this function to set the angle for the steering graphic
-	// }, 50);
+		speedometer.setSpeed(data.speed);
+		document.getElementById("battery_percent_and_temp").innerText = data.battery_percent_and_temp;
+		document.getElementById("battery_img").src = data.battery_img;
+		document.getElementById("connection_png").src = data.con_png;
+		document.getElementById("throttle_bar").style.width = data.throttle + "vw";
+		document.getElementById("brake_bar").style.width = data.brake + "vw";
+		document.getElementById("acceleration").textContent = data.acceleration;
+		document.getElementById("distance_to_object").textContent = data.distance_to_object || "No Object Detected";
+		document.getElementById("gear-value").innerHTML = data.gear;
+		document.getElementById("direction-value").innerHTML = data.direction;
+		// setAngle(data.steeringAngle) Use this function to set the angle for the steering graphic
+	}, 50);
 </script>
