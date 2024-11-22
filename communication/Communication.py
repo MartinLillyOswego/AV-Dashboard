@@ -4,6 +4,7 @@ import control.config as config
 import threading
 import serial
 import time
+import os
 from control.Controller import Controller
 
 
@@ -34,33 +35,26 @@ class Communication(threading.Thread):
     def package_data(self):
         # pull last_packet from vehicle class
         vehicle_snapshot = self.vehicle.__copy__()
-        ind = len(vehicle_snapshot.speed) - 1
-        # if no data is available yet (only occurs on program start up)
-        if ind == -1:
-            packet = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        else:
-            packet = [vehicle_snapshot.speed[ind],
-                      vehicle_snapshot.throttle[ind],
-                      vehicle_snapshot.brake[ind],
-                      vehicle_snapshot.emergency_brake[ind],
-                      vehicle_snapshot.gear[ind],
-                      vehicle_snapshot.steering_angle[ind],
-                      vehicle_snapshot.direction[ind],
-                      vehicle_snapshot.battery_voltage[ind],
-                      vehicle_snapshot.battery_current[ind],
-                      vehicle_snapshot.battery_temperature[ind],
-                      vehicle_snapshot.front_L_wheel_speed[ind],
-                      vehicle_snapshot.front_R_wheel_speed[ind],
-                      vehicle_snapshot.distance_to_object[ind]]
-        # pull new commands
-        new_commands = self.controller.get_vehicle_commands(packet)
-        # send with header when using radios
-        out = bytes(new_commands)
+        packet = [vehicle_snapshot.speedToSend,
+                  vehicle_snapshot.throttleToSend,
+                  vehicle_snapshot.brakeToSend,
+                  vehicle_snapshot.emergency_brakeToSend,
+                  vehicle_snapshot.gearToSend,
+                  vehicle_snapshot.steering_angleToSend,
+                  vehicle_snapshot.directionToSend,
+                  vehicle_snapshot.battery_voltageToSend,
+                  vehicle_snapshot.battery_currentToSend,
+                  vehicle_snapshot.battery_temperatureToSend,
+                  vehicle_snapshot.front_L_wheel_speedToSend,
+                  vehicle_snapshot.front_R_wheel_speedToSend,
+                  vehicle_snapshot.distance_to_objectToSend]
+
         if not config.USE_LOCAL_PORT:
-            out = config.PACKET_HEADER + out
-        print(f"{config.get_time()}:Sending: {new_commands}")
-        print(f"{config.get_time()}:Sending: {out}")
-        return out
+            out = config.PACKET_HEADER + packet
+        os.system("cls")
+        print(f"\033[H\033[J", end=")
+        print(f"{config.get_time()}:Sending: {packet}")
+        return packet
 
     @staticmethod
     def send(connection, data):
