@@ -29,7 +29,7 @@ class Vehicle:
         self.front_R_wheel_speed = []  # 11 : Int 0-255
         self.distance_to_object  = []  # 12 : Int 0-255
 
-        # packet data received
+        # packet data to send
         self.speedToSend               = 0   # 3  : Int 0-255: mph 0-32
         self.throttleToSend            = 0   # 4  : Int 0-255
         self.brakeToSend               = 0   # 5  : Int 0-255
