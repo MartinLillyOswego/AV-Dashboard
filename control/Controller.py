@@ -65,7 +65,7 @@ class Controller(threading.Thread):
         self.controllerCount = pygame.joystick.get_count()
         if self.controllerCount > 0:
             self.vehicle.controller = pygame.joystick.Joystick(0)
-            self.vehicle.controllerName = self.controller.get_name()
+            self.vehicle.controllerName = self.vehicle.controller.get_name()
             self.vehicle.connected = True
             #print(f"{self.controllerName}")
         else:
@@ -86,32 +86,32 @@ class Controller(threading.Thread):
             if event.type == pygame.QUIT:
                 # nothing yet
                 pass
-            if event.type == pygame.JOYDEVICEADDED or event.type == pygame.JOYDEVICEREMOVED
+            if event.type == pygame.JOYDEVICEADDED or event.type == pygame.JOYDEVICEREMOVED:
                 self.controllerConnect()
             if event.type == pygame.JOYBUTTONDOWN:
                 # handbrake
                 if self.controller.get_button(0) == 1:
-                    if self.vehicle.handbrake == 0:
-                        self.vehicle.handbrake = 255
+                    if self.vehicle.handbrakeToSend == 0:
+                        self.vehicle.handbrakeToSend = 255
                     else:
-                        self.vehicle.handbrake = 0
+                        self.vehicle.handbrakeToSend = 0
 
                 # gear selection
-                if self.vehicle.gear == 1 and packet[0] >= 10:
-                    self.vehicle.gear = min(5, self.vehicle.gear + self.controller.get_button(5))
-                elif self.vehicle.gear == 1 and packet[0] < 10:
-                    self.vehicle.gear = min(5, self.vehicle.gear + self.controller.get_button(5))
-                    self.vehicle.gear = max(0, self.vehicle.gear - self.controller.get_button(4))
+                if self.vehicle.gear[-1] == 1 and self.vehicle.speed[-1] >= 10:
+                    self.vehicle.gearToSend = min(5, self.vehicle.gear + self.vehicle.controller.get_button(5))
+                elif self.vehicle.gear[-1] == 1 and self.vehicle.speed[-1] < 10:
+                    self.vehicle.gearToSend = min(5, self.vehicle.gear + self.vehicle.controller.get_button(5))
+                    self.vehicle.gearToSend = max(0, self.vehicle.gear - self.vehicle.controller.get_button(4))
                     if self.controller.get_button(1) == 1:
-                        self.vehicle.gear = 0
+                        self.vehicle.gearToSend = 0
                 else:
-                    self.vehicle.gear = min(5, self.vehicle.gear + self.controller.get_button(5))
-                    self.vehicle.gear = max(0, self.vehicle.gear - self.controller.get_button(4))
+                    self.vehicle.gearToSend = min(5, self.vehicle.gear + self.vehicle.controller.get_button(5))
+                    self.vehicle.gearToSend = max(0, self.vehicle.gear - self.vehicle.controller.get_button(4))
 
             if event.type == pygame.JOYAXISMOTION:
-                self.vehicle.throttle = int(((self.controller.get_axis(5) + 1) * 255) / 2)
-                self.vehicle.brake = int(((self.controller.get_axis(4) + 1) * 255) / 2)
-                self.vehicle.steering = int(((self.controller.get_axis(0) + 1) * 255) / 2)
+                self.vehicle.throttleToSend = int(((self.vehicle.controller.get_axis(5) + 1) * 255) / 2)
+                self.vehicle.brakeToSend = int(((self.vehicle.controller.get_axis(4) + 1) * 255) / 2)
+                self.vehicle.steeringToSend = int(((self.vehicle.controller.get_axis(0) + 1) * 255) / 2)
 
     # Handles different controller inputs
     def GetControllerValue(self, selection):
@@ -164,6 +164,6 @@ class Controller(threading.Thread):
 
     def run(self):
         while True:
-            self.vehicle.update_outgoing(self.get_events())
+            self.get_events()
             if self.vehicle.exit:
                 break

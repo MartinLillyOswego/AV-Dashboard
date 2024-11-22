@@ -5,7 +5,6 @@ import threading
 import serial
 import time
 import os
-from control.Controller import Controller
 
 
 class Communication(threading.Thread):
@@ -14,7 +13,6 @@ class Communication(threading.Thread):
         super(Communication, self).__init__()
         self.vehicle = vehicle
         self.serial_port = None
-        self.controller = Controller()
 
     def serial_connect(self):
         while True:
@@ -50,11 +48,11 @@ class Communication(threading.Thread):
                   vehicle_snapshot.distance_to_objectToSend]
 
         if not config.USE_LOCAL_PORT:
-            out = config.PACKET_HEADER + packet
+            out = config.PACKET_HEADER + bytes(packet)
         os.system("cls")
-        print(f"\033[H\033[J", end=")
-        print(f"{config.get_time()}:Sending: {packet}")
-        return packet
+        print(f"\033[H\033[J", end="")
+        print(f"{config.get_time()}:Sending: {out}")
+        return out
 
     @staticmethod
     def send(connection, data):
