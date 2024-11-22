@@ -73,7 +73,7 @@ class Controller:
             self.controller = pygame.joystick.Joystick(0)
             self.controllerName = self.controller.get_name()
             self.connected = True
-            #print(f"{self.controllerName}")
+            print(f"{self.controllerName}")
         else:
              print(f"No Controller Connected")
              self.connected = False
@@ -83,13 +83,13 @@ class Controller:
 
     def get_vehicle_commands(self, packet):
         # try to connect with latest controller
-        if not connected:
+        if not self.connected:
             self.controllerConnect()
 
         # Call get events method
-        self.get_events(packet)
+        new_packet = self.get_events(packet)
 
-        return packet
+        return new_packet
 
     '''
     def clearWindow(self):
@@ -103,6 +103,7 @@ class Controller:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 #nothing yet
+                pass
             if event.type == pygame.JOYBUTTONDOWN:
                 if self.controller.get_button(0) == 1:
                     if self.handbrake == 0:
@@ -121,27 +122,27 @@ class Controller:
                     self.gear = min(5, self.gear + self.controller.get_button(5))
                     self.gear = max(0, self.gear - self.controller.get_button(4))
 
-                if event.type == pygame.JOYAXISMOTION:
-                    self.throttle = int(((self.controller.get_axis(5)+1)*255)/2)
-                    self.brake    = int(((self.controller.get_axis(4)+1)*255)/2)
-                    self.steering = int(((self.controller.get_axis(0)+1)*255)/2)
+            if event.type == pygame.JOYAXISMOTION:
+                self.throttle = int(((self.controller.get_axis(5)+1)*255)/2)
+                self.brake    = int(((self.controller.get_axis(4)+1)*255)/2)
+                self.steering = int(((self.controller.get_axis(0)+1)*255)/2)
 
-                '''
-                # Print screen
-                os.system("cls")
-                print("\033[H\033[J", end="")
-                print(f"Throttle   : {self.throttle}")
-                print(f"Brake      : {self.brake}")
-                print(f"Steer Angle: {self.steering}")
-                print(f"Hand Brake : {self.handbrake}")
-                print(f"Gear       : {self.gear}")
-                print(f"Controller :{self.controllerName}")
-                time.sleep(.1)
-                '''
-                # Assign packet 
-                Packet[1] = self.throttle
-                Packet[2] = self.brake
-                Packet[5] = self.steering
+            
+            # Print screen
+            #os.system("cls")
+            #print("\033[H\033[J", end="")
+            #print(f"Throttle   : {self.throttle}")
+            #print(f"Brake      : {self.brake}")
+            #print(f"Steer Angle: {self.steering}")
+            #print(f"Hand Brake : {self.handbrake}")
+            #print(f"Gear       : {self.gear}")
+            #print(f"Controller :{self.controllerName}")
+            #time.sleep(.1)
+            
+            # Assign packet 
+            Packet[1] = self.throttle
+            Packet[2] = self.brake
+            Packet[5] = self.steering
         
         return Packet
 

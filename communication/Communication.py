@@ -84,6 +84,7 @@ class Communication(threading.Thread):
             while not self.serial_port.in_waiting:
                 if (time.monotonic() - st) > 1:
                     self.vehicle.radio_state = 1
+                    break
                     # where error state is triggered
             if self.serial_port.in_waiting:
                 packet = self.serial_port.read(config.PACKET_SIZE)
