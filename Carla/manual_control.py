@@ -1396,6 +1396,7 @@ class CommunicationMC(threading.Thread):
                   vehicle_snapshot.front_L_wheel_speed[ind],
                   vehicle_snapshot.front_R_wheel_speed[ind],
                   vehicle_snapshot.distance_to_object[ind]]
+        print(packet)
         # send with header when using radios
         if config.USE_LOCAL_PORT:
             return bytes(packet)
@@ -1425,9 +1426,13 @@ class CommunicationMC(threading.Thread):
             # Read Packet
             packet = self.serial_port.read(config.PACKET_SIZE)
             print(f"{config.get_time()}:Received: {packet}")
+            out = ""
+            for i in range(len(packet)):
+                out += str(int(packet[i])) + " "
+            print(out)
 
             # Update Packet
-            if len(packet) == config.PACKET_SIZE-3:
+            if len(packet) == config.PACKET_SIZE:
                 self.vehicle.update_with_packet(packet)
             time.sleep(config.SEND_INTERVAL)
 

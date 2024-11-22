@@ -1,4 +1,6 @@
 # Imports
+import threading
+
 try:
     import pygame
     from pygame.locals import KMOD_CTRL
@@ -45,9 +47,10 @@ except ImportError:
     raise RuntimeError('cannot import pygame, make sure pygame package is installed')
 
 
-class Controller:
-    def __init__(self):
+class Controller(threading.Thread):
+    def __init__(self, vehicle):
         # Variables
+        super(Controller).__init__()
         self.connected = False
         self.controller = None
         self.controllerName = ""
@@ -57,17 +60,19 @@ class Controller:
         self.handbrake = 0
         self.gear = 1
         self.controllerCount = 0
-        
+
+        self.vehicle = vehicle
+
     def controllerConnect(self):
-        #Initialize pygame and joystick
+        # Initialize pygame and joystick
         pygame.init()
         pygame.joystick.init()
 
-        #clear terminal window
-        #self.clearWindow()
+        # clear terminal window
+        # self.clearWindow()
 
-        #Get number of controllers
-        
+        # Get number of controllers
+
         self.controllerCount = pygame.joystick.get_count()
         if self.controllerCount > 0:
             self.controller = pygame.joystick.Joystick(0)
@@ -75,11 +80,11 @@ class Controller:
             self.connected = True
             print(f"{self.controllerName}")
         else:
-             print(f"No Controller Connected")
-             self.connected = False
-             self.controllerName = None
-             self.controller = None
-        #time.sleep(2)
+            print(f"No Controller Connected")
+            self.connected = False
+            self.controllerName = None
+            self.controller = None
+        # time.sleep(2)
 
     def get_vehicle_commands(self, packet):
         # try to connect with latest controller
@@ -96,13 +101,11 @@ class Controller:
         os.system("cls")
         print("\033[H\033[J", end="")
     '''
-    
-
 
     def get_events(self, Packet):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                #nothing yet
+                # nothing yet
                 pass
             if event.type == pygame.JOYBUTTONDOWN:
                 if self.controller.get_button(0) == 1:
@@ -123,27 +126,26 @@ class Controller:
                     self.gear = max(0, self.gear - self.controller.get_button(4))
 
             if event.type == pygame.JOYAXISMOTION:
-                self.throttle = int(((self.controller.get_axis(5)+1)*255)/2)
-                self.brake    = int(((self.controller.get_axis(4)+1)*255)/2)
-                self.steering = int(((self.controller.get_axis(0)+1)*255)/2)
+                self.throttle = int(((self.controller.get_axis(5) + 1) * 255) / 2)
+                self.brake = int(((self.controller.get_axis(4) + 1) * 255) / 2)
+                self.steering = int(((self.controller.get_axis(0) + 1) * 255) / 2)
 
-            
             # Print screen
-            #os.system("cls")
-            #print("\033[H\033[J", end="")
-            #print(f"Throttle   : {self.throttle}")
-            #print(f"Brake      : {self.brake}")
-            #print(f"Steer Angle: {self.steering}")
-            #print(f"Hand Brake : {self.handbrake}")
-            #print(f"Gear       : {self.gear}")
-            #print(f"Controller :{self.controllerName}")
-            #time.sleep(.1)
-            
-            # Assign packet 
+            # os.system("cls")
+            # print("\033[H\033[J", end="")
+            # print(f"Throttle   : {self.throttle}")
+            # print(f"Brake      : {self.brake}")
+            # print(f"Steer Angle: {self.steering}")
+            # print(f"Hand Brake : {self.handbrake}")
+            # print(f"Gear       : {self.gear}")
+            # print(f"Controller :{self.controllerName}")
+            # time.sleep(.1)
+
+            # Assign packet
             Packet[1] = self.throttle
             Packet[2] = self.brake
             Packet[5] = self.steering
-        
+
         return Packet
 
     # Handles different controller inputs
@@ -179,7 +181,7 @@ class Controller:
                 "Down": 3
             }
 
-    #elif self.controller_name == "Logitech G HUB G920 Driving Force Racing Wheel USB"
+    # elif self.controller_name == "Logitech G HUB G920 Driving Force Racing Wheel USB"
     def GetKeyboardValue(self, selection):
         keys = {
             "Throttle": K_w,
@@ -191,6 +193,11 @@ class Controller:
             "GearUp": K_UP,
             "GearDown": K_DOWN,
             "Menu": K_h,
-            "Select" :K_b,
+            "Select": K_b,
             "Options": K_o,
         }
+
+    def run(self):
+        while True:
+            if self.vehicle.exit:
+                break

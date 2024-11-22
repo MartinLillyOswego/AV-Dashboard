@@ -12,11 +12,16 @@ def start_dashboard():
         from communication.Communication import Communication
         from control.Vehicle import Vehicle
         from python_gui.gui import GUI
+        from control.Controller import Controller
     except ImportError:
         raise RuntimeError("cannot import local dependencies")
 
     # create instance of Vehicle class
     telemetry = Vehicle()
+
+    # start a thread for the controller
+    controller_thread = Controller(vehicle=telemetry)
+    controller_thread.start()
 
     # start the communication thread
     communication_thread = Communication(vehicle=telemetry)
