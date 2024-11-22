@@ -67,7 +67,7 @@ class Controller(threading.Thread):
             self.vehicle.controller = pygame.joystick.Joystick(0)
             self.vehicle.controllerName = self.vehicle.controller.get_name()
             self.vehicle.connected = True
-            #print(f"{self.controllerName}")
+            print(f"{self.vehicle.controllerName}")
         else:
             #print(f"No Controller Connected")
             self.vehicle.connected = False
@@ -111,8 +111,11 @@ class Controller(threading.Thread):
             if event.type == pygame.JOYAXISMOTION:
                 self.vehicle.throttleToSend = int(((self.vehicle.controller.get_axis(5) + 1) * 255) / 2)
                 self.vehicle.brakeToSend = int(((self.vehicle.controller.get_axis(4) + 1) * 255) / 2)
-                self.vehicle.steeringToSend = int(((self.vehicle.controller.get_axis(0) + 1) * 255) / 2)
+                self.vehicle.steering_angleToSend = int(((self.vehicle.controller.get_axis(0) + 1) * 255) / 2)
 
+            print(f"{self.vehicle.throttleToSend}")
+            print(f"{self.vehicle.brakeToSend}")
+            print(f"{self.vehicle.steering_angleToSend}")
     # Handles different controller inputs
     def GetControllerValue(self, selection):
         if self.controller_name == "Xbox One for Windows" | "Logitech G HUB G920 Driving Force Racing Wheel USB":
