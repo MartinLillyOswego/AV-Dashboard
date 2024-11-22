@@ -46,66 +46,104 @@ except ImportError:
 
 
 class Controller:
-
     def __init__(self):
+        # Variables
+        self.connected = False
+        self.controller = None
+        self.controllerName = ""
+        self.throttle = 0
+        self.brake = 0
+        self.steering = 128
+        self.handbrake = 0
+        self.gear = 1
+        self.controllerCount = 0
+        
+    def controllerConnect(self):
+        #Initialize pygame and joystick
         pygame.init()
+        pygame.joystick.init()
+
+        #clear terminal window
+        #self.clearWindow()
+
+        #Get number of controllers
+        
+        self.controllerCount = pygame.joystick.get_count()
+        if self.controllerCount > 0:
+            self.controller = pygame.joystick.Joystick(0)
+            self.controllerName = self.controller.get_name()
+            self.connected = True
+            #print(f"{self.controllerName}")
+        else:
+             print(f"No Controller Connected")
+             self.connected = False
+             self.controllerName = None
+             self.controller = None
+        #time.sleep(2)
 
     def get_vehicle_commands(self, packet):
         # try to connect with latest controller
-        if pygame.joystick.get_count() > 0:
-            self.controller = pygame.joystick.Joystick(0)
-            self.controller_name = self.controller.get_name()
+        if not connected:
+            self.controllerConnect()
 
         # Call get events method
         self.get_events(packet)
 
         return packet
 
-    def get_events(self, packet):
-        # Look for any events
+    '''
+    def clearWindow(self):
+        os.system("cls")
+        print("\033[H\033[J", end="")
+    '''
+    
+
+
+    def get_events(self, Packet):
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                #nothing yet
             if event.type == pygame.JOYBUTTONDOWN:
-                # Find the pressed button
-                if self.controller.get_button() == 0:
-                    # Gear Down / Might need to be mapped to 0-255 instead of 0,1,2
-                    if packet[9] == 1:  # If in neutral
-                        if packet[9] <= 5:  # Reverse lockout
-                            packet[9] += - 1
-                    elif packet[9] > 0:
-                        packet[9] += - 1
+                if self.controller.get_button(0) == 1:
+                    if self.handbrake == 0:
+                        self.handbrake = 255
+                    else:
+                        self.handbrake = 0
 
-                if self.controller.get_button() == 3:
-                    # Gear Up / Might need to be mapped to 0-255 instead of 0,1,2
-                    if packet[9] == 0:  # If in reverse
-                        if packet[9] <= 5:  # Reverse lock
-                            packet[9] += 1
-                    elif packet[9] < 4:
-                        packet[9] += 1
+                if self.gear == 1 and packet[0] >= 10:
+                    self.gear = min(5, self.gear + self.controller.get_button(5))
+                elif self.gear == 1 and packet[0] < 10:
+                    self.gear = min(5, self.gear + self.controller.get_button(5))
+                    self.gear = max(0, self.gear - self.controller.get_button(4))
+                    if self.controller.get_button(1) == 1:
+                        self.gear = 0
+                else:
+                    self.gear = min(5, self.gear + self.controller.get_button(5))
+                    self.gear = max(0, self.gear - self.controller.get_button(4))
 
-            # elif event.type == pygame.JOYAXISMOTION:
-            # Get all axis values
-            steering = self.controller.get_axis(0)
-            if abs(steering) < 0.1:
-                steering = 0
-            throttle = self.controller.get_axis(5)
-            # print (f"THROTTLE{type(self.throttle)}")
-            brake = self.controller.get_axis(4)
+                if event.type == pygame.JOYAXISMOTION:
+                    self.throttle = int(((self.controller.get_axis(5)+1)*255)/2)
+                    self.brake    = int(((self.controller.get_axis(4)+1)*255)/2)
+                    self.steering = int(((self.controller.get_axis(0)+1)*255)/2)
 
-            # Map axis
-            throttle = ((throttle + 1) / 2) * 255
-            brake = ((brake + 1) / 2) * 255
-            steering = ((steering + 1) / 2) * 255
-
-            # Change packet values
-            packet[1] = int(throttle)
-            packet[2] = int(brake)
-            packet[5] = int(steering)
-
-
-        # elif event.type == pygame.KEYUP:
-        # if event.key == GetKeyboardValue(keys["Throttle"]):
-
-        return packet
+                '''
+                # Print screen
+                os.system("cls")
+                print("\033[H\033[J", end="")
+                print(f"Throttle   : {self.throttle}")
+                print(f"Brake      : {self.brake}")
+                print(f"Steer Angle: {self.steering}")
+                print(f"Hand Brake : {self.handbrake}")
+                print(f"Gear       : {self.gear}")
+                print(f"Controller :{self.controllerName}")
+                time.sleep(.1)
+                '''
+                # Assign packet 
+                Packet[1] = self.throttle
+                Packet[2] = self.brake
+                Packet[5] = self.steering
+        
+        return Packet
 
     # Handles different controller inputs
     def GetControllerValue(self, selection):
