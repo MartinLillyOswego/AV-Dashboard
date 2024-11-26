@@ -12,43 +12,45 @@ class Vehicle:
     def __init__(self):
         self.lock = threading.Lock()
         self.exit = False  # True when system needs to exit
-        self.unchecked = True # should data be checked for error state
+        self.unchecked = True  # should data be checked for error state
 
         # packet data received
-        self.speed               = []  # 0  : Int 0-255: mph 0-32
-        self.throttle            = []  # 1  : Int 0-255
-        self.brake               = []  # 2  : Int 0-255
-        self.emergency_brake     = []  # 3  : Int 0-255
-        self.gear                = []  # 4  : Int (0-31:Reverse) (32-64:Neutral) (65-97:Low) (98-130:Mid) (131-163:High) (164-196:Overdrive) (197-255:Unassigned)
-        self.steering_angle      = []  # 5  : Int Center:127
-        self.direction           = []  # 6  : Int 0-255 East is zero:Clockwise to 255
-        self.battery_voltage     = []  # 7  : Int 0-255
-        self.battery_current     = []  # 8  : Int 0-255
+        self.speed = []                # 0  : Int 0-255: mph 0-32
+        self.throttle = []             # 1  : Int 0-255
+        self.brake = []                # 2  : Int 0-255
+        self.emergency_brake = []      # 3  : Int 0-255
+        self.gear = []                 # 4  : Int (0-31:Reverse)
+        # (32-64:Neutral) (65-97:Low) (98-130:Mid) (131-163:High) (164-196:Overdrive) (197-255:Unassigned)
+        self.steering_angle = []       # 5  : Int Center:127
+        self.direction = []            # 6  : Int 0-255 East is zero:Clockwise to 255
+        self.battery_voltage = []      # 7  : Int 0-255
+        self.battery_current = []      # 8  : Int 0-255
         self.battery_temperature = []  # 9  : Int 0-255
         self.front_L_wheel_speed = []  # 10 : Int 0-255
         self.front_R_wheel_speed = []  # 11 : Int 0-255
-        self.distance_to_object  = []  # 12 : Int 0-255
+        self.distance_to_object = []   # 12 : Int 0-255
 
         # packet data to send
-        self.speedToSend               = 0   # 3  : Int 0-255: mph 0-32
-        self.throttleToSend            = 0   # 4  : Int 0-255
-        self.brakeToSend               = 0   # 5  : Int 0-255
-        self.emergency_brakeToSend     = 0   # 6  : Int 0-255
-        self.gearToSend                = 1   # 7  : Int (0-31:Reverse) (32-64:Neutral) (65-97:Low) (98-130:Mid) (131-163:High) (164-196:Overdrive) (197-255:Unassigned)
-        self.steering_angleToSend      = 127 # 8  : Int Center:127
-        self.directionToSend           = 0   # 9  : Int 0-255 East is zero:Clockwise to 255
-        self.battery_voltageToSend     = 0   # 10 : Int 0-255
-        self.battery_currentToSend     = 0   # 11 : Int 0-255
+        self.speedToSend = 0                 # 3  : Int 0-255: mph 0-32
+        self.throttleToSend = 0              # 4  : Int 0-255
+        self.brakeToSend = 0                 # 5  : Int 0-255
+        self.emergency_brakeToSend = 0       # 6  : Int 0-255
+        self.gearToSend = 1                  # 7  : Int (0-31:Reverse) (32-64:Neutral) (65-97:Low) (98-130:Mid)
+        # (131-163:High) (164-196:Overdrive) (197-255:Unassigned)
+        self.steering_angleToSend = 127      # 8  : Int Center:127
+        self.directionToSend = 0             # 9  : Int 0-255 East is zero:Clockwise to 255
+        self.battery_voltageToSend = 0       # 10 : Int 0-255
+        self.battery_currentToSend = 0       # 11 : Int 0-255
         self.battery_temperatureToSend = 0   # 12 : Int 0-255
         self.front_L_wheel_speedToSend = 0   # 13 : Int 0-255
         self.front_R_wheel_speedToSend = 0   # 14 : Int 0-255
-        self.distance_to_objectToSend  = 0   # 15 : Int 0-255
+        self.distance_to_objectToSend = 0    # 15 : Int 0-255
 
         # controller information
         self.controllerConnected = False
-        self.controllerName      = None
+        self.controllerName = None
         self.controllerReference = None
-        
+
         # Error states
         self.warning_state = False
         self.critical_error_state = False
@@ -68,7 +70,7 @@ class Vehicle:
         with self.lock:
             out.exit = self.exit
 
-            # Packet data
+            # incoming packet data
             out.speed = self.speed.copy()
             out.throttle = self.throttle.copy()
             out.brake = self.brake.copy()
@@ -82,6 +84,21 @@ class Vehicle:
             out.front_L_wheel_speed = self.front_L_wheel_speed.copy()
             out.front_R_wheel_speed = self.front_R_wheel_speed.copy()
             out.distance_to_object = self.distance_to_object.copy()
+
+            # outgoing command data
+            out.speedToSend = self.speedToSend
+            out.throttleToSend = self.throttleToSend
+            out.brakeToSend = self.brakeToSend
+            out.emergency_brakeToSend = self.emergency_brakeToSend
+            out.gearToSend = self.gearToSend
+            out.steering_angleToSend = self.steering_angleToSend
+            out.directionToSend = self.directionToSend
+            out.battery_voltageToSend = self.battery_voltageToSend
+            out.battery_currentToSend = self.battery_currentToSend
+            out.battery_temperatureToSend = self.battery_temperatureToSend
+            out.front_L_wheel_speedToSend = self.front_L_wheel_speedToSend
+            out.front_R_wheel_speedToSend = self.front_R_wheel_speedToSend
+            out.distance_to_objectToSend = self.distance_to_objectToSend
 
             # Error stats
             out.warning_state = self.warning_state
@@ -130,23 +147,3 @@ class Vehicle:
             self.front_L_wheel_speed.append(attributes[10])
             self.front_R_wheel_speed.append(attributes[11])
             self.distance_to_object.append(attributes[12])
-
-    # update fields not directly given by the packet
-    def update_calculated_data(self, attributes):
-        with self.lock:
-            pass
-            '''
-            self.display_velocity = attributes[0].copy()
-            self.acceleration = attributes[1].copy()
-            self.display_battery_temperate = attributes[2].copy()
-            self.display_battery_voltage = attributes[3].copy()
-            self.display_battery_current = attributes[4].copy()
-            self.display_steering_angle = attributes[5]
-            self.display_direction = attributes[6]
-            self.position_graphic = attributes[7].copy()  # data type of this field is tbd
-            self.total_distance_traveled = attributes[8]
-            self.display_throttle = attributes[9].copy()
-            self.display_slip_angle = attributes[10].copy()
-            self.display_distance_to_object = attributes[11]
-            self.display_error_code = attributes[12]
-            '''

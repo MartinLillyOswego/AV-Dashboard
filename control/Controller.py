@@ -1,6 +1,4 @@
-# Imports
 import threading
-
 try:
     import pygame
 except ImportError:
@@ -48,7 +46,7 @@ class Controller(threading.Thread):
                 pass
             if event.type == pygame.JOYDEVICEADDED or event.type == pygame.JOYDEVICEREMOVED:
                 self.controllerConnect()
-            #print(f"{self.vehicle.controller.get_numaxis()}")
+
             if event.type == pygame.JOYBUTTONDOWN:
                 # handbrake
                 if self.controller.get_button(0) == 1:
@@ -70,14 +68,17 @@ class Controller(threading.Thread):
                     self.vehicle.gearToSend = min(5, self.vehicle.gear + self.vehicle.controller.get_button(5))
                     self.vehicle.gearToSend = max(0, self.vehicle.gear - self.vehicle.controller.get_button(4))
 
+            # throttle and brake
             if event.type == pygame.JOYAXISMOTION:
-                print(f"{self.vehicle.controller.get_axis(0)}")
                 self.vehicle.throttleToSend = int(((self.vehicle.controller.get_axis(5) + 1) * 255) / 2)
                 self.vehicle.brakeToSend = int(((self.vehicle.controller.get_axis(4) + 1) * 255) / 2)
-            self.vehicle.steering_angleToSend = int(((self.vehicle.controller.get_axis(2) + 1) * 255) / 2)
-            #print(f"{self.vehicle.throttleToSend}")
-            print(f"{self.vehicle.brakeToSend}")
-            print(f"{self.vehicle.steering_angleToSend}")
+
+            # steering
+            js_val = self.vehicle.controller.get_axis(2)
+            if abs(js_val) < 0.1:
+                js_val = 0
+            self.vehicle.steering_angleToSend = int(((js_val + 1) * 255) / 2)
+
     # Handles different controller inputs
     def GetControllerValue(self, selection):
         if self.controller_name == "Xbox One for Windows" | "Logitech G HUB G920 Driving Force Racing Wheel USB":

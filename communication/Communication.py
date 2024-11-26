@@ -32,32 +32,32 @@ class Communication(threading.Thread):
 
     def package_data(self):
         # pull last_packet from vehicle class
-        #vehicle_snapshot = self.vehicle.__copy__()
-        packet = [self.vehicle.speedToSend,
-                  self.vehicle.throttleToSend,
-                  self.vehicle.brakeToSend,
-                  self.vehicle.emergency_brakeToSend,
-                  self.vehicle.gearToSend,
-                  self.vehicle.steering_angleToSend,
-                  self.vehicle.directionToSend,
-                  self.vehicle.battery_voltageToSend,
-                  self.vehicle.battery_currentToSend,
-                  self.vehicle.battery_temperatureToSend,
-                  self.vehicle.front_L_wheel_speedToSend,
-                  self.vehicle.front_R_wheel_speedToSend,
-                  self.vehicle.distance_to_objectToSend]
-
+        vehicle_snapshot = self.vehicle.__copy__()
+        packet = [vehicle_snapshot.speedToSend,
+                  vehicle_snapshot.throttleToSend,
+                  vehicle_snapshot.brakeToSend,
+                  vehicle_snapshot.emergency_brakeToSend,
+                  vehicle_snapshot.gearToSend,
+                  vehicle_snapshot.steering_angleToSend,
+                  vehicle_snapshot.directionToSend,
+                  vehicle_snapshot.battery_voltageToSend,
+                  vehicle_snapshot.battery_currentToSend,
+                  vehicle_snapshot.battery_temperatureToSend,
+                  vehicle_snapshot.front_L_wheel_speedToSend,
+                  vehicle_snapshot.front_R_wheel_speedToSend,
+                  vehicle_snapshot.distance_to_objectToSend]
+        out = bytes(packet)
         if not config.USE_LOCAL_PORT:
-            out = config.PACKET_HEADER + bytes(packet)
+            out = config.PACKET_HEADER + out
         #os.system("cls")
         #print(f"\033[H\033[J", end="")
-        #print(f"{config.get_time()}:Sending: {out}")
-        if False:
-            os.system("cls")
-            print(f"\033[H\033[J", end="")
-            print(f"Throttle: {self.vehicle.throttleToSend}")
-            print(f"Brake   : {self.vehicle.brakeToSend}")
-            print(f"Steer   : {self.vehicle.steering_angleToSend}")
+        print(f"{config.get_time()}:Sending: {packet}")
+        print(f"{config.get_time()}:Sending: {out}")
+        #os.system("cls")
+        #print(f"\033[H\033[J", end="")
+        #print(f"Throttle: {self.vehicle.throttleToSend}")
+        #print(f"Brake   : {self.vehicle.brakeToSend}")
+        #print(f"Steer   : {self.vehicle.steering_angleToSend}")
         return out
 
     @staticmethod
@@ -82,8 +82,7 @@ class Communication(threading.Thread):
             while not self.serial_port.in_waiting:
                 if (time.monotonic() - st) > 1:
                     self.vehicle.radio_state = 1
-                    break
-                    # where error state is triggered
+                    break  # if no data received after 1sec, send
             if self.serial_port.in_waiting:
                 packet = self.serial_port.read(config.PACKET_SIZE)
                 # print(f"{config.get_time()}:Received: {packet}")
