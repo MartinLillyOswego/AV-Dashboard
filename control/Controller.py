@@ -1,134 +1,197 @@
-# Imports
+from inputs import get_gamepad, devices
+import time
 import threading
-
-try:
-    import pygame
-except ImportError:
-    raise RuntimeError('cannot import pygame, make sure pygame package is installed')
 
 class Controller(threading.Thread):
     def __init__(self, vehicle):
-        # Variables
         super(Controller, self).__init__()
         self.vehicle = vehicle
-        pygame.init()
 
-    def controllerConnect(self):
-        # Initialize pygame and joystick
-        pygame.init()
-        pygame.joystick.init()
+    def keyboard_connect(self):
+        # Check for keyboards
+        keyboards = devices.keyboards
 
-        # clear terminal window
-        # self.clearWindow()
+        # Get length of keyboards
+        index = len(keyboards)
+        #print(f"{keyboards[0]}")
 
-        # Get number of controllers
-        self.controllerCount = pygame.joystick.get_count()
-        if self.controllerCount > 0:
-            self.vehicle.controller = pygame.joystick.Joystick(0)
-            self.vehicle.controllerName = self.vehicle.controller.get_name()
-            self.vehicle.connected = True
-            print(f"{self.vehicle.controllerName}")
+        # If no keyboards connected
+        if not keyboards:
+            self.vehicle.keyboard_name = None
+            self.vehicle.keyboard_reference = None
+            self.vehicle.keyboard_connected = False
+
+        # Else keyboards connected
         else:
-            #print(f"No Controller Connected")
-            self.vehicle.connected = False
-            self.vehicle.controllerName = None
-            self.vehicle.controller = None
-        # time.sleep(2)
+            # Select first keyboard
+            keyboard = keyboards[index - 1]
+            # check if still active
+            try:
 
-    '''
-    def clearWindow(self):
-        os.system("cls")
-        print("\033[H\033[J", end="")
-    '''
+                # Try to pull data from keyboard
+                working = keyboard.get_key()
+
+                # Keyboard still connected
+                self.vehicle.keyboard_name = keyboard.name
+                self.vehicle.keyboard_reference = keyboard
+                self.vehicle.keyboard_connected = True
+
+            # Except if unable to pull data from keyboard
+            except Exception as error:
+
+                # Keyboard is no longer active
+                self.vehicle.keyboard_name = None
+                self.vehicle.keyboard_reference = None
+                self.vehicle.keyboard_connected = False
+
+    def controller_connect(self):
+        # Check for controllers
+        devices._detect_gamepads()
+        controllers = devices.gamepads
+
+        # Find length and choose last controller on list
+        index = len(controllers)
+
+        # If no controllers connected
+        if not controllers:
+            self.vehicle.controller_name = None
+            self.vehicle.controller_reference = None
+            self.vehicle.controller_connected = False
+
+        # Else controllers connected, select latest one
+        else:
+            controller = controllers[index - 1]
+
+            # check if still active
+            try:
+                # Try to pull data from controller
+                working = controller.read()
+
+                # Controller still connected
+                self.vehicle.controller_name = controller.name
+                self.vehicle.controller_reference = controller
+                self.vehicle.controller_connected = True
+
+            # Except if unable to pull data from controller
+            except Exception as error:
+
+                # Controller is no longer active
+                self.vehicle.controller_name = None
+                self.vehicle.controller_reference = None
+                self.vehicle.controller_connected = False
 
     def get_events(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                # nothing yet
-                pass
-            if event.type == pygame.JOYDEVICEADDED or event.type == pygame.JOYDEVICEREMOVED:
-                self.controllerConnect()
-            #print(f"{self.vehicle.controller.get_numaxis()}")
-            if event.type == pygame.JOYBUTTONDOWN:
-                # handbrake
-                if self.controller.get_button(0) == 1:
-                    if self.vehicle.handbrakeToSend == 0:
-                        self.vehicle.handbrakeToSend = 255
-                    else:
-                        self.vehicle.handbrakeToSend = 0
 
-                # gear selection
-                ind = len(self.vehicle.speed)
-                if self.vehicle.gear[ind] == 1 and self.vehicle.speed[-1] >= 10:
-                    self.vehicle.gearToSend = min(5, self.vehicle.gear + self.vehicle.controller.get_button(5))
-                elif self.vehicle.gear[ind] == 1 and self.vehicle.speed[-1] < 10:
-                    self.vehicle.gearToSend = min(5, self.vehicle.gear + self.vehicle.controller.get_button(5))
-                    self.vehicle.gearToSend = max(0, self.vehicle.gear - self.vehicle.controller.get_button(4))
-                    if self.controller.get_button(1) == 1:
-                        self.vehicle.gearToSend = 0
-                else:
-                    self.vehicle.gearToSend = min(5, self.vehicle.gear + self.vehicle.controller.get_button(5))
-                    self.vehicle.gearToSend = max(0, self.vehicle.gear - self.vehicle.controller.get_button(4))
+        while True:
+            # Check for devices
+            if self.vehicle.controller_connected:
 
-            if event.type == pygame.JOYAXISMOTION:
-                print(f"{self.vehicle.controller.get_axis(0)}")
-                self.vehicle.throttleToSend = int(((self.vehicle.controller.get_axis(5) + 1) * 255) / 2)
-                self.vehicle.brakeToSend = int(((self.vehicle.controller.get_axis(4) + 1) * 255) / 2)
-            self.vehicle.steering_angleToSend = int(((self.vehicle.controller.get_axis(2) + 1) * 255) / 2)
-            #print(f"{self.vehicle.throttleToSend}")
-            print(f"{self.vehicle.brakeToSend}")
-            print(f"{self.vehicle.steering_angleToSend}")
-    # Handles different controller inputs
-    def GetControllerValue(self, selection):
-        if self.controller_name == "Xbox One for Windows" | "Logitech G HUB G920 Driving Force Racing Wheel USB":
-            buttons = {
-                "A": 0,
-                "B": 1,
-                "X": 2,
-                "Y": 3,
-                "LeftBumper": 4,
-                "RightBumper": 5,
-                "LeftJoyIn": 6,
-                "RightJoyIn": 7,
-                "View": 8,
-                "Menu": 9,
-                "Home": 10
-            }
+                # Try to read from controller
+                try:
+                    # Get controller inputs
+                    controller_events = self.vehicle.controller_reference.read()
+                    for event in controller_events:
 
-            axis = {
-                "LeftJoyPan": 0,
-                "LeftJoyTilt": 1,
-                "RightJoyPan": 2,
-                "RightJoyTilt": 3,
-                "LeftTrigger": 4,
-                "RightTrigger": 5
-            }
+                        # Get latest index of vehicle class and controller name
+                        ind = len(self.vehicle.speed)
+                        controller = self.vehicle.controller_name
 
-            pads = {
-                "Left": 2,
-                "Right": 1,
-                "Up": 0,
-                "Down": 3
-            }
+                        # if button pressed on gamepad
+                        if event.ev_type == 'Key':
 
-    # elif self.controller_name == "Logitech G HUB G920 Driving Force Racing Wheel USB"
-    def GetKeyboardValue(self, selection):
-        keys = {
-            "Throttle": K_w,
-            "Brake": K_b,
-            "SteerLeft": K_a,
-            "SteerRight": K_d,
-            "Reverse": K_q,
-            "ManualMode": K_m,
-            "GearUp": K_UP,
-            "GearDown": K_DOWN,
-            "Menu": K_h,
-            "Select": K_b,
-            "Options": K_o,
+                            # Shift up
+                            if event.code == self.get_input(controller,"ShiftUp") and event.state == 1:
+                                # If in reverse must be below 5mph
+                                if self.vehicle.speed[-1] < 10 and self.vehicle.gear[-1] == 0:
+                                    # Shift up
+                                    self.vehicle.gearToSend = 1
+                                # Else if not in reverse
+                                elif self.vehicle.gear[-1] != 0:
+                                    #Shift up
+                                    self.vehicle.gearToSend = min(5, self.vehicle.gear[-1] + 1)
+
+                            # Shift down
+                            if event.code == self.get_input(controller,"ShiftDown") and event.state == 1:
+                                # If in neutral must be below 5mph
+                                if self.vehicle.speed[-1] < 5 and self.vehicle.gear[-1] == 1:
+                                    # Shift down
+                                    self.vehicle.gearToSend = 0
+                                # Else if not in neutral
+                                elif self.vehicle.gear[-1] != 1:
+                                    #Shift down
+                                    self.vehicle.gearToSend = max(0, self.vehicle.gear[-1] - 1)
+
+                            # Handbrake
+                            if event.code == self.get_input(controller, "Handbrake") and event.state == 1:
+                                # Apply handbrake
+                                self.vehicle.emergency_brakeToSend = 255
+                            else:
+                                self.vehicle.emergency_brakeToSend = 0
+
+                        # Else if event is a joystick
+                        if event.ev_type == 'Absolute':
+
+                            # Steering
+                            if event.code == self.get_input(controller, "Steer"):
+                                steering_angle = int((event.state + 32768) * (255/65535))       # Map from -32768_32768 to 0_255
+                                self.vehicle.steering_angleToSend = steering_angle
+
+                            # Brake
+                            elif event.code == self.get_input(controller, "Brake"):
+                                brake = event.state
+                                self.vehicle.brakeToSend = brake
+
+                            # Throttle
+                            elif event.code == self.get_input(controller, "Throttle"):
+                                throttle = event.state
+                                self.vehicle.throttleToSend = throttle
+
+                # Except error for reading controller and reconnect
+                except Exception as error:
+                    self.controller_connect()
+
+            # Else connect to controller
+            else:
+                self.controller_connect()
+            '''
+            # Check for keyboard
+            if self.vehicle.keyboard_connected:
+                # Try to read from keyboard
+                try:
+                    # Get keyboard inputs
+                    keyboard_events = self.vehicle.keyboard_reference.get_key()
+                    for event in keyboard_events:
+                        print(f"{event.ev_type}, {event.code}, {event.state}")
+
+                # Except error for reading keyboard and reconnect
+                except Exception as error:
+                    self.keyboard_connect()
+            else:
+                self.keyboard_connect()
+            '''
+
+    @staticmethod
+    def get_input(controller_name, input_selection):
+        # Xbox One controller
+        xbox_one = {
+            "Throttle"  : "ABS_RZ",    # Right trigger
+            "Brake"     : "ABS_Z",      # Left trigger
+            "Handbrake" : "BTN_SOUTH",  # A button
+            "Steer"     : "ABS_X",      # Left Joystick
+            "ShiftDown" : "BTN_TL",     # Left bumper
+            "ShiftUp"   : "BTN_TR",     # Right bumper
+            "Select"    : "BTN_MENU",   # Left select
+            "Menu"      : "BTN_SELECT", # Right menu
+            "D_L/R"     : "ABS_HAT0X",  # Dpad left and right -1 for left 1 for right
+            "D_U/D"     : "ABS_HAT0Y",  # Dpad up and down -1 for up 1 for down
         }
+        # Check for type of connected controller
+        if controller_name == "Microsoft X-Box 360 pad":
+            return xbox_one.get(input_selection)
 
     def run(self):
         while True:
+            time.sleep(2)   #Wait for program to start
             self.get_events()
             if self.vehicle.exit:
                 break
