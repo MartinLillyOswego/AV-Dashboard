@@ -62,14 +62,14 @@ def write():
         header = PACKET_HEADER
         if type(header) == bytes:
             header = f"{int(header[0])}.{int(header[1])}.{int(header[2])}"
-        new_config = f"""VEHICLE_PORT: {VEHICLE_PORT}
-LOCAL_PORT: {LOCAL_PORT}
+        new_config = f"""RADIO_PORT: {VEHICLE_PORT}
+LOCAL_CARLA_PORT: {LOCAL_PORT}
 USE_LOCAL_PORT: {USE_LOCAL_PORT}
 SEND_INTERVAL: {SEND_INTERVAL}
-PACKET_COUNT: {PACKET_COUNT} 
+MAX_PACKET_COUNT: {PACKET_COUNT} 
 PACKET_HEADER: {header}
 MAX_SPEED: {MAX_SPEED}
-PACKET_SIZE: {PACKET_SIZE}
+INCOMING_PACKET_SIZE: {PACKET_SIZE}
 """
         with open(CONFIG_FILE, "w") as file:
             file.write(new_config)
