@@ -44,6 +44,8 @@ class Controller(threading.Thread):
                 self.vehicle.keyboard_reference = None
                 self.vehicle.keyboard_connected = False
 
+
+
     def controller_connect(self):
         # Check for controllers
         devices._detect_gamepads()
@@ -64,6 +66,7 @@ class Controller(threading.Thread):
 
             # check if still active
             try:
+
                 # Try to pull data from controller
                 working = controller.read()
 
@@ -79,6 +82,7 @@ class Controller(threading.Thread):
                 self.vehicle.controller_name = None
                 self.vehicle.controller_reference = None
                 self.vehicle.controller_connected = False
+
 
     def get_events(self):
 
@@ -127,6 +131,7 @@ class Controller(threading.Thread):
                                 self.vehicle.emergency_brakeToSend = 255
                             else:
                                 self.vehicle.emergency_brakeToSend = 0
+
 
                         # Else if event is a joystick
                         if event.ev_type == 'Absolute':
@@ -188,6 +193,7 @@ class Controller(threading.Thread):
         # Check for type of connected controller
         if controller_name == "Microsoft X-Box 360 pad":
             return xbox_one.get(input_selection)
+
 
     def run(self):
         while True:
