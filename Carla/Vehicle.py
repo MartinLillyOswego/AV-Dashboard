@@ -113,4 +113,26 @@ class Vehicle:
             self.front_R_wheel_speedToSend.append(attributes[11])
             self.distance_to_objectToSend.append(attributes[12])
 
-
+    def getgear(self):
+        gear_value = self.gear[-1] 
+        if 0 <= gear_value <= 31:
+            return "Neutral"
+        elif 32 <= gear_value <= 64:
+            return "Low"
+        elif 65 <= gear_value <= 97:
+            return "Mid"
+        elif 98 <= gear_value <= 130:
+            return "High"
+        elif 131 <= gear_value <= 196:
+            return "Overdrive"
+        elif 197 <= gear_value <= 255: 
+            return "Reverse"
+        else:
+            return "Unknown"
+        
+    def getdirection(self):
+        directions = ['East', 'South-East', 'South', 'South-West', 'West', 'North-West', 'North', 'North-East']
+        direction_value = self.direction[-1]
+        adjusted_value = (direction_value + 16) % 256  
+        index = int(adjusted_value / 32)
+        return directions[index]
