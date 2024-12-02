@@ -123,7 +123,7 @@ class GUI(threading.Thread):
                     "battery_img": battery_img,
                     "con_png": con_png,
                     "battery_percent_and_temp": f"{battery_percent}% {battery_temperature}°F",
-                    "acceleration": round(acceleration, 2),
+                    "acceleration": round(smoothed_acceleration, 2),
                     "distance_to_object": distance_to_object,
                     "gear": gear,
                     "direction": direction
