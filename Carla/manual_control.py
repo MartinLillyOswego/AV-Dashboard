@@ -335,7 +335,7 @@ class World(object):
             pass
 
     def tick(self, clock, ogv, icv):
-        newInfo = self.hud.tick(self, clock, ogv)
+        newInfo = self.hud.tick(self, clock, icv)
         return newInfo
 
     def render(self, display):
@@ -494,7 +494,10 @@ class KeyboardControl(object):
                     world.hud.notification("Recording start time is %d" % (world.recording_start))
                 if isinstance(self._control, carla.VehicleControl):
                     if event.key == K_q:
-                        self._control.gear = 1 if self._control.reverse else -1
+                        if self._control.gear == 0 or self._control.gear == 1:
+                            self._control.gear = -1
+                        elif self._control.gear == -1:
+                            self._control.gear = 1
                     elif event.key == K_m:
                         self._control.manual_gear_shift = not self._control.manual_gear_shift
                         self._control.gear = world.player.get_control().gear
@@ -563,35 +566,38 @@ class KeyboardControl(object):
     def _parse_vehicle_keys(self, keys, milliseconds, icv):
         if icv is None:
             return
-        veh = icv.__copy__()
-        ind = len(veh.speed)-1
+        #veh = icv.__copy__()
+        ind = len(icv.throttle)-1
         if ind <= 0:
             return
-        if veh.throttle[ind] > 10:
-            self._control.throttle = min(self._control.throttle + 0.01, 1.00)
+        if icv.throttle[ind] > 5:
+            self._control.throttle = min(self._control.throttle + 0.1, 1.00)
         else:
             self._control.throttle = 0.0
 
-        if veh.brake[ind] > 10:
+        if icv.brake[ind] > 5:
             self._control.brake = min(self._control.brake + 0.2, 1.00)
         else:
             self._control.brake = 0.0
 
-        if veh.emergency_brake[ind] > 10:
+        if icv.emergency_brake[ind] > 10:
             self._control.hand_brake = 1
         else:
             self._control.hand_brake = 0
+        
+        self._control.steer = (icv.steering_angle[ind] - 127.5) / 220
 
-        self._control.gear = veh.gear[ind]
-
-        steer_increment = 5e-4 * milliseconds
-        if veh.steering_angle[ind] < 125:
+        self._control.gear = icv.gear[ind]
+        self._control.hand_brake = icv.emergency_brake[ind]
+        '''
+        steer_increment = 5e-6 * milliseconds
+        if icv.steering_angle[ind] < 120:
             if self._steer_cache > 0:
                 self._steer_cache = 0
             else:
                 self._steer_cache -= steer_increment
 
-        elif veh.steering_angle[ind] > 129:
+        elif icv.steering_angle[ind] > 138:
             if self._steer_cache < 0:
                 self._steer_cache = 0
             else:
@@ -600,10 +606,9 @@ class KeyboardControl(object):
             self._steer_cache = 0.0
         self._steer_cache = min(0.7, max(-0.7, self._steer_cache))
         self._control.steer = round(self._steer_cache, 1)
-
-
+        
         '''
-
+        '''
         if keys[K_UP] or keys[K_w]:
             self._control.throttle = min(self._control.throttle + 0.01, 1.00)
         else:
@@ -613,23 +618,6 @@ class KeyboardControl(object):
             self._control.brake = min(self._control.brake + 0.2, 1)
         else:
             self._control.brake = 0
-
-        steer_increment = 5e-4 * milliseconds
-        if keys[K_LEFT] or keys[K_a]:
-            if self._steer_cache > 0:
-                self._steer_cache = 0
-            else:
-                self._steer_cache -= steer_increment
-        elif keys[K_RIGHT] or keys[K_d]:
-            if self._steer_cache < 0:
-                self._steer_cache = 0
-            else:
-                self._steer_cache += steer_increment
-        else:
-            self._steer_cache = 0.0
-        self._steer_cache = min(0.7, max(-0.7, self._steer_cache))
-        self._control.steer = round(self._steer_cache, 1)
-        self._control.hand_brake = keys[K_SPACE]
         '''
 
     def _parse_walker_keys(self, keys, milliseconds, world):
@@ -684,7 +672,7 @@ class HUD(object):
         self.frame = timestamp.frame
         self.simulation_time = timestamp.elapsed_seconds
 
-    def tick(self, world, clock, ogv):
+    def tick(self, world, clock, icv):
         self._notifications.tick(world, clock)
         if not self._show_info:
             return
@@ -713,7 +701,7 @@ class HUD(object):
                       avHandBrake,
                       avGear,
                       avSteer,
-                      avCompass,
+                      0,
                       0,           #Voltage
                       0,           #Current
                       0,           #Temp
@@ -722,7 +710,7 @@ class HUD(object):
                       avDistance]           #Distance to object
 
             # Write to serial
-            ogv.update_with_packet(Packet)
+            icv.update_with_packet_from_carla(Packet)
 
         compass = world.imu_sensor.compass
         heading = 'N' if compass > 270.5 or compass < 89.5 else ''
@@ -1378,7 +1366,7 @@ class CommunicationMC(threading.Thread):
 
     def package_data(self):
         # pull last_packet from carla class
-        vehicle_snapshot = self.carlaData.__copy__()
+        vehicle_snapshot = self.vehicle.__copy__()
         ind = len(vehicle_snapshot.speed) - 1
         # if no data is available yet
         if ind == -1:
@@ -1397,7 +1385,7 @@ class CommunicationMC(threading.Thread):
                   vehicle_snapshot.front_L_wheel_speed[ind],
                   vehicle_snapshot.front_R_wheel_speed[ind],
                   vehicle_snapshot.distance_to_object[ind]]
-        print(packet)
+        #print(packet)
         # send with header when using radios
         if config.USE_LOCAL_PORT:
             return bytes(packet)
@@ -1411,7 +1399,7 @@ class CommunicationMC(threading.Thread):
             return True
         try:
             connection.write(data)
-            print(f"{config.get_time()}:Sent: {data}")
+            #print(f"{config.get_time()}:Sent: {data}")
         except serial.SerialTimeoutException:
             print(f"{config.get_time()}:Communication: Failed to send packet, bad serial connection")
             return False
@@ -1426,11 +1414,13 @@ class CommunicationMC(threading.Thread):
                 pass
             # Read Packet
             packet = self.serial_port.read(config.PACKET_SIZE)
-            print(f"{config.get_time()}:Received: {packet}")
+            #print(f"{config.get_time()}:Received: {packet}")
+            '''
             out = ""
             for i in range(len(packet)):
                 out += str(int(packet[i])) + " "
             print(out)
+            '''
 
             # Update Packet
             if len(packet) == config.PACKET_SIZE:
@@ -1516,12 +1506,6 @@ def main(ogv, icv):
 
     log_level = logging.DEBUG if args.debug else logging.INFO
     logging.basicConfig(format='%(levelname)s: %(message)s', level=log_level)
-
-    '''
-    #Start serial connection
-    serial3 = serial.Serial(port='COM3',baudrate=9600,timeout=1)
-    print("Here2")
-    '''
 
     logging.info('listening to server %s:%s', args.host, args.port)
 
