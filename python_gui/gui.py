@@ -72,7 +72,7 @@ class GUI(threading.Thread):
                         "acceleration": 0,
                         "distance_to_object": 0,
                         "gear": 0,
-                        "direction": ""}
+                        "direction": 0}
 
             # update data
             veh = self.vehicle.__copy__()
@@ -85,15 +85,30 @@ class GUI(threading.Thread):
             battery_temperature = 0
             battery_percent = 100
             # Calculate acceleration
-            deltav = current_speed - self.lastspeed
-            deltat = current_time -self.lasttime if current_time != self.lasttime else 1e-6
+            if current_speed is None or current_speed < 0: 
+                self.last_acceleration if hasattr(self, 'last_acceleration') else 0
+            current_speed_mps = current_speed * (1000 / 3600)
+            deltav = current_speed_mps - self.lastspeed
+            deltat = max((current_time - self.lasttime), 1e-6)
             acceleration = deltav / deltat
             self.lastspeed = current_speed
             self.lasttime = current_time
+            self.last_acceleration = acceleration 
+
+            self.acceleration_history = getattr(self, 'acceleration_history', [])
+            self.acceleration_history.append(acceleration)
+            if len(self.acceleration_history) > 5:  # Use the last 5 values
+                self.acceleration_history.pop(0)
+            smoothed_acceleration = sum(self.acceleration_history) / len(self.acceleration_history)
+            
             distance_to_object = str(veh.distance_to_object) if veh.distance_to_object != float('inf') else "No Object Detected"
 
             throttle_percent = int(10 * ((throttle_force+1) / 256))
             brake_percent = int(10 * ((brake_force+1) / 256))
+
+            gear = veh.getgear()
+
+            direction = veh.getdirection()
 
             # Battery Img
             battery_img = "static/icons/battery" + str(min(math.ceil(battery_percent * 4 / 100), 4)) + ".png"
@@ -110,8 +125,8 @@ class GUI(threading.Thread):
                     "battery_percent_and_temp": f"{battery_percent}% {battery_temperature}°F",
                     "acceleration": round(acceleration, 2),
                     "distance_to_object": distance_to_object,
-                    # "gear": gear,
-                    # "direction": direction
+                    "gear": gear,
+                    "direction": direction
                     }
 
         # Server Start
