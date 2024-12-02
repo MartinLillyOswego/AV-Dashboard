@@ -30,29 +30,30 @@ class Vehicle:
         self.distance_to_object  = []  # 12 : Int 0-255
 
         # packet data to send
-        self.speedToSend               = 0   # 3  : Int 0-255: mph 0-32
-        self.throttleToSend            = 0   # 4  : Int 0-255
-        self.brakeToSend               = 0   # 5  : Int 0-255
-        self.emergency_brakeToSend     = 0   # 6  : Int 0-255
-        self.gearToSend                = 1   # 7  : Int (0-31:Reverse) (32-64:Neutral) (65-97:Low) (98-130:Mid) (131-163:High) (164-196:Overdrive) (197-255:Unassigned)
-        self.steering_angleToSend      = 127 # 8  : Int Center:127
-        self.directionToSend           = 0   # 9  : Int 0-255 East is zero:Clockwise to 255
-        self.battery_voltageToSend     = 0   # 10 : Int 0-255
-        self.battery_currentToSend     = 0   # 11 : Int 0-255
-        self.battery_temperatureToSend = 0   # 12 : Int 0-255
-        self.front_L_wheel_speedToSend = 0   # 13 : Int 0-255
-        self.front_R_wheel_speedToSend = 0   # 14 : Int 0-255
-        self.distance_to_objectToSend  = 0   # 15 : Int 0-255
+        self.throttleToSend            = 0   # 0  : Int 0-255
+        self.brakeToSend               = 0   # 1  : Int 0-255
+        self.emergency_brakeToSend     = 0   # 2  : Int 0-255
+        self.gearToSend                = 2   # 3  : Int (0-31:Reverse) (32-64:Neutral) (65-97:Low) (98-130:Mid) (131-163:High) (164-196:Overdrive) (197-255:Unassigned)
+        self.steering_angleToSend      = 127 # 4  : Int Center:127
 
         # controller information
-        self.controllerConnected = False
-        self.controllerName      = None
-        self.controllerReference = None
+        self.controller_connected = False
+        self.controller_name      = None
+        self.controller_reference = None
+        self.keyboard_connected = False
+        self.keyboard_name = None
+        self.keyboard_reference = None
+
+        # Communication values
+        self.communication_time = 0
+        self.serial_connected = False
+        self.sent = False
+        self.received = False
         
         # Error states
         self.warning_state = False
         self.critical_error_state = False
-        self.radio_state = 0
+        self.radio_state = 0                    #0: No connection, 1: Slow Connection, 2: Good Connection
         self.collision_state = False
         self.battery_depletion = False
         self.battery_overheat = False
