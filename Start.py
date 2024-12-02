@@ -1,6 +1,5 @@
 from threading import Thread
 import threading
-import signal
 import time
 
 def start_dashboard():
