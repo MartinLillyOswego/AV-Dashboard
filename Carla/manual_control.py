@@ -688,7 +688,10 @@ class HUD(object):
             avThrottle = int(c.throttle * 255)
             avBrake = int(c.brake * 255)
             avHandBrake = int(c.hand_brake * 255)
-            avGear =  c.gear + 1          #int((c.gear * 32) + 6)
+            if c.gear < 0:
+                avGear = 250 + int((c.gear * 32) + 6)
+            else: avGear = int((c.gear * 32) + 6)        
+            avGear = max(0, min(255, avGear)) #c.gear + 1  
             avSteer = int((c.steer + 0.7) * 182)
             avReverse = int(c.reverse)
             avCompass = int(world.imu_sensor.compass * .70833)  # East is 0 degrees and rotates clockwise to north
@@ -701,6 +704,7 @@ class HUD(object):
                       avHandBrake,
                       avGear,
                       avSteer,
+                      avCompass,
                       0,
                       0,           #Voltage
                       0,           #Current
