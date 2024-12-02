@@ -113,22 +113,4 @@ class Vehicle:
             self.front_R_wheel_speedToSend.append(attributes[11])
             self.distance_to_objectToSend.append(attributes[12])
 
-    # update fields not directly given by the packet
-    def update_calculated_data(self, attributes):
-        with self.lock:
-            pass
-            '''
-            self.display_velocity = attributes[0].copy()
-            self.acceleration = attributes[1].copy()
-            self.display_battery_temperate = attributes[2].copy()
-            self.display_battery_voltage = attributes[3].copy()
-            self.display_battery_current = attributes[4].copy()
-            self.display_steering_angle = attributes[5]
-            self.display_direction = attributes[6]
-            self.position_graphic = attributes[7].copy()  # data type of this field is tbd
-            self.total_distance_traveled = attributes[8]
-            self.display_throttle = attributes[9].copy()
-            self.display_slip_angle = attributes[10].copy()
-            self.display_distance_to_object = attributes[11]
-            self.display_error_code = attributes[12]
-            '''
+
