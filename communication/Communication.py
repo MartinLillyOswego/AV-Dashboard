@@ -6,7 +6,6 @@ import serial
 import time
 import os
 
-
 class Communication(threading.Thread):
 
     def __init__(self, vehicle):
@@ -15,49 +14,50 @@ class Communication(threading.Thread):
         self.serial_port = None
 
     def serial_connect(self):
-        while True:
-            serial_id = config.VEHICLE_PORT
-            if config.USE_LOCAL_PORT:
-                serial_id = config.LOCAL_PORT
-            try:
-                self.serial_port = serial.Serial(serial_id, baudrate=115200, timeout=1)
-                if not self.serial_port.is_open:
-                    self.serial_port.open()
-                print(f"{config.get_time()}:Communication: Serial port connected")
-                self.vehicle.radio_state = 2
-                break
-            except serial.SerialException as e:
-                print(f"{config.get_time()}:Communication: Failed to connect to serial port {e}")
-                time.sleep(0.1)
+        # Assign serial id from config file
+        serial_id = config.VEHICLE_PORT
+
+        # If using local port for one computer testing
+        if config.USE_LOCAL_PORT:
+            serial_id = config.LOCAL_PORT
+
+        # Try to connect to serial
+        try:
+            self.serial_port = serial.Serial(serial_id, baudrate=115200, timeout=1)
+            if not self.serial_port.is_open:
+                self.serial_port.open()
+            print(f"{config.get_time()}:Communication: Serial port connected")
+            # Communication flag true
+            self.vehicle.serial_connected = True
+
+        except serial.SerialException as e:
+            print(f"{config.get_time()}:Communication: Failed to connect to serial port {e}")
+            # Communication flag false
+            self.vehicle.serial_connected = False
+        time.sleep(0.2)
 
     def package_data(self):
-        # pull last_packet from vehicle class
-        #vehicle_snapshot = self.vehicle.__copy__()
-        packet = [self.vehicle.speedToSend,
-                  self.vehicle.throttleToSend,
+        # pull new values to send from controls
+        packet = [self.vehicle.throttleToSend,
                   self.vehicle.brakeToSend,
                   self.vehicle.emergency_brakeToSend,
                   self.vehicle.gearToSend,
-                  self.vehicle.steering_angleToSend,
-                  self.vehicle.directionToSend,
-                  self.vehicle.battery_voltageToSend,
-                  self.vehicle.battery_currentToSend,
-                  self.vehicle.battery_temperatureToSend,
-                  self.vehicle.front_L_wheel_speedToSend,
-                  self.vehicle.front_R_wheel_speedToSend,
-                  self.vehicle.distance_to_objectToSend]
+                  self.vehicle.steering_angleToSend]
 
         if not config.USE_LOCAL_PORT:
             out = config.PACKET_HEADER + bytes(packet)
-        #os.system("cls")
-        #print(f"\033[H\033[J", end="")
-        #print(f"{config.get_time()}:Sending: {out}")
-        if False:
+
+        if True:
             os.system("cls")
             print(f"\033[H\033[J", end="")
-            print(f"Throttle: {self.vehicle.throttleToSend}")
-            print(f"Brake   : {self.vehicle.brakeToSend}")
-            print(f"Steer   : {self.vehicle.steering_angleToSend}")
+            print(f"Throttle  : {self.vehicle.throttleToSend}")
+            print(f"Brake     : {self.vehicle.brakeToSend}")
+            print(f"Steer     : {self.vehicle.steering_angleToSend}")
+            print(f"Gear      : {self.vehicle.gearToSend}")
+            print(f"Handbrake : {self.vehicle.emergency_brakeToSend}")
+            print(f"Controller: {self.vehicle.controller_name}, Status: {self.vehicle.controller_connected}")
+            print(f"Keyboard  : {self.vehicle.keyboard_name}, Status: {self.vehicle.keyboard_connected}")
+            print(f"Comm Speed: {self.vehicle.communication_time}")
         return out
 
     @staticmethod
@@ -66,8 +66,9 @@ class Communication(threading.Thread):
             return False
         try:
             connection.write(data)
+            #print("sent")
         except serial.SerialTimeoutException:
-            print(f"{config.get_time()}:Communication: Failed to send packet, bad serial connection")
+            #print(f"{config.get_time()}:Communication: Failed to send packet, bad serial connection")
             return False
         return True
 
@@ -75,30 +76,47 @@ class Communication(threading.Thread):
     def run(self):
         # connect to serial port
         self.serial_connect()
-        while True:
 
-            # read Packet
-            st = time.monotonic()
-            while not self.serial_port.in_waiting:
-                if (time.monotonic() - st) > 1:
-                    self.vehicle.radio_state = 1
-                    break
-                    # where error state is triggered
-            if self.serial_port.in_waiting:
-                packet = self.serial_port.read(config.PACKET_SIZE)
-                # print(f"{config.get_time()}:Received: {packet}")
-                self.vehicle.update_with_packet(packet)  # update packet
+        # Loop through send and receive while serial is connected
+        while self.vehicle.serial_connected:
 
-            # call send method
-            time.sleep(config.SEND_INTERVAL)  # sleep
-            data = self.package_data()  # get data to be sent
-            if not self.send(self.serial_port, data):  # send
-                print(f"{config.get_time()}: Failed to Send Data")
-                self.vehicle.radio_state = 0
-                self.serial_connect()  # attempt to reconnect if sending fails
+            # call data package method
+            data = self.package_data()
+
+            # Start full communication timer
+            initial_time = time.monotonic()
+
+            # if unable to send on serial connection
+            if not self.send(self.serial_port, data):
+                self.vehicle.sent = False
+                self.vehicle.serial_connected = False
             else:
-                self.vehicle.radio_state = 2
+                # packet was sent
+                self.vehicle.sent = True
 
-            # exit
-            if self.vehicle.exit:
-                break
+            # Take first timeout reading
+            start_timeout = time.monotonic()
+
+            # While nothing on buffer wait for max allowed timeout
+            while not self.serial_port.in_waiting:
+                # If more than one second has elapsed
+                if (time.monotonic() - start_timeout) > 1:
+                    #Set vehicle radio state to one
+                    self.vehicle.radio_state = 2
+                    self.vehicle.received = False
+                    self.vehicle.communication_time = 1
+                    break
+                    # where connection error state is triggered
+
+            # Read data if available
+            if self.serial_port.in_waiting:
+                # Check time of received
+                self.vehicle.communication_time = time.monotonic() - initial_time
+                self.vehicle.received = True
+                packet = self.serial_port.read(config.PACKET_SIZE)
+                # update packet
+                self.vehicle.update_with_packet(packet)
+                #print (f"{packet}")
+
+            # delay time
+            time.sleep(config.SEND_INTERVAL)
