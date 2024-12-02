@@ -1,3 +1,8 @@
+'''
+This class gives methods to communicate over Serial. 
+'''
+
+# Imports
 from control.Vehicle import Vehicle
 import serial.tools.list_ports
 import control.config as config
