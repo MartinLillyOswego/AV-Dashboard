@@ -55,7 +55,15 @@ class GUI(threading.Thread):
             out = {
                 "serial_port": config.VEHICLE_PORT,
                 "max_speed": config.MAX_SPEED,
-                "responce_text": self.response_text}
+                "responce_text": self.response_text,
+                "BATTERY_LOW_THRESHOLD": config.BATTERY_LOW_THRESHOLD,
+                "BATTERY_OVERHEAT_THRESHOLD": config.BATTERY_OVERHEAT_THRESHOLD,
+                "COLLISION_THRESHOLD": config.COLLISION_THRESHOLD,
+                "HARD_TURN_THRESHOLD": config.HARD_TURN_THRESHOLD,
+                "EXCESSIVE_LOAD_THRESHOLD": config.EXCESSIVE_LOAD_THRESHOLD,
+                "HILL_DETECTION_THROTTLE": config.HILL_DETECTION_THROTTLE,
+                "HILL_DETECTION_SPEED": config.HILL_DETECTION_SPEED,
+                "SLIP_DETECTION_THRESHOLD": config.SLIP_DETECTION_THRESHOLD}
             self.response_text = ""
             return out
 

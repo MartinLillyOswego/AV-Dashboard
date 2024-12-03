@@ -12,6 +12,7 @@ def start_dashboard():
         from control.Vehicle import Vehicle
         from python_gui.gui import GUI
         from control.Controller import Controller
+        from control.ErrorChecks import ErrorChecks
     except ImportError:
         raise RuntimeError("cannot import local dependencies")
 
@@ -30,5 +31,9 @@ def start_dashboard():
     # start the gui thread
     gui_thread = GUI(vehicle=telemetry)
     gui_thread.start()
+    
+    # error detection thread
+    error_thread = ErrorChecks(vehicle=telemetry)
+    error_thread.start()
 
 start_dashboard()

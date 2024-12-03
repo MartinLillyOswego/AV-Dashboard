@@ -128,7 +128,8 @@ class Vehicle:
     # Updates fields directly from new packet
     def update_with_packet(self, attributes):
         with self.lock:
-
+            self.unchecked = True
+            
             # Remove the oldest packet, if needed
             if len(self.speed) == config.PACKET_COUNT:
                 self.speed.pop(0)
