@@ -3,7 +3,7 @@ This project is intended to give a user the ability to connect with the “woode
 
 
 # First-time setup
-1. Install python version 3.7 from the microsoft store. If you install it through some other means, the important thing is that you can run "python3.7 somerandomfilehere.py" in a batch script and not get an error.
+1. Install python version 3.7 from the microsoft store. If you install it through some other means, the important thing is that you can run "python3.7 somerandomfilehere.py" in a batch script and the file will run.
 2. Run setup.bat either by double clicking it or running it in command prompt(make sure you execute it from the directory of setup.bat).
 3. Run start.bat (should have appeared in the same directory). Two things will happen. A browser window will open and a command prompt window will open. In the command prompt window, you might see the following error:
   Communication: Failed to connect to serial port could not open port 'COM2': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
