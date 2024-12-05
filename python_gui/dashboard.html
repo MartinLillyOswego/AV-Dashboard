@@ -5,6 +5,7 @@
 		<link rel="stylesheet" href="static/dashboard.css">
 		<link rel="stylesheet" href="static/speed.css">
 		<link rel="stylesheet" href="static/steering.css">
+		<link rel="stylesheet" href="static/misc.css">
 		<link href="https://fonts.cdnfonts.com/css/seven-segment" rel="stylesheet">
 	</head>
 
@@ -84,11 +85,30 @@
 				<!-- Remaining Sensor data Graphic -->
 				<div id="misc_graphic" >
 					<!-- Remaining Sensor data will go here when implemented -->
-					<p style="font-family:Seven Segment; color:#acadad; font-size: 18px;">*other sensors*</p>
-					<h4 class="Display">Acceleration: <span id="acceleration">0</span> m/s<sup>2</sup></h4>
+					<!-- <h4 class="Display">Acceleration: <span id="acceleration">0</span> m/s<sup>2</sup></h4>
 					<h4 class="Display">Distance to Object: <span id="distance_to_object">Loading...</span></h4>
 					<h4 id="gear" class="Display">Gear: <span id="gear-value"></span></h4>
-					<h4 id="direction" class="Display">Direction: <span id="direction-value"></span></h4>
+					<h4 id="direction" class="Display">Direction: <span id="direction-value"></span></h4> -->
+					<div class="misc-grid" id="misc-grid-1">
+						<div class="misc-title">Acceleration</div>
+						<div class="misc-data"><span id="acceleration">0</span> m/s<sup>2</sup></div>
+					</div>
+
+					<div class="misc-grid" id="misc-grid-2">
+						<div class="misc-title">Distance to Object</div>
+						<div class="misc-data"><span id="distance_to_object">Loading...</span></div>
+					</div>
+
+					<div class="misc-grid" id="misc-grid-3">
+						<div class="misc-title">Gear</div>
+						<div class="misc-data"><span id="gear-value">N</span></div>
+					</div>
+
+					<div class="misc-grid" id="misc-grid-4">
+						<div class="misc-title">Direction</div>
+						<div class="misc-data"><span id="direction-value">NW</span></div>
+					</div>
+					
 				</div>
 
 			</div>
@@ -143,6 +163,6 @@
 		document.getElementById("distance_to_object").textContent = data.distance_to_object || "No Object Detected";
 		document.getElementById("gear-value").innerHTML = data.gear;
 		document.getElementById("direction-value").innerHTML = data.direction;
-		// setAngle(data.steeringAngle) Use this function to set the angle for the steering graphic
+		setAngle(0)
 	}, 50);
 </script>
