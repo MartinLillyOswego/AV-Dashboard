@@ -1,0 +1,168 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Dashboard</title>
+		<link rel="stylesheet" href="static/dashboard.css">
+		<link rel="stylesheet" href="static/speed.css">
+		<link rel="stylesheet" href="static/steering.css">
+		<link rel="stylesheet" href="static/misc.css">
+		<link href="https://fonts.cdnfonts.com/css/seven-segment" rel="stylesheet">
+	</head>
+
+	<body style="font-family: Trebuchet MS">
+		<div id="main_div">
+
+            <!-- Top Bar -->
+			<div id="top_bar">
+				<h1 id="battery_percent_and_temp" style="font-family:Seven Segment; color:#acadad; font-size: 24px;">0% 0&degF</h1>
+				<img id="battery_img" src="static/icons/battery0.png">
+
+                <!-- open the tuning menu -->
+                <form id="config_button" action="/open_config">
+                <input name="config" value="none" type="hidden">
+                <button style="width: 60%; color:#858F94;" type="submit">
+                    <img src="static/icons/gear.png" style="width: 100%;"></button></form>
+			</div>
+
+            <!-- Main Dashboard stuff -->
+			<div id="main">
+
+                <!-- Speed Graphic -->
+				<div id="speed_zone" style="width: 35%;">
+					<div id="speedometer-container-1" style="width: 100%;">
+						<div id="speedometer-container-2" style="width: 100%;">
+							<div id="speedometer">
+								<div id="scales-container"></div>
+								<div id="center-hide"></div>
+								<div id="center"></div>
+								<div id="bottom-hide"></div>
+								<div id="arrow-container">
+									<div id="arrow-wrapper">
+										<div id="arrow"></div>
+									</div>
+								</div>
+								<div id="center-hide" style="z-index: 300;">
+									<div id="speed"><div id="value">0</div> <div>MPH</div></div>
+									<div id="speed-values"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+                <!-- Throttle and brake Graphic -->
+                <div id="bar_zone">
+                    <h1 id="throttle_label" style="font-family:Seven Segment; color:#acadad; font-size: 24px;" >Throttle:</h1>
+                    <h1 id="brake_label" style="font-family: Seven Segment; color:#acadad; font-size: 24px;">Brake:</h1>
+                    <div id="throttle_bar"></div>
+                    <div id="brake_bar"></div>
+                </div>
+
+				<!-- Position Graphic -->
+				<div id="position_graphic" >
+					<!-- Position Graphic will go here when implemented -->
+					<p style="font-family:Seven Segment; color:#acadad; font-size: 18px;">*position graphic*</p>
+				</div>
+
+				<!-- Steering Graphic -->
+				<div id="steering_graphic" >
+					<div id="steering-container">
+						<div id="main-steering">
+							<div id="steering-display"><div id="steering-angle">0°</div></div>
+							<div id="axle"></div>
+							<div id="right-wheel" class="wheel">
+								<div class="tread"></div>
+								<div class="tread"></div>
+							</div>
+							<div id="left-wheel" class="wheel">
+								<div class="tread"></div>
+								<div class="tread"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Remaining Sensor data Graphic -->
+				<div id="misc_graphic" >
+					<!-- Remaining Sensor data will go here when implemented -->
+					<!-- <h4 class="Display">Acceleration: <span id="acceleration">0</span> m/s<sup>2</sup></h4>
+					<h4 class="Display">Distance to Object: <span id="distance_to_object">Loading...</span></h4>
+					<h4 id="gear" class="Display">Gear: <span id="gear-value"></span></h4>
+					<h4 id="direction" class="Display">Direction: <span id="direction-value"></span></h4> -->
+					<div class="misc-grid" id="misc-grid-1">
+						<div class="misc-title">Acceleration</div>
+						<div class="misc-data"><span id="acceleration">0</span> m/s<sup>2</sup></div>
+					</div>
+
+					<div class="misc-grid" id="misc-grid-2">
+						<div class="misc-title">Distance to Object</div>
+						<div class="misc-data"><span id="distance_to_object">Loading...</span></div>
+					</div>
+
+					<div class="misc-grid" id="misc-grid-3">
+						<div class="misc-title">Gear</div>
+						<div class="misc-data"><span id="gear-value">N</span></div>
+					</div>
+
+					<div class="misc-grid" id="misc-grid-4">
+						<div class="misc-title">Direction</div>
+						<div class="misc-data"><span id="direction-value">NW</span></div>
+					</div>
+					
+				</div>
+
+			</div>
+
+
+            <!-- Bottom Bar -->
+			<div id="bottom_bar">
+				<div class="icon"><img src="static/icons/car-oil.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/accident.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/battery.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/brake.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/engine.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/sensor.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/temp.png" height="100%" width="100%"></div>
+				<div class="icon"><img src="static/icons/warning.png" height="100%" width="100%"></div>
+				<div id="con_png" class="icon"><img id="connection_png" src="static/icons/radio.png" height="100%" width="100%"></div>
+			</div>
+
+		</div>
+    </body>
+</html>
+
+<script type="text/javascript" src="static/gauges.js"></script>
+
+<script>
+	speedometer = new speedometer(40, 'speedometer-container-1', 'speedometer-container-2');
+	window.addEventListener("resize", speedometer.resize.bind(speedometer));
+	// let i = 0;
+	// let direction = 1;
+	// setInterval(async () => {
+	// 	speedometer.setSpeed(i)
+	// 	if (direction == 1){
+	// 		i += 2
+	// 		if (i >= 50) {direction = 0}
+	// 	}else {
+	// 		i -= 2
+	// 		if (i <= 0) {direction = 1}
+	// 	}
+	// }, 300);
+
+	setInterval(async () => {
+		const response = await fetch("/data");
+		const data = await response.json();
+		
+		speedometer.setSpeed(data.speed);
+		document.getElementById("battery_percent_and_temp").innerText = data.battery_percent_and_temp;
+		document.getElementById("battery_img").src = data.battery_img;
+		document.getElementById("connection_png").src = data.con_png;
+		document.getElementById("throttle_bar").style.width = data.throttle + "vw";
+		document.getElementById("brake_bar").style.width = data.brake + "vw";
+		document.getElementById("acceleration").textContent = data.acceleration;
+		document.getElementById("distance_to_object").textContent = data.distance_to_object || "No Object Detected";
+		document.getElementById("gear-value").innerHTML = data.gear;
+		document.getElementById("direction-value").innerHTML = data.direction;
+		setAngle((data.steering_angle - 126) / 2)
+	}, 50);
+</script>

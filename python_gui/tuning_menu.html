@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tuning Menu</title>
+    <link rel="stylesheet" type="text/css" href="static/tuning_menu.css" />
+</head>
+
+<body style="background-color:#30302f; color: #c7c8c9; font-family: Trebuchet MS" onload="onLoad()">
+    <div id="top_bar">
+        <p><u><b id="label" style="color:white; font-size: 24px;" >Tuning Menu:</b></u></p>
+
+        <!-- back button -->
+        <form id="buttonDash" action="/">
+        <button class="buttonSty" style="color:#307dc9; width:80px; font-family: Trebuchet MS; color:#bacfc8; font-size:18px" type="submit" >Dashboard</button>
+        </form>
+
+    </div>
+
+    <!-- holds all submission boxes -->
+    <div id="main">
+
+        <!-- input for serial port -->
+        <form id="serial" action="/open_config">
+            <p style="font-family: Trebuchet MS;color:white">Radio's Serial Port:
+            <label> <input style="background-color:#4a4946" name="serial_port" type="text">
+                    <input style="color:white; background-color:#4a4946" type = "submit" value = "Submit" />
+                    <span id="serial_text" style="color: white; font-family: Trebuchet MS "></span>
+            </label></p>
+        </form>
+
+        <!-- input for max speed -->
+        <form id="max_speed" action="/open_config">
+            <p style="font-family: Trebuchet MS;color:white">Maximum Allowed Speed:
+            <label> <input style="background-color:#4a4946" name="max_speed" type="text">
+                    <input style="color:white; background-color:#4a4946" type = "submit" value = "Submit" />
+                    <span id="max_speed_text" style="color: white; font-family: Trebuchet MS "></span>
+            </label></p>
+        </form>
+		<!-- BATTERY_LOW_THRESHOLD -->
+        <form id="max_speed" action="/open_config">
+            <p style="font-family: Trebuchet MS;color:white">Low Battery Threshold:
+            <label> <input style="background-color:#4a4946" name="BATTERY_LOW_THRESHOLD" type="text">
+                    <input style="color:white; background-color:#4a4946" type = "submit" value = "Submit" />
+                    <span id="BATTERY_LOW_THRESHOLD" style="color: white; font-family: Trebuchet MS "></span>
+            </label></p>
+        </form>
+		<!-- BATTERY_OVERHEAT_THRESHOLD -->
+        <form id="max_speed" action="/open_config">
+            <p style="font-family: Trebuchet MS;color:white">Battert Overhead Threshold:
+            <label> <input style="background-color:#4a4946" name="BATTERY_OVERHEAT_THRESHOLD" type="text">
+                    <input style="color:white; background-color:#4a4946" type = "submit" value = "Submit" />
+                    <span id="BATTERY_OVERHEAT_THRESHOLD" style="color: white; font-family: Trebuchet MS "></span>
+            </label></p>
+        </form>
+		<!-- COLLISION_THRESHOLD -->
+        <form id="max_speed" action="/open_config">
+            <p style="font-family: Trebuchet MS;color:white">Collision Threshold:
+            <label> <input style="background-color:#4a4946" name="COLLISION_THRESHOLD" type="text">
+                    <input style="color:white; background-color:#4a4946" type = "submit" value = "Submit" />
+                    <span id="COLLISION_THRESHOLD" style="color: white; font-family: Trebuchet MS "></span>
+            </label></p>
+        </form>
+		<!-- HARD_TURN_THRESHOLD -->
+        <form id="max_speed" action="/open_config">
+            <p style="font-family: Trebuchet MS;color:white">Hard Turn Threshold:
+            <label> <input style="background-color:#4a4946" name="HARD_TURN_THRESHOLD" type="text">
+                    <input style="color:white; background-color:#4a4946" type = "submit" value = "Submit" />
+                    <span id="HARD_TURN_THRESHOLD" style="color: white; font-family: Trebuchet MS "></span>
+            </label></p>
+        </form>
+		<!-- EXCESSIVE_LOAD_THRESHOLD -->
+        <form id="max_speed" action="/open_config">
+            <p style="font-family: Trebuchet MS;color:white">Excessive Load Threshold:
+            <label> <input style="background-color:#4a4946" name="EXCESSIVE_LOAD_THRESHOLD" type="text">
+                    <input style="color:white; background-color:#4a4946" type = "submit" value = "Submit" />
+                    <span id="EXCESSIVE_LOAD_THRESHOLD" style="color: white; font-family: Trebuchet MS "></span>
+            </label></p>
+        </form><!-- HILL_DETECTION_THROTTLE -->
+        <form id="max_speed" action="/open_config">
+            <p style="font-family: Trebuchet MS;color:white">Hill Detection Throttle:
+            <label> <input style="background-color:#4a4946" name="HILL_DETECTION_THROTTLE" type="text">
+                    <input style="color:white; background-color:#4a4946" type = "submit" value = "Submit" />
+                    <span id="HILL_DETECTION_THROTTLE" style="color: white; font-family: Trebuchet MS "></span>
+            </label></p>
+        </form>
+		<!-- HILL_DETECTION_SPEED -->
+        <form id="max_speed" action="/open_config">
+            <p style="font-family: Trebuchet MS;color:white">Hill Detection Speed:
+            <label> <input style="background-color:#4a4946" name="HILL_DETECTION_SPEED" type="text">
+                    <input style="color:white; background-color:#4a4946" type = "submit" value = "Submit" />
+                    <span id="HILL_DETECTION_SPEED" style="color: white; font-family: Trebuchet MS "></span>
+            </label></p>
+        </form>
+		<!-- SLIP_DETECTION_THRESHOLD -->
+        <form id="max_speed" action="/open_config">
+            <p style="font-family: Trebuchet MS;color:white">Slip Detection Threshold:
+            <label> <input style="background-color:#4a4946" name="SLIP_DETECTION_THRESHOLD" type="text">
+                    <input style="color:white; background-color:#4a4946" type = "submit" value = "Submit" />
+                    <span id="SLIP_DETECTION_THRESHOLD" style="color: white; font-family: Trebuchet MS "></span>
+            </label></p>
+        </form>
+
+    </div>
+    <div id="bottom_bar">
+        <span id="responce" style="color: #c7c8c9; font-family: Trebuchet MS "></span>
+    </div>
+</body>
+</html>
+
+<!-- runs on load -->
+<script type="text/javascript">
+  async function onLoad() {
+    const response = await fetch("/config_data");
+    const data = await response.json();
+    document.getElementById("serial_text").innerText = "Operating Value: " + data.serial_port;
+    document.getElementById("max_speed_text").innerText = "Operating Value: " + data.max_speed;
+	document.getElementById("BATTERY_LOW_THRESHOLD").innerText = "Operating Value: " + data.BATTERY_LOW_THRESHOLD;
+	document.getElementById("BATTERY_OVERHEAT_THRESHOLD").innerText = "Operating Value: " + data.BATTERY_OVERHEAT_THRESHOLD;
+	document.getElementById("COLLISION_THRESHOLD").innerText = "Operating Value: " + data.COLLISION_THRESHOLD;
+	document.getElementById("HARD_TURN_THRESHOLD").innerText = "Operating Value: " + data.HARD_TURN_THRESHOLD;
+	document.getElementById("EXCESSIVE_LOAD_THRESHOLD").innerText = "Operating Value: " + data.EXCESSIVE_LOAD_THRESHOLD;
+	document.getElementById("HILL_DETECTION_THROTTLE").innerText = "Operating Value: " + data.HILL_DETECTION_THROTTLE;
+	document.getElementById("HILL_DETECTION_SPEED").innerText = "Operating Value: " + data.HILL_DETECTION_SPEED;
+	document.getElementById("SLIP_DETECTION_THRESHOLD").innerText = "Operating Value: " + data.SLIP_DETECTION_THRESHOLD;
+    document.getElementById("responce").innerText = data.responce_text;
+    }
+</script>

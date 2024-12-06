@@ -1,0 +1,134 @@
+* {
+	box-sizing: border-box;
+}
+#speedometer {
+	width: 100%;
+	height: 138.88%;
+	border: 2px solid black;
+	border-radius: 50%;
+	position: absolute;
+}
+
+#center {
+	background-color: black;
+	width: 1.5%;
+	height: 1.5%;
+	border: 2px solid black;
+	border-radius: 50%;
+	position: absolute;
+	top: 49.5%;
+	left: 49.5%;
+}
+
+#center-hide {
+	background-color: #262626;
+	width: 70%;
+	height: 70%;
+	border: 2px solid #00ACEF;
+	border-radius: 50%;
+	position: absolute;
+	top: 15%;
+	left: 15%;
+}
+
+#bottom-hide {
+	width: 102%;
+	height: 39%;
+	position: absolute;
+	bottom: -1%;
+	left: -1%;
+	background-color: #262626;
+	z-index: 100;
+	border-radius: 50%;
+	border: 2px solid #00ACEF;
+}
+
+.scales {
+	width: 100%;
+	height: 50%;
+	background-color: #00ACEF;
+}
+
+.half-scale-container {
+	width: 1%;
+	height: 85%;
+	position: absolute;
+	left: 49.5%;
+	top: 7.5%;
+}
+
+.scale-container {
+	width: 1%;
+	height: 95%;
+	position: absolute;
+	left: 49.5%;
+	top: 2.5%;
+}
+
+.red-box {
+	width: 300px;
+	height: 300px;
+	background-color: red;
+}
+
+#arrow-container {
+	width: 60%;
+	height: 60%;
+	background-color: transparent;
+	position: absolute;
+	top: 20%;
+	left: 20%;
+}
+
+#arrow-wrapper {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	background-color: transparent;
+	transform: rotate(-25deg); /*-25deg : 205deg - |230deg|&*/
+	transition: transform 0.5s steps;
+}
+
+#arrow {
+	width: 80%;
+	height: 1%;
+	position: absolute;
+	background-color: red;
+	top: 49.5%;
+	left: -29.5%;
+}
+
+#speed {
+	position: relative;
+	width: 50%;
+	height: 20%;
+	top: 30%;
+	left: 25%;
+	text-align: center;
+	font-size: 10vh;
+	color: #00ACEF;
+	font-family: 'Seven Segment', sans-serif;
+}
+
+.speed-scale-value-top{
+	style='width: 1000%;
+	z-index: 3000;
+}
+
+.speed-scale-value-bottom{
+	style='width: 1000%;
+	z-index: 3000;
+	position: absolute;
+	bottom: 0px;
+}
+
+.scale-values {
+	width: 5%;
+	height: 95%;
+	position: absolute;
+	left: 47.5%;
+	top: 2.5%;
+	font-size: 3vh;
+	font-family: 'Seven Segment', sans-serif;
+	color: #00ACEF;
+}
