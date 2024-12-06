@@ -141,13 +141,13 @@
 	// setInterval(async () => {
 	// 	speedometer.setSpeed(i)
 	// 	if (direction == 1){
-	// 		i += 5
+	// 		i += 2
 	// 		if (i >= 50) {direction = 0}
 	// 	}else {
-	// 		i -= 5
+	// 		i -= 2
 	// 		if (i <= 0) {direction = 1}
 	// 	}
-	// }, 1000);
+	// }, 300);
 
 	setInterval(async () => {
 		const response = await fetch("/data");
@@ -163,6 +163,6 @@
 		document.getElementById("distance_to_object").textContent = data.distance_to_object || "No Object Detected";
 		document.getElementById("gear-value").innerHTML = data.gear;
 		document.getElementById("direction-value").innerHTML = data.direction;
-		setAngle(0)
+		setAngle((data.steering_angle - 126) / 2)
 	}, 50);
 </script>

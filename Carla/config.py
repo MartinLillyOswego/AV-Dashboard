@@ -8,7 +8,7 @@ import re
 
 # known values
 CONFIG_FILE = "control/config.txt"
-CONFIG_FILE_MC = "control/configMC.txt"
+CONFIG_FILE_MC = "Carla/configMC.txt"
 
 # values to be loaded from file
 VEHICLE_PORT = -1  # radio's serial port

@@ -54,7 +54,7 @@ class speedometer {
 						clearInterval(intervalId)
 					}
 				}
-			}, 5);
+			}, 10);
 		}
 	}
 	// setSpeed(speed) {
