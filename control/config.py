@@ -47,9 +47,9 @@ def read(input_file):
         else:
             USE_LOCAL_PORT = False
 
-        SEND_INTERVAL = float(vals[3])
-        PACKET_COUNT = int(vals[4])
-        PACKET_HEADER = str(vals[5])
+        SEND_INTERVAL = float(vals[1])
+        PACKET_COUNT = int(vals[2])
+        PACKET_HEADER = str(vals[3])
 
         # pull packet header
         valsH = [exp.group() for exp in re.finditer(r"[0-9]+", str(PACKET_HEADER))]
@@ -58,16 +58,16 @@ def read(input_file):
             b += int(val).to_bytes(1, "big")
         PACKET_HEADER = b
 
-        MAX_SPEED = float(vals[6])
-        PACKET_SIZE = int(vals[7])
-        BATTERY_LOW_THRESHOLD = int(vals[8])
-        BATTERY_OVERHEAT_THRESHOLD = int(vals[9])
-        COLLISION_THRESHOLD = int(vals[10])
-        HARD_TURN_THRESHOLD = int(vals[11])
-        EXCESSIVE_LOAD_THRESHOLD = int(vals[12])
-        HILL_DETECTION_THROTTLE = int(vals[13])
-        HILL_DETECTION_SPEED = int(vals[14])
-        SLIP_DETECTION_THRESHOLD = int(vals[15])
+        MAX_SPEED = float(vals[4])
+        PACKET_SIZE = int(vals[5])
+        BATTERY_LOW_THRESHOLD = int(vals[6])
+        BATTERY_OVERHEAT_THRESHOLD = int(vals[7])
+        COLLISION_THRESHOLD = int(vals[8])
+        HARD_TURN_THRESHOLD = int(vals[9])
+        EXCESSIVE_LOAD_THRESHOLD = int(vals[10])
+        HILL_DETECTION_THROTTLE = int(vals[11])
+        HILL_DETECTION_SPEED = int(vals[12])
+        SLIP_DETECTION_THRESHOLD = int(vals[13])
 
     except:
         raise RuntimeError(f"{get_time()}:Config: Failed to read file")
@@ -79,8 +79,6 @@ def write():
         if type(header) == bytes:
             header = f"{int(header[0])}.{int(header[1])}.{int(header[2])}"
         new_config = f"""RADIO_PORT: {VEHICLE_PORT}
-LOCAL_CARLA_PORT: {LOCAL_PORT}
-USE_LOCAL_PORT: {USE_LOCAL_PORT}
 SEND_INTERVAL: {SEND_INTERVAL}
 MAX_PACKET_COUNT: {PACKET_COUNT} 
 PACKET_HEADER: {header}
