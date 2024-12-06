@@ -109,8 +109,6 @@ class GUI(threading.Thread):
                 self.acceleration_history.pop(0)
             smoothed_acceleration = sum(self.acceleration_history) / len(self.acceleration_history)
             
-            distance_to_object = str(veh.distance_to_object) if veh.distance_to_object != float('inf') else "No Object Detected"
-
             throttle_percent = int(10 * ((throttle_force+1) / 256))
             brake_percent = int(10 * ((brake_force+1) / 256))
 
@@ -132,7 +130,7 @@ class GUI(threading.Thread):
                     "con_png": con_png,
                     "battery_percent_and_temp": f"{battery_percent}% {battery_temperature}°F",
                     "acceleration": round(smoothed_acceleration, 2),
-                    "distance_to_object": distance_to_object,
+                    "distance_to_object": veh.distance_to_object[ind],
                     "gear": gear,
                     "direction": direction
                     }
