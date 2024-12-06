@@ -48,6 +48,13 @@ class Communication(threading.Thread):
                   self.vehicle.emergency_brakeToSend,
                   self.vehicle.gearToSend,
                   self.vehicle.steering_angleToSend]
+        
+        if not self.vehicle.controller_connected:
+            packet = [0, 255, 255, 1, 127]
+        
+        if self.vehicle.critical_error_state:
+            packet = [0, 255, 255, 1, self.vehicle.steering_angleToSend]
+            
 
         # if not config.USE_LOCAL_PORT:
         #     out = config.PACKET_HEADER + bytes(packet)
