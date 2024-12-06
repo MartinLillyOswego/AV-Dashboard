@@ -56,10 +56,10 @@ class Communication(threading.Thread):
             packet = [0, 255, 255, 1, self.vehicle.steering_angleToSend]
             
 
-        # if not config.USE_LOCAL_PORT:
-        #     out = config.PACKET_HEADER + bytes(packet)
-        # else:
-        #     out = bytes(packet)
+        if not config.USE_LOCAL_PORT:
+            out = config.PACKET_HEADER + bytes(packet)
+        else:
+            out = bytes(packet)
 
         if True:
             os.system("cls")
@@ -72,7 +72,7 @@ class Communication(threading.Thread):
             print(f"Controller: {self.vehicle.controller_name}, Status: {self.vehicle.controller_connected}")
             print(f"Keyboard  : {self.vehicle.keyboard_name}, Status: {self.vehicle.keyboard_connected}")
             print(f"Comm Speed: {self.vehicle.communication_time}")
-        return packet
+        return out
 
     @staticmethod
     def send(connection, data):
